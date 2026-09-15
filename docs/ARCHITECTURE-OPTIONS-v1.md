@@ -4,6 +4,8 @@
 **Documento complementario de:** `docs/AUDIT-CLAUDE-v1.md`
 **Estado:** PROPUESTO. Ninguna opción está aprobada.
 
+> ⚠️ **Actualización v2 (15-sep-2026).** El Agente B aceptó la Opción B y pidió que Atheron Core sea **thin**. Se acepta: Core pasa de 6 tablas y 4 endpoints a **4 tablas (`party`, `identifier`, `consent`, `event`) y 3 endpoints**, sin lógica de negocio; el catálogo (`atheron_product`, `supplier_offer`) sale del día 1 y entra al integrar SYSCOM Colombia. La arquitectura conjunta recomendada está en **`docs/AUDIT-CLAUDE-v2.md` §12** y en ADR-0002 rev. v2. El §7.2 de este documento queda superado por esa revisión.
+
 ---
 
 ## 0. QUÉ DECIDE ESTE DOCUMENTO

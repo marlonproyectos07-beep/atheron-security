@@ -3,6 +3,7 @@
 **Autor:** Agente A (Claude Code) · **Fecha:** 15 de septiembre de 2026
 **Documento complementario de:** `docs/AUDIT-CLAUDE-v1.md`
 **Estado:** PROPUESTO. No ejecutado.
+**Revisión 2 — 15-sep-2026**, tras la revisión del Agente B. Los cambios frente a la versión original están marcados con **`[v2]`** y explicados en `docs/AUDIT-CLAUDE-v2.md` §13.
 
 ---
 
@@ -27,22 +28,31 @@ Solo dos cosas son irrecuperables: **los eventos que no se registran** y **el co
 
 Lo que sí o sí debe existir. Ordenado por dependencia.
 
-### 🔴 M0 · Gate legal habilitante — BLOQUEANTE DE TODO
-**Owner: Marlon** · Días 1–10 (en paralelo con lo demás, pero bloquea la venta)
+### 🔴 M0 · Gate legal habilitante — **`[v2]` BLOQUEA LA INSTALACIÓN, NO TODO EL MVP**
+**Owner: Marlon** · Días 1–10
+
+> **`[v2]` Corrección aceptada del Agente B.** La versión original bloqueaba toda venta con instalación; era un gate romo. Lo correcto es bloquear **un alcance específico**: la instalación, y solo hasta confirmar la figura jurídica aplicable. Todo lo demás avanza en paralelo. Ver ADR-0014.
 
 | Tarea | Evidencia de terminado |
 |---|---|
-| Concepto jurídico escrito sobre Supervigilancia (las 4 preguntas de la auditoría §B.5) | PDF del concepto, con fecha y firma |
+| **`[v2]`** Concepto jurídico con las **3 preguntas precisas** del ADR-0014 (figura (a) vs (b) vs (c); umbral hacia monitoreo; responsabilidad por proveedor no inscrito) | PDF del concepto, con fecha y firma |
+| **`[v2]`** Restricción inmediata: **prohibido mencionar monitoreo o respuesta** en toda pieza comercial hasta resolver | Revisión de textos, sin esperar al abogado |
 | Política de Tratamiento de Datos Personales redactada y publicada | URL pública |
 | Aviso de privacidad y texto de autorización para el formulario | Texto aprobado, versionado |
 | Verificar estado real: Odoo, WhatsApp BSP, pasarela, proveedor DIAN, SYSCOM | Tabla §B.11 completa, con contratos o cotizaciones |
 
 > **Ninguna venta ocurre antes de cerrar M0.** Es la recomendación más incómoda de esta auditoría y la que más riesgo elimina. Si M0 revela que se requiere licencia, el plan comercial cambia — y es infinitamente mejor descubrirlo en el día 10 que en el día 300 con clientes instalados.
 
-### 🟠 M1 · Los 5 productos, costeados de verdad
+### 🟠 M1 · **`[v2]`** El producto ancla, costeado de verdad
 **Owner: Marlon + comercial** · Días 1–7
 
-Para **cada uno** de los 5 productos de Línea Hogar:
+> **`[v2]`** Se costea **un producto ancla**, no cinco. Los otros cuatro se costean y publican solo si el ancla convierte. Criterio de selección:
+> `puntaje = margen_contribución × demanda_búsqueda × (1 ÷ complejidad_instalación)`
+> con tres restricciones duras: costo verificado con cotización, instalable en menos de medio día, sin dependencia de stock volátil.
+>
+> **Secuencia (desacuerdo residual D-R3):** el Agente A recomienda elegir el ancla **después** de M0 y de la decisión sobre venta nacional — si la instalación queda restringida, el ancla correcta es un producto autoinstalable, que es un producto distinto. La plantilla maestra (M3) **no depende del producto** y avanza en paralelo, así que esto no cuesta calendario.
+
+Para el producto ancla (y después para cada uno de los restantes):
 
 | Campo | Regla |
 |---|---|
@@ -60,8 +70,12 @@ Para **cada uno** de los 5 productos de Línea Hogar:
 ### 🟠 M2 · Atheron Core mínimo
 **Owner: Agente A** · Días 5–12
 
-Las 6 tablas de `ARCHITECTURE-OPTIONS-v1.md` §7.2 y cuatro endpoints:
-`POST /leads` · `POST /events` · `POST /webhooks/{provider}` · `GET /health`
+> **`[v2]` Corrección aceptada del Agente B: Core **thin**.** De 6 tablas a 4, de 4 endpoints a 3. Definición operativa: *Core es un registrador, no un procesador; si contiene un `if` que codifica una regla comercial, ya no es thin.* Ver ADR-0002 rev. v2.
+
+**4 tablas:** `party` · `identifier` · `consent` · `event`
+**3 endpoints:** `POST /leads` · `POST /events` · `POST /webhooks/{provider}`
+
+Sale del día 1: catálogo (`atheron_product`, `supplier_offer`) — entra al integrar SYSCOM Colombia.
 
 Con: idempotencia, verificación de firma, `correlation_id`, y logs estructurados.
 
@@ -69,10 +83,22 @@ Con: idempotencia, verificación de firma, `correlation_id`, y logs estructurado
 
 > **Esto es lo único de "plataforma" que se construye este mes.** Son días de trabajo y es lo que hace posible todo lo demás.
 
-### 🟠 M3 · Una landing (no cinco)
+### 🟠 M3 · **`[v2]`** Plantilla maestra de landing (no cinco landings)
 **Owner: Agente A** · Días 8–16
 
-Una plantilla, un producto publicado. Los otros cuatro se publican con la misma plantilla si el primero convierte.
+Una **plantilla maestra parametrizada**, un producto publicado. Los otros cuatro se publican con la misma plantilla **solo si el ancla convierte** — si no convierte, el problema es la oferta o el precio, y replicar multiplica el error por cinco.
+
+**`[v2]` Qué es fijo y qué es variable:**
+
+| Fijo en la plantilla | Variable por producto |
+|---|---|
+| Estructura, jerarquía, formulario, consentimiento | Nombre, ficha, imágenes |
+| Captura de UTM, `correlation_id`, ciudad | Precio contado / crédito / inicial |
+| Bloque WhatsApp contextual | Alcance de instalación |
+| Bloque de garantía y alcance | FAQ específica |
+| Rendimiento y SEO técnico | Productos relacionados |
+
+La plantilla **no depende del producto ancla** y puede construirse antes de elegirlo.
 
 Requisitos duros:
 - Móvil primero. **Objetivo de carga < 3 s en 4G**, medido con herramienta, no percibido.
@@ -114,7 +140,15 @@ Tres campos adicionales en cada lead y cada venta:
 2. ¿Ha sido huésped de alguna de las 7 casas? (sí / no / no sabe)
 3. ¿Cómo conoció a Atheron? (lista cerrada)
 
-**Costo: tres campos. Valor: es la única forma de saber si el ecosistema existe** (§B.3). Sin esto, la decisión sobre el Loop en la Fase 7 será una corazonada.
+**`[v2]` Corrección aceptada del Agente B: la medición de v1 era defectuosa.** Los umbrales (<5% / 5–15% / >15%) eran falsa precisión sin tasa base; con ~100 leads en 90 días el intervalo de confianza atravesaba las tres bandas, así que el experimento no podía distinguir entre sus propias respuestas; y medía porcentaje bruto en lugar de **lift**.
+
+**E1 rediseñado en tres partes:**
+
+- **E1-A · Techo aritmético — se calcula HOY.** Contar los huéspedes distintos históricos de las 7 casas. Ese número acota el pozo máximo de solapamiento posible. Si son 300 personas, ninguna estrategia de venta cruzada sobre esa base mueve un negocio — y se sabe hoy, gratis, con datos que ya existen. **Es la pieza que faltaba y la más valiosa.**
+- **E1-B · Prueba activa — semanas, no trimestres.** Ofrecer a los huéspedes históricos con consentimiento válido una oferta concreta de seguridad. Mide intención provocada, no coincidencia pasiva.
+- **E1-C · Lift, no porcentaje.** `lift = P(compra | fue huésped) ÷ P(compra | no fue huésped)`. Decisión: **< 1,5** no construir el Loop · **1,5–3** registrar sin automatizar · **> 3** invertir · **si el intervalo cruza 1,5**, el dato aún no decide — y se dice, en lugar de fingir conclusión.
+
+**Los tres campos del formulario se mantienen.** Siguen costando cero y siguen siendo necesarios; lo que cambia es que ya no pretenden ser un test por sí solos.
 
 ### 🟠 M7 · Cobro y facturación
 **Owner: Marlon** · Días 15–25
@@ -147,6 +181,24 @@ Checklist obligatorio por instalación:
 - Backup de Core y de Odoo, **con una restauración real probada**.
 
 **Evidencia:** captura del tablero + registro de la restauración de prueba.
+
+### 🟠 **`[v2]`** M11 · Venta nacional sin instalación (modo M-1) — opcional
+**Owner: Marlon** · Días 20–30 · **Solo si M0 y la decisión M2 lo permiten**
+
+> **`[v2]` Corrección aceptada del Agente B:** venta nacional y apertura de ciudad son cosas distintas. La versión original las confundía y bloqueaba la vía de crecimiento más barata. Ver ADR-0008 rev. v2.
+
+Vender equipo despachado a cualquier ciudad, **sin instalación**. Restringido a productos genuinamente autoinstalables, etiquetados como tales, con guía y video. Es la forma más barata de medir demanda nacional antes de comprometer capital en una ciudad.
+
+**Trampa a evitar:** un equipo mal montado por el cliente genera una reseña que dice "Atheron", no "mi instalación". Por eso la restricción de catálogo no es opcional.
+
+### 🟠 **`[v2]`** M12 · Prueba de mantenimiento recurrente
+**Owner: Marlon** · Desde la primera instalación
+
+Sin software, sin landing, sin pasarela. En la conversación de cierre de instalación se ofrece el plan (revisión anual, limpieza y reajuste, verificación de grabación, firmware, prioridad de agenda, garantía ampliada) y se registra: aceptación, precio aceptado sin fricción, motivo de rechazo.
+
+**Criterio:** adopción > 20% → prioridad post-MVP por encima del Loop. Ver ADR-0013.
+
+**Cuidado con el nombre:** mantenimiento ≠ monitoreo. El nombre del plan tiene consecuencias jurídicas (ADR-0014).
 
 ### 🟠 M10 · Venta real y medición
 **Owner: todos** · Días 20–30
@@ -208,7 +260,7 @@ Esta lista es un compromiso. Si algo de aquí aparece en un sprint, es señal de
 | **Ecommerce nacional** | Sin fulfillment, devoluciones y garantías resueltos, cada venta remota es un problema futuro |
 | **Dropshipping automático** | El propio Playbook lo marca como hipótesis. Requiere las 7 respuestas de §B.8 |
 | **Segunda compañía legal** | Impuesto contable permanente sin beneficio actual (§C.5) |
-| **Segunda ciudad** | Diluye el único efecto de red disponible (K.11) |
+| **`[v2]` Apertura operativa de ciudad (modo M-3)** | Diluye el único efecto de red disponible (K.11). **Precisión v2: el freno aplica solo a M-3. La venta nacional M-1 queda habilitada** (ADR-0008 rev. v2) |
 | **Bus de eventos** | Los contratos sí; la infraestructura no. Sin volumen añade modos de fallo, no capacidad (ADR-0003) |
 | **Multimoneda** | Basta con persistir moneda explícita. Construir conversión hoy es ficción |
 | **Microservicios** | Un servicio pequeño. Dividirlo ahora multiplica la operación sin dividir la complejidad |
@@ -234,7 +286,7 @@ Zona de riesgo conocida: **M0 no depende de Atheron.** Un concepto jurídico pue
 
 | Gate | Criterio | Si falla |
 |---|---|---|
-| **G0** | Concepto Supervigilancia recibido + política de datos publicada | **PARAR.** No hay venta |
+| **G0** | **`[v2]`** Concepto con las 3 preguntas del ADR-0014 + política de datos publicada | **PARAR la instalación.** El resto del MVP avanza |
 | **G1** | 5 productos con costo verificado y margen calculado | No publicar nada |
 | **G2** | Landing en producción, < 3 s en móvil, consentimiento capturado | No invertir en pauta |
 | **G3** | Un lead recorre landing → Core → Odoo con mismo `correlation_id` | No invertir en pauta |

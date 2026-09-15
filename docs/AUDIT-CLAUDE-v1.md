@@ -8,6 +8,8 @@
 **Rama:** `claude/audit-atheron-ecosystem-v1`
 **Estado:** propuesta de auditoría. NO implementada. NO fusionada.
 
+> ⚠️ **Documento superado en parte.** Tras la revisión del Agente B existe una segunda pasada: **`docs/AUDIT-CLAUDE-v2.md`**, que corrige cuatro puntos de este documento (gate legal romo, tamaño de Atheron Core, diseño del experimento E1, y confusión entre venta nacional y apertura de ciudad) y reduce los desacuerdos a tres. **Ante discrepancia, v2 es la versión vigente.** Este documento se conserva íntegro como registro del razonamiento original.
+
 ---
 
 ## CÓMO LEER ESTE DOCUMENTO

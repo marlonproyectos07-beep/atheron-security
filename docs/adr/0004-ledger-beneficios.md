@@ -54,3 +54,34 @@ benefit_entry (
 ## Cómo se revierte
 
 No hace falta revertirlo: un ledger append-only se puede proyectar a cualquier otro modelo. Lo irreversible es lo contrario.
+
+---
+
+## REVISIÓN v2 — 15-sep-2026 (tras revisión del Agente B)
+
+**Corrección aceptada.** El Agente A había propuesto *congelar* la escalera 5/10/15/20. El Agente B la reformula como **niveles de privilegio sujetos a margen, no descuentos automáticos**. **La reformulación de B es superior** y se adopta: preserva la intención del Playbook (reconocer al cliente recurrente) y elimina el riesgo de margen.
+
+El cálculo de `AUDIT-CLAUDE-v1.md` §B.2 sigue siendo válido **como escenario de riesgo** de la interpretación "descuento automático acumulable", no como descripción de lo propuesto por B.
+
+**Impacto cuantificado de la corrección:**
+
+| Escenario | Margen de contribución |
+|---|---|
+| Escalera 20% + referido 5% + pasarela | 15,4 % |
+| **Privilegios de bajo costo marginal + pasarela** | **≈ 35,7 %** |
+
+**Lo que debe existir para que "sujeto a margen" sea real y no una intención:**
+
+1. **Verificación de piso de margen en el momento de cotizar**, que rechaza la combinación si el margen de contribución cae bajo el umbral. Sin esa comprobación, la sujeción no existe.
+2. **Catálogo de privilegios ordenado por costo marginal ascendente:**
+
+| Nivel | Privilegios |
+|---|---|
+| 1 | Prioridad de agenda · revisión anual · canal directo de soporte |
+| 2 | + Ampliación de garantía · asesoría de configuración |
+| 3 | + Upgrade en instalación · beneficio de aliado con sponsor |
+| 4 | + Condición comercial preferente, **verificada contra el piso de margen** |
+
+3. Sponsor, vencimiento y costo tope en todos, como ya establecía este ADR.
+
+**Desacuerdo residual D-R1:** el Agente A sostiene que **los niveles no deben llamarse 5/10/15/20**. Son porcentajes, y serán leídos como descuentos por vendedores, clientes y aliados sin importar lo que diga el documento interno; la nomenclatura arrastra el comportamiento y reintroduce el riesgo que B acaba de eliminar. Propone nombres no numéricos. **Requiere decisión de Marlon (M5).**

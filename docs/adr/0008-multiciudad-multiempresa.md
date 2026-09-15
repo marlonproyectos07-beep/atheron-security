@@ -38,3 +38,24 @@ Hallazgo adicional no contemplado en el Playbook: el ICA es un impuesto **munici
 ## Cómo se revierte
 
 Trivial en un sentido (ignorar el campo); costoso en el otro (añadirlo después).
+
+---
+
+## REVISIÓN v2 — 15-sep-2026 (tras revisión del Agente B)
+
+**Corrección aceptada sin reservas.** El Agente B señala que **venta nacional y apertura operativa de ciudad son cosas distintas**. Tenía razón: la versión original de este ADR y la decisión D10 las confundían, y con ello bloqueaban innecesariamente la vía de crecimiento más barata.
+
+**Tres modos operativos, no dos:**
+
+| Modo | Qué es | Requiere | ICA / presencia | Gate |
+|---|---|---|---|---|
+| **M-1 · Venta nacional con despacho** | Solo equipo, sin instalación, a cualquier ciudad | Logística, garantía, logística inversa | Territorialidad `REQUIERE FUENTE` (concepto tributario) | Bajo |
+| **M-2 · Venta con instalación en ciudad cubierta** | Equipo + instalación | Técnico certificado, agenda, inventario local | Sí, en esa ciudad | Medio |
+| **M-3 · Apertura operativa de ciudad** | Presencia real | Técnicos, aliados, responsable, P&L, registro ICA, plan 90 días | Sí, completo | Alto — checklist §17 del Playbook |
+
+**D10 corregida:** el freno *"no abrir la ciudad 2 hasta dominar Zipaquirá"* aplica **solo a M-3**. M-1 puede escalar temprano y es la forma más barata de medir demanda nacional antes de comprometer capital en una ciudad.
+
+**Dos advertencias que acompañan la concesión:**
+
+1. **M-1 tiene una trampa específica en seguridad.** Un equipo vendido sin instalar que el cliente monta mal genera soporte, garantía y una reseña negativa que dice "Atheron", no "mi instalación". **M-1 se restringe a productos genuinamente autoinstalables, etiquetados como tales, con guía y video.** No todo el catálogo va a M-1.
+2. **M-1 cambia la pregunta jurídica** del ADR-0014: comercializar sin instalar puede tener tratamiento distinto a comercializar e instalar.

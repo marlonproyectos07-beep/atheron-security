@@ -49,3 +49,27 @@ Comparación completa en `docs/ARCHITECTURE-OPTIONS-v1.md`.
 ## Cómo se revierte
 
 Consolidar todo en Odoo. Posible mientras el Core siga siendo pequeño; cada mes que pasa lo encarece.
+
+---
+
+## REVISIÓN v2 — 15-sep-2026 (tras revisión del Agente B)
+
+**Cambio:** el Agente B acepta la frontera y pide que el Core sea **thin**. Se acepta y se precisa.
+
+**Definición operativa de "thin":**
+
+> Atheron Core Thin es un **registrador, no un procesador**.
+> **Prueba de delgadez:** si Core contiene un `if` que codifica una regla comercial, ya no es thin.
+
+**Core Thin — 4 tablas (antes 6) y 3 endpoints (antes 4):**
+
+```
+party · identifier · consent · event
+POST /leads   POST /events   POST /webhooks/{provider}
+```
+
+**Sale del día 1:** `atheron_product` y `supplier_offer` (entran al integrar SYSCOM Colombia, ADR-0009). `inbound_webhook` se fusiona en `event` mediante la clave de idempotencia (ADR-0005).
+
+**No negociable incluso en thin:** `party`, `identifier`, `consent` y `event`. Son los únicos cuatro objetos irrecuperables: el consentimiento no se pide retroactivamente y los eventos no ocurridos no se registran después.
+
+**Desacuerdo residual D-R2 (`REQUIERE FUENTE — razonamiento B`):** si "thin" significara que identidad y consentimiento viven en Odoo, el Agente A discrepa — el consentimiento es evidencia legal que debe ser append-only y exportable (ADR-0007), y sin `merge/unmerge` propio un falso positivo de deduplicación expone la configuración de seguridad de una casa a otra persona (riesgo R09). Se cierra con una aclaración del Agente B.
