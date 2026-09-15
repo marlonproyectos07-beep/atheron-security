@@ -232,7 +232,7 @@ Todos los demás admiten corrección. Estos tres, no:
 
 1. **R04 — consentimiento.** No se puede pedir retroactivamente sobre la base histórica.
 2. **R03 — instrumentación de la tesis.** Los eventos no ocurridos no se registran después.
-3. **R01 — licencia.** Vender sin ella no se deshace con un trámite posterior.
+3. **R01 — permiso/registro Supervigilancia.** Vender sin él no se deshace con un trámite posterior. **Confirmado, no hipotético** (art. 52, Decreto 356/1994).
 
 **Los tres se mitigan en la semana 1, y los tres cuestan casi nada comparados con lo que evitan.**
 
