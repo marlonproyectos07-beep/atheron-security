@@ -297,3 +297,60 @@ La única recomendación al respecto: elegir lo que el equipo ya sabe operar, y 
 ---
 
 **Estado: PROPUESTO.** Requiere decisión D5 de Marlon y revisión del Agente B. Formalizado en ADR-0002.
+
+---
+
+# 9. ARQUITECTURA CANDIDATA FINAL v1
+
+**Cerrada el 15-sep-2026** tras la segunda pasada del Agente A, la revisión del Agente B y su cierre con corrección regulatoria. **No queda ningún desacuerdo abierto entre agentes.** Pendiente únicamente la aprobación de Marlon.
+
+```
+              Landing — plantilla maestra parametrizada
+                              │
+                              ▼
+                   ATHERON CORE THIN
+              party · identifier · consent · event
+                   sin lógica comercial
+                              │
+                    sincroniza (un dueño por campo)
+                              ▼
+                     ODOO — casi estándar
+        CRM · ventas · inventario · facturación DIAN · cartera
+                              │
+              ┌───────────────┼───────────────┐
+              ▼               ▼               ▼
+          WhatsApp        Pasarela     SYSCOM Colombia
+                                        (tras el POC)
+```
+
+## Decisiones cerradas
+
+| Dominio | Resolución final | ADR |
+|---|---|---|
+| **Frontera** | Odoo = libro mayor del dinero · Core = memoria de la relación | 0002 |
+| **Atheron Core Thin** | **`party` + `identifier` + `consent` + `event`, sin lógica comercial.** 3 endpoints. Registrador, no procesador | 0002 v3 |
+| **Identidad** | `Party` UUID opaco e inmutable · solo determinístico · merge no destructivo con `unmerge` | 0001 |
+| **Consentimiento** | Granular por finalidad · append-only · con evidencia · desde el primer formulario | 0007 |
+| **Eventos** | Contratos sí, bus no. Envelope común, append-only, `correlation_id` extremo a extremo | 0003 |
+| **Idempotencia** | Clave única por `(provider, event_id)` · firma verificada · recepción ≠ procesamiento · DLQ | 0005 |
+| **Beneficios** | Niveles = **privilegios sujetos a margen**, **sin nombres numéricos**. Ledger append-only, diferido | 0004 v3 |
+| **Proveedor** | **SYSCOM Colombia.** Capa anticorrupción al integrar, no antes. `AtheronProduct → N SupplierOffer` | 0009 v2 |
+| **Territorio** | M-1 nacional · M-2 instalación · M-3 apertura de ciudad — **los tres bajo el mismo gate regulatorio** | 0008 v3 |
+| **Modelo comercial** | Híbrido: venta + instalación + postventa + prueba de mantenimiento recurrente | 0013 |
+| **Alcance regulado** | **Comercialización + instalación.** Sin monitoreo, respuesta, custodia de video ni consultoría facturada | 0014 v3 |
+| **Frontend** | Una plantilla maestra · preselección de 5–10 productos · **ancla congelada tras el gate y el costeo** | 0010 |
+| **Multiempresa** | Una sola compañía real hasta que un contador indique lo contrario | 0008 |
+| **Observabilidad** | `correlation_id` · trazabilidad del dinero · 3 alertas · 1 tablero · backup restaurado | 0012 |
+| **Secretos** | Cero en el repositorio · 3 entornos · mínimo privilegio · MFA · cifrado en reposo | 0006 |
+| **Gobernanza** | Repositorio manda · Drive apunta, no duplica · toda decisión estructural por ADR | 0011, 0000 |
+
+## La restricción que gobierna el calendario
+
+**El permiso/registro ante Supervigilancia condiciona la activación comercial, no la construcción.** Todo lo de arriba se construye, se prueba y se costea mientras el trámite avanza; nada se vende, cobra, despacha ni instala hasta cumplirlo. El trámite tiene plazo de respuesta de hasta 30 días hábiles desde la radicación (ADR-0014 rev. v3).
+
+## Qué hace defendible esta arquitectura
+
+1. **El activo es portable desde el primer registro.** Identidad, consentimiento e historia viven fuera del ERP y se exportan íntegros cualquier día.
+2. **Lo irrecuperable se captura desde el día 1.** El consentimiento no se pide retroactivamente; los eventos no ocurridos no se registran después.
+3. **Nada se construye antes de que un hecho lo justifique.** Ledger, catálogo, motor de reglas y bus de eventos están diferidos a un disparador concreto, no a una fecha.
+4. **El modelo de datos no cambia al escalar.** Todo lo demás es reemplazable — incluido Odoo, incluido el motor de lealtad, que probablemente se comprará en lugar de construirse.

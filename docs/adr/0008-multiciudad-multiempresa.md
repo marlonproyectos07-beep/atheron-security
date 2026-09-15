@@ -59,3 +59,21 @@ Trivial en un sentido (ignorar el campo); costoso en el otro (añadirlo después
 
 1. **M-1 tiene una trampa específica en seguridad.** Un equipo vendido sin instalar que el cliente monta mal genera soporte, garantía y una reseña negativa que dice "Atheron", no "mi instalación". **M-1 se restringe a productos genuinamente autoinstalables, etiquetados como tales, con guía y video.** No todo el catálogo va a M-1.
 2. **M-1 cambia la pregunta jurídica** del ADR-0014: comercializar sin instalar puede tener tratamiento distinto a comercializar e instalar.
+
+---
+
+## REVISIÓN v3 — 15-sep-2026 · CORRECCIÓN REGULATORIA
+
+**El modo M-1 pierde su condición de "gate bajo".** La revisión v2 lo habilitó sobre la base de que vender sin instalar podría quedar fuera del ámbito de Supervigilancia. **Esa premisa era errónea:** el artículo 52 del Decreto 356 de 1994 nombra la **comercialización** de forma expresa e independiente de la instalación (ADR-0014 rev. v3).
+
+**Tabla corregida:**
+
+| Modo | Qué es | Gate regulatorio | Otros requisitos |
+|---|---|---|---|
+| **M-1 · Venta nacional con despacho** | Solo equipo, sin instalación | **Permiso/registro Supervigilancia — igual que los demás** | Logística, garantía, logística inversa. Territorialidad ICA `REQUIERE FUENTE` |
+| **M-2 · Venta con instalación en ciudad cubierta** | Equipo + instalación | **Permiso/registro Supervigilancia** | Técnico certificado, agenda, inventario local |
+| **M-3 · Apertura operativa de ciudad** | Presencia real | **Permiso/registro Supervigilancia** | Técnicos, aliados, responsable, P&L, ICA, plan 90 días |
+
+**Lo que se mantiene de la revisión v2 y sigue siendo válido:** la distinción entre los tres modos es correcta y útil — son operaciones distintas con logística, costos y riesgos distintos. Lo que cambia es que **ninguno de los tres es una vía para eludir el gate regulatorio.** M-1 sigue siendo la vía más barata de medir demanda nacional, pero **después** del permiso, no antes.
+
+**Se mantiene igualmente** la advertencia sobre M-1 en seguridad: restringido a productos genuinamente autoinstalables, etiquetados como tales, con guía y video.

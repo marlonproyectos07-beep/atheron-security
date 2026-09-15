@@ -73,3 +73,17 @@ POST /leads   POST /events   POST /webhooks/{provider}
 **No negociable incluso en thin:** `party`, `identifier`, `consent` y `event`. Son los únicos cuatro objetos irrecuperables: el consentimiento no se pide retroactivamente y los eventos no ocurridos no se registran después.
 
 **Desacuerdo residual D-R2 (`REQUIERE FUENTE — razonamiento B`):** si "thin" significara que identidad y consentimiento viven en Odoo, el Agente A discrepa — el consentimiento es evidencia legal que debe ser append-only y exportable (ADR-0007), y sin `merge/unmerge` propio un falso positivo de deduplicación expone la configuración de seguridad de una casa a otra persona (riesgo R09). Se cierra con una aclaración del Agente B.
+
+---
+
+## CIERRE v3 — 15-sep-2026 (cierre del Agente B)
+
+**Desacuerdo residual D-R2: CERRADO.** El Agente B fija Atheron Core Thin como:
+
+```
+party  +  identifier  +  consent  +  event        — sin lógica comercial
+```
+
+Coincide exactamente con la posición del Agente A en la revisión v2. **No queda desacuerdo.** Las cuatro tablas son las irrenunciables (los únicos objetos irrecuperables: el consentimiento no se pide retroactivamente y los eventos no ocurridos no se registran después), y la ausencia de lógica comercial es la prueba de delgadez.
+
+**Este ADR queda cerrado en su alcance técnico.** Pendiente únicamente la aprobación formal de Marlon.

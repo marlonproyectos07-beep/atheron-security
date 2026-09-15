@@ -54,3 +54,59 @@ Se exige y se conserva prueba de inscripción de todo proveedor de equipos de vi
 ## Cómo se revierte
 
 No se revierte. Es requisito regulatorio, no preferencia de diseño.
+
+---
+
+## REVISIÓN v3 — 15-sep-2026 · CORRECCIÓN REGULATORIA (cierre del Agente B)
+
+> **⚠️ Esta revisión SUPERSEDE los puntos 1, 2 y 3 de la Decisión anterior.** La hipótesis de la v2 —que la comercialización sin instalación podría quedar fuera del requisito— **era errónea**. Se corrige.
+
+### Lo que dice la fuente
+
+El **artículo 52 del Decreto 356 de 1994** incluye expresamente las actividades de **fabricación, importación, instalación, comercialización o arrendamiento** de equipos para vigilancia y seguridad privada. Quienes las ejercen deben **inscribirse ante la Superintendencia de Vigilancia y Seguridad Privada** y quedan sujetos a su control, inspección y vigilancia permanente ([Decreto Ley 356 de 1994, Función Pública](https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1341); [texto completo, DIMAR](https://www.dimar.mil.co/sites/default/files/normatividad/DECRETO%20356%20DE%201994.pdf) — consultados 15-sep-2026).
+
+Supervigilancia publica actualmente el trámite **"Permiso de Estado para el ejercicio de las actividades para equipos de vigilancia y seguridad privada"**, que **incluye instalación y comercialización**. La Resolución 20204000064817 oficializó los trámites que requieren permiso de Estado, con plazo de respuesta de hasta **30 días hábiles** desde la radicación ([Ámbito Jurídico](https://www.ambitojuridico.com/noticias/general/defensa-nacional-y-seguridad-privada/supervigilancia-oficializa-los-tramites-que); [Supervigilancia, trámites y requisitos](https://www.supervigilancia.gov.co/documentos/6457/tramites-y-requisitos/) — consultados 15-sep-2026).
+
+**Etiqueta: `CONFIRMADO`** (norma citada + trámite publicado por la entidad). Deja de ser `HIPÓTESIS`.
+
+### El error que se corrige, dicho con claridad
+
+La v2 razonó que, si la figura aplicable era un registro de comercializadores/instaladores, entonces **vender sin instalar** podría quedar fuera del requisito, y sobre esa base habilitó el modo M-1 (venta nacional con despacho) con "gate bajo". **Eso es incorrecto: el artículo 52 nombra la comercialización de forma expresa e independiente de la instalación.** Vender equipo sin instalarlo está igualmente dentro del ámbito.
+
+Fue un error de método: la v2 se apoyó en fuentes secundarias e infirió un límite que la norma no establece, en lugar de esperar al texto del artículo. La corrección del Agente B es correcta y se adopta íntegra.
+
+### Decisión corregida
+
+**1. G0 — Gate regulatorio (reemplaza la formulación v2).**
+
+No se asume que ninguna modalidad de actividad comercial sobre equipos esté libre del requisito. **La activación comercial/transaccional —de cualquier modalidad, con o sin instalación, local o nacional— queda condicionada a verificar y cumplir el permiso/registro aplicable ante Supervigilancia.**
+
+**2. Qué SÍ avanza mientras tanto** (sin activación comercial):
+
+- selección y **preselección de 5–10 productos**
+- costeo real con cotizaciones de respaldo
+- fichas técnicas y contenido
+- CRM (Odoo) y su configuración
+- arquitectura y Atheron Core Thin
+- POC de la API de SYSCOM Colombia (sandbox, nunca producción)
+- plantilla maestra de landing
+- pruebas internas de todo el recorrido
+
+**3. Qué NO ocurre hasta cumplir el permiso/registro:** publicar oferta comercial al público, captar pedidos, cobrar, vender, despachar o instalar. **Ni en modalidad M-1, ni M-2, ni M-3** (ADR-0008).
+
+**4. Alcance inicial deseado — se mantiene y se fija:**
+
+> **Comercialización + instalación.**
+> **Sin** monitoreo, **sin** respuesta, **sin** custodia de video y **sin** consultoría de seguridad facturada, hasta validar los permisos específicos que cada uno de esos servicios exija.
+
+Esta restricción es **contractual y de lenguaje, efectiva desde hoy**: ninguna pieza comercial, landing, plantilla de WhatsApp o conversación de venta menciona ni insinúa esos cuatro servicios.
+
+**5. Debida diligencia de proveedores:** se mantiene y se refuerza. El artículo 52 aplica también a quien comercializa: se exige y conserva prueba de inscripción de todo proveedor de equipos (pregunta 7 del ADR-0009).
+
+### Consecuencia de calendario que debe verse
+
+El trámite tiene un plazo de respuesta de hasta **30 días hábiles** desde la radicación, sin contar la preparación del expediente. **El MVP de 30 días no puede terminar en venta real.** Termina en *listo para vender*: todo construido, costeado, probado y esperando el permiso. El gate G5 ("venta real") se desplaza fuera de la ventana de 30 días y pasa a depender del trámite, no del desarrollo.
+
+Es una mala noticia de calendario y una buena noticia de riesgo: el proyecto descubre esto en la semana 1 y no con clientes instalados.
+
+**Acción inmediata para Marlon:** radicar el trámite cuanto antes. Cada día de demora en radicar es un día de demora en vender, y el trabajo técnico no lo compensa.

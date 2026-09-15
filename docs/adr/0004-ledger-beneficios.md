@@ -85,3 +85,18 @@ El cálculo de `AUDIT-CLAUDE-v1.md` §B.2 sigue siendo válido **como escenario 
 3. Sponsor, vencimiento y costo tope en todos, como ya establecía este ADR.
 
 **Desacuerdo residual D-R1:** el Agente A sostiene que **los niveles no deben llamarse 5/10/15/20**. Son porcentajes, y serán leídos como descuentos por vendedores, clientes y aliados sin importar lo que diga el documento interno; la nomenclatura arrastra el comportamiento y reintroduce el riesgo que B acaba de eliminar. Propone nombres no numéricos. **Requiere decisión de Marlon (M5).**
+
+---
+
+## CIERRE v3 — 15-sep-2026 (cierre del Agente B)
+
+**Desacuerdo residual D-R1: CERRADO a favor de la posición del Agente A.** El Agente B decide que **los niveles del Atheron Loop NO usarán 5/10/15/20 como nombres.**
+
+Queda firme, por tanto:
+1. Los niveles son **privilegios sujetos a margen**, no descuentos automáticos (aporte del Agente B, revisión v2 — vale ~20 puntos de margen de contribución).
+2. Los niveles llevan **nombres no numéricos**, para que la nomenclatura no reintroduzca la lectura de "porcentaje de descuento" que el diseño acaba de eliminar (aporte del Agente A).
+3. Se mantiene el catálogo de privilegios ordenado por costo marginal ascendente y la verificación de piso de margen en el momento de cotizar.
+
+**Pendiente:** los nombres concretos de los cuatro niveles son decisión de marca de Marlon. No bloquean nada técnico — el ledger y la verificación de margen no dependen de cómo se llamen.
+
+**No queda desacuerdo abierto en este ADR.**

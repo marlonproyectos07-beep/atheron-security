@@ -5,6 +5,14 @@
 **Antecede:** `docs/AUDIT-CLAUDE-v1.md` (primera pasada)
 **Rama:** `claude/audit-atheron-ecosystem-v1` · PR #1 en DRAFT · **NO MERGE**
 
+> ⚠️ **CIERRE v3 — 15-sep-2026. La conclusión del §1 de este documento fue CORREGIDA por el Agente B y es errónea.**
+>
+> El §1 concluyó que G0 debía bloquear *solo la instalación*, infiriendo que la comercialización sin instalación podría quedar fuera del requisito. **El artículo 52 del Decreto 356 de 1994 incluye expresamente la comercialización**, junto con fabricación, importación, instalación y arrendamiento. La conclusión correcta y vigente está en **ADR-0014 rev. v3**: la activación comercial de cualquier modalidad queda condicionada al permiso/registro ante Supervigilancia.
+>
+> Los tres desacuerdos residuales (§10) quedan **cerrados**: D-R1 a favor del Agente A (nombres no numéricos), D-R2 sin desacuerdo (Core Thin = party+identifier+consent+event), D-R3 resuelto por el gate regulatorio (el ancla se congela después). **No queda ningún desacuerdo abierto entre A y B.**
+>
+> El resto de este documento (§2 a §8, §11–§14) sigue vigente.
+
 ---
 
 ## 0. NOTA DE ALCANCE — LEER ANTES QUE NADA

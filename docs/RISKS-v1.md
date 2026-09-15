@@ -20,8 +20,10 @@
 
 ## TOP 15 RIESGOS
 
-### 🔴 R01 — Requisito de licencia de Supervigilancia no verificado
-**Sev 5 × Prob 3 = 15** · Owner: **Marlon** · Ventana: **ANTES de la primera venta**
+### 🔴 R01 — Actividad regulada por Supervigilancia sin permiso vigente
+**Sev 5 × Prob 5 = 25** · Owner: **Marlon** · Ventana: **ANTES de cualquier activación comercial**
+
+> **ACTUALIZACIÓN 15-sep-2026 — el riesgo sube de 15 a 25 (máximo).** Deja de ser un requisito *no verificado* y pasa a ser un requisito **confirmado**: el art. 52 del Decreto 356/1994 incluye expresamente fabricación, importación, **instalación, comercialización** y arrendamiento de equipos de vigilancia y seguridad privada, con inscripción obligatoria ante Supervigilancia; y existe el trámite publicado *"Permiso de Estado para el ejercicio de las actividades para equipos de vigilancia y seguridad privada"* ([Función Pública](https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=1341); [Supervigilancia, trámites](https://www.supervigilancia.gov.co/documentos/6457/tramites-y-requisitos/) — consultados 15-sep-2026). La probabilidad pasa a 5 porque **ocurrirá con certeza si se vende sin el permiso.** Mitigación y alcance en ADR-0014 rev. v3.
 
 **Impacto.** El Decreto 356 de 1994 regula, entre otros, la comercialización, instalación y utilización de equipos para vigilancia y seguridad privada, y exige licencia para prestar servicios con medios tecnológicos ([Decreto 356/1994](http://www.secretariasenado.gov.co/senado/basedoc/decreto_0356_1994.html); [Supervigilancia](https://supervigilancia.gov.co/publicaciones/6338/preguntas-frecuentes-supervigilancia/) — consultados 15-sep-2026). Si el modelo de Atheron requiere licencia y opera sin ella: sanciones, cierre, contratos inválidos, y todo el trabajo de 30 días sobre una base no operable. **El Playbook no menciona a Supervigilancia ni una vez.**
 
@@ -189,12 +191,12 @@
 
 | # | Riesgo | Sev | Prob | **Exp** | Owner | Ventana |
 |---|---|:---:|:---:|:---:|---|---|
-| R02 | Apilamiento destruye margen | 5 | 4 | **20** | Marlon + B | Antes de publicar beneficios |
+| **R01** | **Actividad regulada sin permiso vigente** | **5** | **5** | **25** | **Marlon** | **Antes de toda activación comercial** |
+| R02 | Apilamiento destruye margen (mitigado: privilegios sujetos a margen, ADR-0004 v3) | 5 | 2 | **10** | Marlon + B | Antes de publicar beneficios |
 | R04 | Consentimiento insuficiente | 4 | 4 | **16** | Marlon | Antes del primer formulario |
 | R05 | Odoo se vuelve cárcel | 4 | 4 | **16** | A + B | Antes del primer custom |
 | R06 | Calidad de instalación | 4 | 4 | **16** | Marlon | Primera instalación |
 | R07 | Webhooks no idempotentes | 4 | 4 | **16** | Agente A | Día 1 |
-| R01 | Licencia Supervigilancia | 5 | 3 | **15** | Marlon | Antes de la primera venta |
 | R03 | Tesis sin sustrato | 5 | 3 | **15** | Marlon | Medir día 1, decidir día 90 |
 | R08 | Dependencia de WhatsApp | 4 | 3 | **12** | Marlon | Antes de depender |
 | R09 | Fusión errónea de identidad | 4 | 3 | **12** | Agente A | Segundo canal |

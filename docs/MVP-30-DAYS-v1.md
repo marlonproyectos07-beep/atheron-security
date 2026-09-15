@@ -3,7 +3,11 @@
 **Autor:** Agente A (Claude Code) · **Fecha:** 15 de septiembre de 2026
 **Documento complementario de:** `docs/AUDIT-CLAUDE-v1.md`
 **Estado:** PROPUESTO. No ejecutado.
-**Revisión 2 — 15-sep-2026**, tras la revisión del Agente B. Los cambios frente a la versión original están marcados con **`[v2]`** y explicados en `docs/AUDIT-CLAUDE-v2.md` §13.
+**Revisión 3 — 15-sep-2026**, tras el cierre del Agente B. Cambios marcados **`[v2]`** y **`[v3]`**.
+
+> ⚠️ **`[v3]` CORRECCIÓN REGULATORIA QUE CAMBIA EL RESULTADO DEL MES.** El artículo 52 del Decreto 356 de 1994 incluye expresamente la **comercialización** —no solo la instalación— entre las actividades sujetas a inscripción ante Supervigilancia, y existe el trámite *"Permiso de Estado para el ejercicio de las actividades para equipos de vigilancia y seguridad privada"* con plazo de respuesta de hasta **30 días hábiles**. Ver ADR-0014 rev. v3.
+>
+> **Consecuencia: este MVP ya no termina en venta real. Termina en *listo para vender*** — todo construido, costeado, probado y esperando el permiso. El gate G5 sale de la ventana de 30 días.
 
 ---
 
@@ -28,15 +32,31 @@ Solo dos cosas son irrecuperables: **los eventos que no se registran** y **el co
 
 Lo que sí o sí debe existir. Ordenado por dependencia.
 
-### 🔴 M0 · Gate legal habilitante — **`[v2]` BLOQUEA LA INSTALACIÓN, NO TODO EL MVP**
-**Owner: Marlon** · Días 1–10
+### 🔴 M0 · Gate regulatorio — **`[v3]` BLOQUEA LA ACTIVACIÓN COMERCIAL, NO LA CONSTRUCCIÓN**
+**Owner: Marlon** · Radicar en los primeros días · Respuesta hasta 30 días hábiles
 
-> **`[v2]` Corrección aceptada del Agente B.** La versión original bloqueaba toda venta con instalación; era un gate romo. Lo correcto es bloquear **un alcance específico**: la instalación, y solo hasta confirmar la figura jurídica aplicable. Todo lo demás avanza en paralelo. Ver ADR-0014.
+> **`[v3]` Corrección del Agente B, adoptada.** La revisión v2 dijo que G0 bloqueaba *solo la instalación*, razonando que vender sin instalar podría quedar fuera del requisito. **Esa premisa era errónea:** el art. 52 nombra la comercialización de forma expresa e independiente.
+>
+> **G0 corregido:** no se asume que ninguna modalidad —con o sin instalación, local o nacional— esté libre del requisito. **La activación comercial/transaccional queda condicionada a verificar y cumplir el permiso/registro aplicable.**
+
+| ✅ Avanza sin esperar | ⛔ No ocurre hasta cumplir el permiso |
+|---|---|
+| Preselección de 5–10 productos | Publicar oferta comercial al público |
+| Costeo real con cotizaciones | Captar pedidos |
+| Fichas técnicas y contenido | Cobrar |
+| CRM (Odoo) y configuración | Vender |
+| Arquitectura y Atheron Core Thin | Despachar |
+| POC API SYSCOM Colombia (sandbox) | Instalar |
+| Plantilla maestra de landing | — en **ninguna** modalidad (M-1, M-2, M-3) |
+| Pruebas internas extremo a extremo | — |
+
+**Acción inmediata:** radicar el trámite cuanto antes. Cada día de demora en radicar es un día de demora en vender, y el trabajo técnico no lo compensa.
 
 | Tarea | Evidencia de terminado |
 |---|---|
-| **`[v2]`** Concepto jurídico con las **3 preguntas precisas** del ADR-0014 (figura (a) vs (b) vs (c); umbral hacia monitoreo; responsabilidad por proveedor no inscrito) | PDF del concepto, con fecha y firma |
-| **`[v2]`** Restricción inmediata: **prohibido mencionar monitoreo o respuesta** en toda pieza comercial hasta resolver | Revisión de textos, sin esperar al abogado |
+| **`[v3]`** Trámite de permiso/registro **radicado** ante Supervigilancia | Radicado con fecha |
+| **`[v3]`** Concepto jurídico sobre el umbral hacia monitoreo, respuesta, custodia de video y consultoría facturada, y sobre responsabilidad por proveedor no inscrito | PDF del concepto, con fecha y firma |
+| **`[v3]`** Restricción de alcance vigente desde hoy: **comercialización + instalación**, sin monitoreo, sin respuesta, sin custodia de video, sin consultoría de seguridad facturada | Revisión de todos los textos, sin esperar al abogado |
 | Política de Tratamiento de Datos Personales redactada y publicada | URL pública |
 | Aviso de privacidad y texto de autorización para el formulario | Texto aprobado, versionado |
 | Verificar estado real: Odoo, WhatsApp BSP, pasarela, proveedor DIAN, SYSCOM | Tabla §B.11 completa, con contratos o cotizaciones |
@@ -46,13 +66,17 @@ Lo que sí o sí debe existir. Ordenado por dependencia.
 ### 🟠 M1 · **`[v2]`** El producto ancla, costeado de verdad
 **Owner: Marlon + comercial** · Días 1–7
 
-> **`[v2]`** Se costea **un producto ancla**, no cinco. Los otros cuatro se costean y publican solo si el ancla convierte. Criterio de selección:
+> **`[v3]`** **Preselección de 5–10 productos: puede hacerse ya.** El costeo real avanza en paralelo.
+>
+> **`[v3]` El producto ancla definitivo para campaña y venta se congela DESPUÉS del gate regulatorio y del costeo real** — no antes. Esto cierra el desacuerdo residual D-R3 en el sentido que el Agente A proponía, por una razón más fuerte que la suya: no es que el alcance jurídico *podría* cambiar la elección, es que no hay activación comercial que justifique congelarla antes.
+>
+> Criterio de selección del ancla, aplicable sobre la preselección:
 > `puntaje = margen_contribución × demanda_búsqueda × (1 ÷ complejidad_instalación)`
 > con tres restricciones duras: costo verificado con cotización, instalable en menos de medio día, sin dependencia de stock volátil.
 >
-> **Secuencia (desacuerdo residual D-R3):** el Agente A recomienda elegir el ancla **después** de M0 y de la decisión sobre venta nacional — si la instalación queda restringida, el ancla correcta es un producto autoinstalable, que es un producto distinto. La plantilla maestra (M3) **no depende del producto** y avanza en paralelo, así que esto no cuesta calendario.
+La plantilla maestra (M3) **no depende del producto** y avanza en paralelo, así que congelar el ancla más tarde no cuesta calendario.
 
-Para el producto ancla (y después para cada uno de los restantes):
+Para cada producto de la preselección:
 
 | Campo | Regla |
 |---|---|
@@ -182,12 +206,12 @@ Checklist obligatorio por instalación:
 
 **Evidencia:** captura del tablero + registro de la restauración de prueba.
 
-### 🟠 **`[v2]`** M11 · Venta nacional sin instalación (modo M-1) — opcional
-**Owner: Marlon** · Días 20–30 · **Solo si M0 y la decisión M2 lo permiten**
+### ⏸️ **`[v3]`** M11 · Venta nacional sin instalación (modo M-1) — **DESPUÉS del permiso**
+**Owner: Marlon** · **Fuera de la ventana de 30 días**
 
-> **`[v2]` Corrección aceptada del Agente B:** venta nacional y apertura de ciudad son cosas distintas. La versión original las confundía y bloqueaba la vía de crecimiento más barata. Ver ADR-0008 rev. v2.
+> **`[v3]`** La revisión v2 habilitó M-1 con "gate bajo" asumiendo que vender sin instalar quedaba fuera del requisito. **Premisa errónea** (art. 52 nombra la comercialización). M-1 queda sujeto al mismo gate regulatorio que M-2 y M-3. Ver ADR-0008 rev. v3.
 
-Vender equipo despachado a cualquier ciudad, **sin instalación**. Restringido a productos genuinamente autoinstalables, etiquetados como tales, con guía y video. Es la forma más barata de medir demanda nacional antes de comprometer capital en una ciudad.
+Sigue siendo válido que M-1, M-2 y M-3 son operaciones distintas, y que M-1 es la vía más barata de medir demanda nacional — **pero después del permiso, no antes.** Restringido a productos genuinamente autoinstalables, etiquetados como tales, con guía y video.
 
 **Trampa a evitar:** un equipo mal montado por el cliente genera una reseña que dice "Atheron", no "mi instalación". Por eso la restricción de catálogo no es opcional.
 
@@ -275,8 +299,11 @@ Esta lista es un compromiso. Si algo de aquí aparece en un sprint, es señal de
 SEMANA 1  ████ M0 legal · M1 productos costeados · arranque M2
 SEMANA 2  ████ M2 Core · M3 landing · M6 instrumentación
 SEMANA 3  ████ M4 Odoo CRM · M5 WhatsApp · M7 cobro
-SEMANA 4  ████ M8 instalación · M9 observabilidad · M10 VENTA REAL
+SEMANA 4  ████ M8 protocolo instalación · M9 observabilidad · LISTO PARA VENDER
+   ⏸️      ░░░░ G5 VENTA REAL — espera permiso (hasta 30 días hábiles)
 ```
+
+**`[v3]` El mes termina en *listo para vender*, no en vendido.** Todo construido, costeado, probado y esperando el permiso. Es mala noticia de calendario y buena noticia de riesgo: se descubre en la semana 1 y no con clientes instalados.
 
 Zona de riesgo conocida: **M0 no depende de Atheron.** Un concepto jurídico puede tardar más de 10 días. Por eso arranca el día 1 y todo lo demás avanza en paralelo — pero **la venta no ocurre hasta que M0 cierre.**
 
@@ -286,12 +313,12 @@ Zona de riesgo conocida: **M0 no depende de Atheron.** Un concepto jurídico pue
 
 | Gate | Criterio | Si falla |
 |---|---|---|
-| **G0** | **`[v2]`** Concepto con las 3 preguntas del ADR-0014 + política de datos publicada | **PARAR la instalación.** El resto del MVP avanza |
+| **G0** | **`[v3]`** Trámite radicado + permiso/registro obtenido + política de datos publicada | **PARAR toda activación comercial** (vender, cobrar, despachar, instalar, publicar oferta). La construcción avanza |
 | **G1** | 5 productos con costo verificado y margen calculado | No publicar nada |
 | **G2** | Landing en producción, < 3 s en móvil, consentimiento capturado | No invertir en pauta |
 | **G3** | Un lead recorre landing → Core → Odoo con mismo `correlation_id` | No invertir en pauta |
 | **G4** | WhatsApp con plantilla aprobada y conversación registrada | Seguimiento manual, sin automatizar |
-| **G5** | Una venta cobrada, facturada con CUFE, instalada con serial | No escalar |
+| **G5** | **`[v3]`** Una venta cobrada, facturada con CUFE, instalada con serial. **Depende de G0, no del desarrollo: sale de la ventana de 30 días** | No escalar |
 | **G6** | 30 días de datos: CPL, conversión, margen real, motivos de pérdida | No decidir la fase 2 a ciegas |
 
 **Formato de evidencia obligatorio para cada gate:** URL · commit · prueba · captura (móvil y escritorio) · dato medido · **plan de reversión**.
@@ -302,7 +329,7 @@ Zona de riesgo conocida: **M0 no depende de Atheron.** Un concepto jurídico pue
 
 Al día 30 deben existir estas respuestas. Si no existen, el mes se gastó construyendo en lugar de aprendiendo:
 
-1. ¿Se requiere licencia de Supervigilancia? **(bloqueante)**
+1. ~~¿Se requiere permiso de Supervigilancia?~~ **`[v3]` YA RESPONDIDA: sí.** Art. 52 del Decreto 356/1994. La pregunta viva es **en qué estado va el trámite** y qué exige exactamente el expediente.
 2. ¿Cuál es el costo real por lead calificado?
 3. ¿El margen realizado coincide con el 38,8% estimado?
 4. ¿Qué porcentaje de compradores tuvo contacto previo con la capa de hospitalidad? **(la tesis del ecosistema)**
