@@ -7,8 +7,29 @@
  * producto solo declara en qué etapa vive hoy (`growthPath.currentStageId`).
  */
 
+/**
+ * Ids válidos como lista explícita (no derivados de `GROWTH_PATH_STAGES`
+ * con `as const`, para no perder el tipo `GrowthStage[]` de abajo). Un
+ * `currentStageId` con un id fuera de esta lista falla en `tsc --noEmit`
+ * en vez de caer silenciosamente a "ninguna etapa resaltada" (auditoría
+ * 001B, Arquitectura/Maintainability, P1).
+ */
+export const GROWTH_PATH_STAGE_IDS = [
+  "one-camera",
+  "more-coverage",
+  "four-cameras",
+  "eight-sixteen-cameras",
+  "nvr-storage",
+  "alarms",
+  "access-control",
+  "automation",
+  "commercial-industrial",
+] as const;
+
+export type GrowthStageId = (typeof GROWTH_PATH_STAGE_IDS)[number];
+
 export interface GrowthStage {
-  id: string;
+  id: GrowthStageId;
   title: string;
   description: string;
 }
@@ -61,6 +82,6 @@ export const GROWTH_PATH_STAGES: GrowthStage[] = [
   },
 ];
 
-export function getGrowthStageIndex(stageId: string): number {
+export function getGrowthStageIndex(stageId: GrowthStageId): number {
   return GROWTH_PATH_STAGES.findIndex((stage) => stage.id === stageId);
 }

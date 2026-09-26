@@ -1,7 +1,8 @@
 import { Section } from "@/components/ui/Section";
-import { GROWTH_PATH_STAGES } from "@/lib/growth/growth-path";
+import { GROWTH_PATH_STAGES, type GrowthStageId } from "@/lib/growth/growth-path";
 import { cn } from "@/lib/cn";
 import { Icon } from "@/components/ui/Icon";
+import { ATHERON_CENTRAL_MESSAGE } from "@/lib/copy";
 
 /**
  * Bloque visual compartido: se usa en cada landing de producto (resaltando
@@ -14,7 +15,7 @@ import { Icon } from "@/components/ui/Icon";
  * filas de hasta 5 da a cada tarjeta el doble de ancho sin perder la
  * secuencia (la flecha en cada tarjeta sigue marcando "sigue aquí").
  */
-export function GrowthPath({ currentStageId }: { currentStageId?: string }) {
+export function GrowthPath({ currentStageId }: { currentStageId?: GrowthStageId }) {
   const highlightId = currentStageId ?? GROWTH_PATH_STAGES[0].id;
   const highlightLabel = currentStageId ? "Estás aquí" : "Punto de partida";
 
@@ -28,9 +29,7 @@ export function GrowthPath({ currentStageId }: { currentStageId?: string }) {
           Lo que compras hoy puede formar parte del sistema que necesitas mañana
         </h2>
         <p className="mt-4 text-base leading-relaxed text-text-on-dark-muted">
-          ATHERON no solo vende cámaras. Puedes empezar comprando un solo equipo, y te
-          acompañamos a construir un sistema completo a medida que crecen tus necesidades, a tu
-          ritmo.
+          {ATHERON_CENTRAL_MESSAGE}
         </p>
       </div>
 
@@ -80,7 +79,7 @@ export function GrowthPath({ currentStageId }: { currentStageId?: string }) {
                   {stage.description}
                 </p>
                 {isCurrent ? (
-                  <span className="mt-3 inline-flex w-fit items-center rounded-full bg-brand-accent-light px-2.5 py-1 text-[11px] font-semibold text-brand-accent">
+                  <span className="mt-3 inline-flex w-fit items-center rounded-full bg-brand-accent-light px-2.5 py-1 text-xs font-semibold text-brand-accent">
                     {highlightLabel}
                   </span>
                 ) : null}

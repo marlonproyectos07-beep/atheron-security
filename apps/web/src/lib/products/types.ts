@@ -7,6 +7,8 @@
  * propio `status` en vez de admitir `null` silencioso.
  */
 
+import type { GrowthStageId } from "@/lib/growth/growth-path";
+
 export type SourceStatus = "verified" | "requires_source" | "requires_test";
 
 export interface Sourced<T> {
@@ -121,8 +123,9 @@ export interface Testimonial {
   authorContext: string;
   productOrProject?: string;
   quote: string;
+  /** Preparado para testimonios con foto; Testimonials.tsx todavía no lo consume. */
   photoSrc?: string;
-  /** Preparado para video-testimonios; no se usa todavía. */
+  /** Preparado para video-testimonios; Testimonials.tsx ya reserva el marco de video. */
   videoUrl?: string;
   /** Procedencia del testimonio (para uno real) o nota de por qué es demo. */
   source: string;
@@ -137,7 +140,7 @@ export interface SeoInfo {
 
 export interface GrowthPathRef {
   /** id de la etapa en lib/growth/growth-path.ts donde vive este producto hoy. */
-  currentStageId: string;
+  currentStageId: GrowthStageId;
 }
 
 export interface Product {
@@ -149,7 +152,13 @@ export interface Product {
   name: string;
   category: string;
   segment: Segment[];
-  images: ProductImage[];
+  /**
+   * Tupla no vacía (auditoría 001B, Frontend/Next.js, P1): antes era
+   * `ProductImage[]`, y un futuro producto publicado con `images: []`
+   * revienta en SSG/runtime en cualquier componente que asuma
+   * `images[0]`. El tipo ahora obliga a declarar al menos una imagen.
+   */
+  images: [ProductImage, ...ProductImage[]];
   headline: string;
   shortDescription: string;
   benefits: Benefit[];

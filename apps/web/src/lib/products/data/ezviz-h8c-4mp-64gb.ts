@@ -22,6 +22,11 @@ import type { Product } from "@/lib/products/types";
  * con su propio `status`. No confundir "proveedor conocido" con "oferta
  * verificada": son dos preguntas distintas.
  */
+// Única fuente de verdad para el copy de garantía no verificada (auditoría
+// 001B, Copy comercial, P2): antes `warranty.fallbackCopy` y la respuesta
+// del FAQ redactaban dos variantes distintas del mismo texto legal-safe.
+const WARRANTY_FALLBACK_COPY = "Consulta las condiciones aplicables a este producto.";
+
 export const ezvizH8c4mp64gb: Product = {
   id: "ezviz-h8c-4mp-64gb",
   slug: "ezviz-h8c-4mp-64gb",
@@ -44,11 +49,11 @@ export const ezvizH8c4mp64gb: Product = {
   ],
   headline: "Tu primer paso hacia un sistema de seguridad que crece contigo",
   shortDescription:
-    "Cámara EZVIZ H8C de 4MP con tarjeta microSD de 64 GB incluida para grabación local. El punto de partida de tu Ruta de Crecimiento Atheron.",
+    "Cámara EZVIZ H8C de 4 MP con tarjeta microSD de 64 GB incluida para grabación local. El punto de partida de tu Ruta de Crecimiento Atheron.",
   benefits: [
     {
       icon: "resolution",
-      title: "Imagen en alta definición (4MP)",
+      title: "Imagen en alta definición (4 MP)",
       description:
         "Resolución de 4 megapíxeles pensada para que identifiques con claridad lo que sucede en tu propiedad.",
     },
@@ -79,7 +84,6 @@ export const ezvizH8c4mp64gb: Product = {
         { label: "Modelo", value: "H8C", status: "verified" },
         { label: "Resolución", value: "4 MP", status: "verified" },
         { label: "Almacenamiento incluido", value: "Tarjeta microSD de 64 GB", status: "verified" },
-        { label: "Proveedor", value: "SYSCOM Colombia", status: "verified" },
       ],
     },
     {
@@ -140,7 +144,7 @@ export const ezvizH8c4mp64gb: Product = {
     status: "requires_source",
     durationMonths: null,
     coverageSummary: null,
-    fallbackCopy: "Consulta las condiciones aplicables a este producto.",
+    fallbackCopy: WARRANTY_FALLBACK_COPY,
   },
   pricing: {
     status: "requires_source",
@@ -176,7 +180,7 @@ export const ezvizH8c4mp64gb: Product = {
     },
     {
       question: "¿Qué garantía tiene el equipo?",
-      answer: "Consulta las condiciones aplicables a este producto con un asesor Atheron.",
+      answer: WARRANTY_FALLBACK_COPY,
     },
     {
       question: "¿Puedo ampliar mi sistema más adelante?",
@@ -199,8 +203,12 @@ export const ezvizH8c4mp64gb: Product = {
   seo: {
     title: "EZVIZ H8C 4MP + MicroSD 64 GB",
     description:
-      "Cámara EZVIZ H8C de 4MP con microSD de 64 GB incluida. El primer paso de tu Ruta de Crecimiento Atheron, con acompañamiento antes, durante y después de tu compra.",
+      "Cámara EZVIZ H8C de 4 MP con microSD de 64 GB incluida. El primer paso de tu Ruta de Crecimiento Atheron, con acompañamiento antes, durante y después de tu compra.",
     canonicalPath: "/productos/ezviz-h8c-4mp-64gb",
-    ogImageSrc: "/products/ezviz-h8c-4mp-64gb/hero.svg",
+    // PNG, no el SVG de la página (auditoría 001B, SEO técnico, P1): la
+    // mayoría de redes (WhatsApp, LinkedIn, X) no renderizan SVG como
+    // preview de Open Graph. El SVG de `images[0]` se sigue usando en la
+    // página; esto es solo la miniatura para compartir el link.
+    ogImageSrc: "/og-default.png",
   },
 };
