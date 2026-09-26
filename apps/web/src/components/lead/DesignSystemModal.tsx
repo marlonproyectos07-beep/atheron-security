@@ -29,6 +29,7 @@ export function DesignSystemModal({
   productContext?: ProductContext;
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const firstFieldRef = useRef<HTMLSelectElement>(null);
   const [status, setStatus] = useState<Status>("idle");
   const [mode, setMode] = useState<LeadMode | null>(null);
 
@@ -36,6 +37,11 @@ export function DesignSystemModal({
     captureAndPersistUtm();
     setStatus("idle");
     dialogRef.current?.showModal();
+    // El diálogo ya está siempre montado (solo oculto), así que el
+    // autofocus nativo del navegador solo ocurriría una vez al montar —
+    // enfocamos el primer campo a mano en cada apertura (auditoría 001B,
+    // Accessibility, P2: sin esto el foco caía en el botón "Cerrar").
+    firstFieldRef.current?.focus();
   }
 
   function close() {
@@ -95,6 +101,7 @@ export function DesignSystemModal({
 
       <dialog
         ref={dialogRef}
+        aria-labelledby="design-system-modal-title"
         onClick={(event) => {
           if (event.target === dialogRef.current) close();
         }}
@@ -105,12 +112,14 @@ export function DesignSystemModal({
         )}
       >
         <div className="flex items-center justify-between border-b border-border px-6 py-4">
-          <h2 className="text-lg font-bold text-text">Diseña tu sistema con Atheron</h2>
+          <h2 id="design-system-modal-title" className="text-lg font-bold text-text">
+            Diseña tu sistema con Atheron
+          </h2>
           <button
             type="button"
             onClick={close}
             aria-label="Cerrar"
-            className="rounded-md p-1 text-text-muted hover:bg-surface-muted hover:text-text"
+            className="rounded-lg p-1 text-text-muted hover:bg-surface-muted hover:text-text"
           >
             <Icon name="close" className="h-5 w-5" />
           </button>
@@ -132,12 +141,14 @@ export function DesignSystemModal({
                 </>
               ) : (
                 <>
-                  <p className="text-base font-semibold text-text">
-                    Flujo de demostración completado
-                  </p>
+                  <p className="text-base font-semibold text-text">Gracias por tu interés</p>
                   <p className="mt-2 text-sm text-text-muted">
-                    La solicitud todavía no se envía a nuestro sistema comercial. Esta es una
-                    vista previa de cómo funcionará &quot;Diseñar mi sistema&quot;.
+                    Este sitio todavía está en fase de prueba, así que tu solicitud no llegó a
+                    nuestro equipo comercial. Muy pronto podrás contactarnos directamente desde
+                    aquí
+                    {siteConfig.whatsappNumberVerified
+                      ? " — mientras tanto, escríbenos por WhatsApp."
+                      : "."}
                   </p>
                 </>
               )}
@@ -155,6 +166,7 @@ export function DesignSystemModal({
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="Tipo de propiedad" htmlFor="propertyType">
                   <select
+                    ref={firstFieldRef}
                     id="propertyType"
                     name="propertyType"
                     required
@@ -281,7 +293,8 @@ export function DesignSystemModal({
 
               {status === "error" ? (
                 <p className="text-sm text-red-600">
-                  No pudimos enviar tu solicitud. Intenta de nuevo o escríbenos por WhatsApp.
+                  No pudimos enviar tu solicitud. Intenta de nuevo
+                  {siteConfig.whatsappNumberVerified ? " o escríbenos por WhatsApp." : " en unos minutos."}
                 </p>
               ) : null}
 
@@ -303,7 +316,7 @@ export function DesignSystemModal({
 }
 
 const inputClasses =
-  "w-full rounded-lg border border-border px-3 py-2 text-sm text-text placeholder:text-text-muted/70 focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent";
+  "w-full rounded-lg border border-border px-3 py-2 text-sm text-text placeholder:text-text-muted focus:border-brand-accent focus:outline-none focus:ring-1 focus:ring-brand-accent";
 const selectClasses = inputClasses;
 
 function Field({
