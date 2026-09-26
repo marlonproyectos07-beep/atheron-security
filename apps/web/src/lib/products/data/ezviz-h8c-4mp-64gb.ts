@@ -6,21 +6,30 @@ import type { Product } from "@/lib/products/types";
  * REGLA DE ORIGEN DE DATOS (obligatoria para este archivo):
  * Solo se afirman como hecho al usuario los datos que están dados por el
  * encargo de esta tarea (nombre del kit, marca, resolución 4MP, tarjeta
- * microSD de 64 GB incluida, SKU de proveedor CSH8C4MPKIT) o que están
- * documentados en docs/. Todo lo demás (precio, disponibilidad, costo,
- * garantía, tiempo de entrega, especificaciones técnicas adicionales,
- * condiciones de instalación, financiación) queda marcado
- * `requires_source` o `requires_test` y el componente de presentación
- * debe mostrar copy neutral en su lugar, nunca un valor inventado.
+ * microSD de 64 GB incluida, proveedor SYSCOM Colombia, SKU de proveedor
+ * CSH8C4MPKIT) o que están documentados en docs/. Todo lo demás (precio,
+ * disponibilidad, costo, garantía, tiempo de entrega, especificaciones
+ * técnicas adicionales, condiciones de instalación, financiación) queda
+ * marcado `requires_source` o `requires_test` y el componente de
+ * presentación debe mostrar copy neutral en su lugar, nunca un valor
+ * inventado.
+ *
+ * Nota sobre `supplier` (decisión CEO, iteración de hardening): la
+ * IDENTIDAD del proveedor (SYSCOM Colombia, ADR-0009) SÍ está verificada.
+ * Lo que NO está verificado es la OFERTA de ese proveedor sobre este SKU
+ * —stock, costo, disponibilidad, tiempos y condiciones comerciales—, y eso
+ * vive por separado en `pricing`/`availability`/`installation`, cada uno
+ * con su propio `status`. No confundir "proveedor conocido" con "oferta
+ * verificada": son dos preguntas distintas.
  */
 export const ezvizH8c4mp64gb: Product = {
   id: "ezviz-h8c-4mp-64gb",
   slug: "ezviz-h8c-4mp-64gb",
   atheronSku: "ATH-CAM-EZV-H8C-4MP-64GB",
   supplier: {
-    name: "Proveedor en validación (capa anticorrupción pendiente, ADR-0009)",
+    name: "SYSCOM Colombia",
     sku: "CSH8C4MPKIT",
-    status: "requires_source",
+    status: "verified",
   },
   brand: "EZVIZ",
   name: "EZVIZ H8C 4MP + MicroSD 64 GB",
@@ -70,6 +79,7 @@ export const ezvizH8c4mp64gb: Product = {
         { label: "Modelo", value: "H8C", status: "verified" },
         { label: "Resolución", value: "4 MP", status: "verified" },
         { label: "Almacenamiento incluido", value: "Tarjeta microSD de 64 GB", status: "verified" },
+        { label: "Proveedor", value: "SYSCOM Colombia", status: "verified" },
       ],
     },
     {
@@ -174,9 +184,20 @@ export const ezvizH8c4mp64gb: Product = {
         "Sí. Este kit es el primer escalón de la Ruta de Crecimiento Atheron: puedes sumar más cámaras, almacenamiento centralizado, alarmas o control de acceso cuando lo necesites.",
     },
   ],
-  testimonials: [],
+  testimonials: [
+    {
+      id: "demo-001",
+      isDemo: true,
+      authorName: "Testimonio de demostración",
+      authorContext: "Contenido provisional para validar diseño — no publicar como testimonio real",
+      productOrProject: "EZVIZ H8C 4MP + MicroSD 64 GB (demo)",
+      quote:
+        "Este es un testimonio de demostración para revisar cómo se vería esta sección con contenido real: nombre, ciudad, tipo de instalación y producto.",
+      source: "DEMO interno — placeholder de diseño, ATH-SECURITY-WEB-001. NO PUBLICAR COMO TESTIMONIO REAL.",
+    },
+  ],
   seo: {
-    title: "EZVIZ H8C 4MP + MicroSD 64 GB | Atheron Security",
+    title: "EZVIZ H8C 4MP + MicroSD 64 GB",
     description:
       "Cámara EZVIZ H8C de 4MP con microSD de 64 GB incluida. El primer paso de tu Ruta de Crecimiento Atheron, con acompañamiento antes, durante y después de tu compra.",
     canonicalPath: "/productos/ezviz-h8c-4mp-64gb",
