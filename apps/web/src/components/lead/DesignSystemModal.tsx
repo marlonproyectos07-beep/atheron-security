@@ -8,6 +8,7 @@ import { siteConfig } from "@/lib/site-config";
 import { captureAndPersistUtm, readPersistedUtm } from "@/lib/utm";
 
 type Status = "idle" | "submitting" | "success" | "error";
+type LeadMode = "demo" | "live";
 
 interface ProductContext {
   slug: string;
@@ -29,6 +30,7 @@ export function DesignSystemModal({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [status, setStatus] = useState<Status>("idle");
+  const [mode, setMode] = useState<LeadMode | null>(null);
 
   function open() {
     captureAndPersistUtm();
@@ -71,6 +73,8 @@ export function DesignSystemModal({
         body: JSON.stringify(payload),
       });
       if (!response.ok) throw new Error("request_failed");
+      const data: { mode?: LeadMode } = await response.json();
+      setMode(data.mode ?? "demo");
       setStatus("success");
     } catch {
       setStatus("error");
@@ -118,11 +122,25 @@ export function DesignSystemModal({
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-brand-accent-light text-brand-accent">
                 <Icon name="check" className="h-6 w-6" />
               </div>
-              <p className="text-base font-semibold text-text">Recibimos tu solicitud</p>
-              <p className="mt-2 text-sm text-text-muted">
-                Un asesor Atheron se pondrá en contacto contigo para ayudarte a diseñar tu
-                sistema.
-              </p>
+              {mode === "live" ? (
+                <>
+                  <p className="text-base font-semibold text-text">Recibimos tu solicitud</p>
+                  <p className="mt-2 text-sm text-text-muted">
+                    Un asesor Atheron se pondrá en contacto contigo para ayudarte a diseñar tu
+                    sistema.
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="text-base font-semibold text-text">
+                    Flujo de demostración completado
+                  </p>
+                  <p className="mt-2 text-sm text-text-muted">
+                    La solicitud todavía no se envía a nuestro sistema comercial. Esta es una
+                    vista previa de cómo funcionará &quot;Diseñar mi sistema&quot;.
+                  </p>
+                </>
+              )}
               <Button type="button" variant="secondary" className="mt-6" onClick={close}>
                 Cerrar
               </Button>

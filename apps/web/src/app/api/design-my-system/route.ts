@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { LEAD_CAPTURE_MODE } from "@/lib/lead-mode";
 
 /**
  * Endpoint de STAGING/DEMO para el formulario "Diseñar mi sistema".
@@ -6,9 +7,14 @@ import { NextResponse } from "next/server";
  * Este piloto NO conecta todavía a Odoo, Atheron Core, WhatsApp Cloud API
  * ni n8n (fuera de alcance de ATH-SECURITY-WEB-001, ver
  * docs/ATH-SECURITY-WEB-001.md). Este handler valida la forma del payload
- * y lo registra en el log del servidor, dejando el contrato de datos listo
- * para cuando exista un backend real que lo reciba (Atheron Core, M2 del
- * MVP-30-DAYS-v1). No persiste nada ni envía nada a un sistema productivo.
+ * y registra en el log del servidor SOLO lo no personal (para verificar que
+ * el flujo funciona), dejando el contrato de datos listo para cuando exista
+ * un backend real (Atheron Core, M2 del MVP-30-DAYS-v1). No persiste PII,
+ * no la registra en el log, y no envía nada a un sistema productivo.
+ *
+ * La respuesta incluye `mode` (ver lib/lead-mode.ts) para que el cliente
+ * decida qué mensaje de éxito mostrar sin que el formulario necesite saber
+ * si el backend real ya existe.
  */
 
 interface DesignSystemLeadPayload {
@@ -58,12 +64,19 @@ export async function POST(request: Request) {
     );
   }
 
-  // DEMO/STAGING: registrar en el log del servidor. Reemplazar por un
-  // evento `LeadCreated` hacia Atheron Core cuando exista (ADR-0003).
+  // DEMO/STAGING: registrar en el log del servidor SIN PII. `name` y
+  // `whatsapp` nunca se escriben en el log completos — solo si llegaron.
+  // Reemplazar por un evento `LeadCreated` hacia Atheron Core cuando exista
+  // (ADR-0003); ese evento sí necesitará la PII, pero viajará al Core, no
+  // al log de la aplicación.
+  const { name, whatsapp, ...nonPiiFields } = body;
   console.info("[design-my-system:staging-lead]", {
     receivedAt: new Date().toISOString(),
-    ...body,
+    mode: LEAD_CAPTURE_MODE,
+    hasName: isNonEmptyString(name),
+    hasWhatsapp: isNonEmptyString(whatsapp),
+    ...nonPiiFields,
   });
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, mode: LEAD_CAPTURE_MODE });
 }
