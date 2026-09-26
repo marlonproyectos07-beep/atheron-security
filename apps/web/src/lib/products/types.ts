@@ -110,10 +110,21 @@ export interface FaqItem {
 }
 
 export interface Testimonial {
+  id: string;
+  /**
+   * true = contenido de demostración para validar diseño, NO un testimonio
+   * real. Debe renderizarse con una insignia visible y nunca publicarse en
+   * producción con `isDemo: true`. Ver Testimonials.tsx.
+   */
+  isDemo: boolean;
   authorName: string;
   authorContext: string;
+  productOrProject?: string;
   quote: string;
-  /** Todo testimonio debe ser real; este campo documenta su procedencia. */
+  photoSrc?: string;
+  /** Preparado para video-testimonios; no se usa todavía. */
+  videoUrl?: string;
+  /** Procedencia del testimonio (para uno real) o nota de por qué es demo. */
   source: string;
 }
 
