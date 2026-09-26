@@ -18,6 +18,7 @@ export function Installation({ product }: { product: Product }) {
           <OptionCard
             title="Comprar solo el equipo"
             description="Recibes el kit y lo instalas por tu cuenta o con tu técnico de confianza."
+            ctaLabel="Comprar este equipo"
             productContext={{ slug: product.slug, name: product.name }}
           />
         ) : null}
@@ -25,6 +26,7 @@ export function Installation({ product }: { product: Product }) {
           <OptionCard
             title="Solicitar instalación"
             description="Un asesor Atheron confirma alcance, condiciones y tiempos según tu ciudad y tipo de propiedad."
+            ctaLabel="Solicitar instalación"
             productContext={{ slug: product.slug, name: product.name }}
           />
         ) : null}
@@ -36,10 +38,12 @@ export function Installation({ product }: { product: Product }) {
 function OptionCard({
   title,
   description,
+  ctaLabel,
   productContext,
 }: {
   title: string;
   description: string;
+  ctaLabel: string;
   productContext: { slug: string; name: string };
 }) {
   return (
@@ -50,11 +54,7 @@ function OptionCard({
       <p className="mt-4 text-base font-semibold text-text">{title}</p>
       <p className="mt-2 flex-1 text-sm leading-relaxed text-text-muted">{description}</p>
       <div className="mt-5">
-        <DesignSystemModal
-          triggerLabel="Consultar con un asesor"
-          triggerVariant="secondary"
-          productContext={productContext}
-        />
+        <DesignSystemModal triggerLabel={ctaLabel} triggerVariant="secondary" productContext={productContext} />
       </div>
     </div>
   );

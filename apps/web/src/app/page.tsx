@@ -7,6 +7,7 @@ import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
 import { GrowthPath } from "@/components/product/GrowthPath";
 import { getAllProducts } from "@/lib/products/registry";
 import { buildDesignSystemWhatsappMessage } from "@/lib/whatsapp";
+import { ATHERON_CENTRAL_MESSAGE } from "@/lib/copy";
 
 export const metadata: Metadata = {
   title: "Seguridad que crece contigo",
@@ -44,9 +45,7 @@ export default function HomePage() {
             Seguridad que crece contigo
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-text-muted">
-            ATHERON no solo vende cámaras. Puedes empezar comprando un solo equipo, y te
-            acompañamos a construir un sistema completo a medida que crecen tus necesidades:
-            cámaras, alarmas, control de acceso y automatización.
+            {ATHERON_CENTRAL_MESSAGE} Cámaras, alarmas, control de acceso y automatización.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <DesignSystemModal triggerLabel="Diseñar mi sistema" triggerSize="lg" />
