@@ -1,16 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/Section";
-import { ButtonLink } from "@/components/ui/Button";
+import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { Icon } from "@/components/ui/Icon";
 import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
 import { GrowthPath } from "@/components/product/GrowthPath";
 import { getAllProducts } from "@/lib/products/registry";
-import { siteConfig } from "@/lib/site-config";
-import { buildDesignSystemWhatsappMessage, buildWhatsappLink } from "@/lib/whatsapp";
+import { buildDesignSystemWhatsappMessage } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
-  title: `${siteConfig.name} — Seguridad que crece contigo`,
+  title: "Seguridad que crece contigo",
   description:
     "De una cámara a un sistema completo: cámaras, alarmas, control de acceso y automatización. Atheron te acompaña antes, durante y después de tu compra.",
   alternates: { canonical: "/" },
@@ -33,7 +32,6 @@ const segments = [
 
 export default function HomePage() {
   const products = getAllProducts();
-  const whatsappHref = buildWhatsappLink(buildDesignSystemWhatsappMessage());
 
   return (
     <div>
@@ -46,15 +44,13 @@ export default function HomePage() {
             Seguridad que crece contigo
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-text-muted">
-            No vendemos cámaras sueltas. Te acompañamos de un primer equipo a un sistema completo
-            de seguridad: cámaras, alarmas, control de acceso y automatización.
+            ATHERON no solo vende cámaras. Puedes empezar comprando un solo equipo, y te
+            acompañamos a construir un sistema completo a medida que crecen tus necesidades:
+            cámaras, alarmas, control de acceso y automatización.
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <DesignSystemModal triggerLabel="Diseñar mi sistema" triggerSize="lg" />
-            <ButtonLink href={whatsappHref} variant="whatsapp" size="lg">
-              <Icon name="whatsapp" className="h-5 w-5" />
-              Escribir por WhatsApp
-            </ButtonLink>
+            <WhatsappCta message={buildDesignSystemWhatsappMessage()} size="lg" />
           </div>
         </div>
       </section>
