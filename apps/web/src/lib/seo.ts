@@ -18,6 +18,13 @@ export function buildProductJsonLd(product: Product) {
     availability.status === "verified" &&
     availability.state !== "unknown";
 
+  // Nunca se declara una imagen ilustrativa/placeholder como si fuera
+  // fotografía verificable del producto en datos estructurados: se omite
+  // `image` por completo hasta que exista al menos una foto real.
+  const verifiedImages = product.images
+    .filter((image) => !image.isPlaceholder)
+    .map((image) => absoluteUrl(image.src));
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
@@ -25,7 +32,7 @@ export function buildProductJsonLd(product: Product) {
     brand: { "@type": "Brand", name: product.brand },
     sku: product.atheronSku,
     description: product.shortDescription,
-    image: product.images.map((image) => absoluteUrl(image.src)),
+    ...(verifiedImages.length > 0 ? { image: verifiedImages } : {}),
     url: absoluteUrl(product.seo.canonicalPath),
     ...(offersVerified
       ? {
