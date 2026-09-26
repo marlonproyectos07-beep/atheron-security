@@ -12,7 +12,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
     "bg-white text-brand-primary border border-border hover:border-brand-accent hover:text-brand-accent focus-visible:outline-brand-accent",
   "outline-on-dark":
     "border border-white/40 text-white hover:bg-white/10 focus-visible:outline-white",
-  whatsapp: "bg-[#25D366] text-[#0a2350] hover:brightness-95 focus-visible:outline-[#25D366]",
+  whatsapp: "bg-whatsapp text-whatsapp-ink hover:brightness-95 focus-visible:outline-whatsapp",
   "disabled-neutral": "border border-dashed border-border bg-surface-muted text-text-muted",
 };
 
@@ -40,7 +40,10 @@ export function ButtonLink({
   ...rest
 }: CommonProps & { href: string } & AnchorHTMLAttributes<HTMLAnchorElement>) {
   const classes = cn(BASE, VARIANT_CLASSES[variant], SIZE_CLASSES[size], className);
-  const isExternal = href.startsWith("http") || href.startsWith("https://wa.me");
+  // Cualquier href que empiece por "https://wa.me" ya empieza por "http",
+  // así que antes había una segunda condición inalcanzable (auditoría
+  // 001B, Frontend/Next.js, P2).
+  const isExternal = href.startsWith("http");
 
   if (isExternal) {
     return (

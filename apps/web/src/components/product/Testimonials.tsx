@@ -3,15 +3,24 @@ import { Section, SectionHeading } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
 
 export function Testimonials({ product }: { product: Product }) {
-  const hasDemoContent = product.testimonials.some((testimonial) => testimonial.isDemo);
+  const demoCount = product.testimonials.filter((testimonial) => testimonial.isDemo).length;
 
   return (
     <Section tone="muted" id="testimonios" ariaLabel="Testimonios">
       <SectionHeading eyebrow="Prueba social" title="Lo que dicen nuestros clientes" />
-      {hasDemoContent ? (
+      {demoCount > 0 ? (
         <p className="mt-4 max-w-2xl text-sm text-text-muted">
-          La(s) tarjeta(s) marcada(s) <strong>DEMO</strong> son contenido de demostración para
-          validar el diseño de esta sección — no son testimonios reales de clientes.
+          {demoCount === 1 ? (
+            <>
+              La tarjeta marcada como <strong>DEMO</strong> es contenido de demostración para
+              mostrar cómo se vería esta sección — no es un testimonio real de un cliente.
+            </>
+          ) : (
+            <>
+              Las tarjetas marcadas como <strong>DEMO</strong> son contenido de demostración para
+              mostrar cómo se vería esta sección — no son testimonios reales de clientes.
+            </>
+          )}
         </p>
       ) : null}
 
@@ -27,14 +36,14 @@ export function Testimonials({ product }: { product: Product }) {
               }
             >
               {testimonial.isDemo ? (
-                <span className="absolute right-3 top-3 rounded-full bg-amber-400 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-amber-950">
+                <span className="absolute right-3 top-3 rounded-full bg-amber-400 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-amber-950">
                   Demo
                 </span>
               ) : null}
 
               {testimonial.videoUrl ? (
                 <div className="mb-4 flex aspect-video items-center justify-center rounded-lg bg-surface-dark text-white">
-                  <Icon name="chevron-right" className="h-8 w-8" />
+                  <Icon name="play" className="h-8 w-8" />
                 </div>
               ) : null}
 

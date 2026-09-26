@@ -10,8 +10,8 @@ export function WhatsIncluded({ product }: { product: Product }) {
         <div>
           <p className="text-sm font-semibold text-text">Incluido</p>
           <ul className="mt-4 space-y-3">
-            {product.includedItems.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-sm text-text">
+            {product.includedItems.map((item, index) => (
+              <li key={`${index}-${item}`} className="flex items-start gap-3 text-sm text-text">
                 <Icon name="check" className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" />
                 {item}
               </li>
@@ -21,8 +21,8 @@ export function WhatsIncluded({ product }: { product: Product }) {
         <div>
           <p className="text-sm font-semibold text-text">No incluido</p>
           <ul className="mt-4 space-y-3">
-            {product.excludedItems.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-sm text-text-muted">
+            {product.excludedItems.map((item, index) => (
+              <li key={`${index}-${item}`} className="flex items-start gap-3 text-sm text-text-muted">
                 <Icon name="close" className="mt-0.5 h-4 w-4 shrink-0 text-text-muted" />
                 {item}
               </li>

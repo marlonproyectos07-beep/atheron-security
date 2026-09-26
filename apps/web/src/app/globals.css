@@ -17,6 +17,15 @@
   --color-text-muted: #52607a;
   --color-text-on-dark: #f5f7fb;
   --color-text-on-dark-muted: #b9c6e0;
+
+  /*
+   * Verde de marca de WhatsApp, deliberadamente fuera de la paleta
+   * azul/blanco/gris de Atheron: identifica el canal, no la marca propia.
+   * Tokenizado (en vez de un hex suelto en el componente) para que sea el
+   * único lugar que definir si cambia (auditoría 001B, Diseño visual, P2).
+   */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-ink: #0a2350;
 }
 
 @theme inline {
@@ -37,6 +46,8 @@
   --color-text-muted: var(--color-text-muted);
   --color-text-on-dark: var(--color-text-on-dark);
   --color-text-on-dark-muted: var(--color-text-on-dark-muted);
+  --color-whatsapp: var(--color-whatsapp);
+  --color-whatsapp-ink: var(--color-whatsapp-ink);
 }
 
 body {
