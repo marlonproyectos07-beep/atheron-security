@@ -38,6 +38,16 @@ export const siteConfig = {
   whatsappNumber: process.env.NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER || null,
   whatsappNumberVerified: Boolean(process.env.NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER),
   privacyPolicyPath: "/aviso-de-privacidad",
+  /**
+   * GATE DE INDEXACIÓN (auditoría 001B, hallazgo P0 — SEO técnico + Security).
+   * Por defecto `false`: el sitio entero se sirve con `noindex,nofollow` y
+   * `robots.txt` con `disallow: "/"`. Un piloto sin dominio/hosting
+   * definitivo, pensado solo para revisión interna del CEO, no debe quedar
+   * indexable por accidente en el primer preview público. Se activa
+   * explícitamente con `NEXT_PUBLIC_ALLOW_INDEXING=true` el día que el CEO
+   * apruebe la publicación real — nunca por omisión.
+   */
+  allowIndexing: process.env.NEXT_PUBLIC_ALLOW_INDEXING === "true",
 } as const;
 
 export const mainNavLinks = [
