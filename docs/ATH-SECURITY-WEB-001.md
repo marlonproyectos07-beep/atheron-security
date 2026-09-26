@@ -287,7 +287,118 @@ No hay integración de hosting configurada en este entorno (decisión explícita
 3. Configurar `NEXT_PUBLIC_SITE_URL` con la URL real que asigne el proveedor (o el dominio definitivo) — sin esto, `site-config.ts` usa el dominio placeholder `*.invalid` y lo advierte en el log de build (ver §5).
 4. Dejar `NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER` sin configurar hasta tener el número real — el sitio se ve terminado igual (§11.2).
 5. Desplegar la rama `pilot/ath-security-web-001` como *preview*, nunca como producción del dominio definitivo, hasta que este gate visual se apruebe.
+6. **Dejar `NEXT_PUBLIC_ALLOW_INDEXING` sin configurar (o en `false`)** en ese preview — el sitio se sirve con `noindex,nofollow` por defecto (§12.1). Cambiarlo a `true` solo el día que el CEO apruebe la publicación pública real.
 
 ### 11.7 QA repetido tras esta iteración
 
 `npx next typegen`, `npx tsc --noEmit` (0 errores), `npm run lint` (0 errores/warnings) y `npm run build` se repitieron después de cada bloque de cambios (no solo al final) y quedaron limpios. El QA responsive con Playwright (375/768/1440px, las 6 combinaciones página×ancho) se repitió íntegro tras todos los cambios: 0 errores de consola, 0 `pageerror`, 0 respuestas HTTP ≥ 400, 0 overflow horizontal.
+
+---
+
+## 12. AUDITORÍA MULTIAGENTE — HARDENING 001B
+
+Orden explícita del CEO: auditar la landing con especialistas independientes antes de declararla lista para revisión, usando capacidad multiagente real si existe en el entorno.
+
+**Verificación de capacidad (obligatoria antes de simular nada):** no existe ninguna herramienta llamada "Ruflo" ni equivalente en este entorno. La capacidad multiagente real disponible es el `Agent` tool de Claude Code (subagentes reales, cada uno con su propio contexto y ejecución). Se usó esa capacidad: **8 subagentes reales, en paralelo, cada uno de solo lectura** (sin permiso de `Edit`/`Write`), auditando el mismo commit (`90c72e9`) desde un ángulo distinto. Ninguno fue simulado.
+
+Especialistas desplegados: Frontend/Next.js, UX/CRO, SEO técnico, Accessibility (código, más allá de Lighthouse), Copy comercial, Diseño visual, Security/Privacy, Arquitectura/Maintainability. Performance/CWV y QA Responsive los reverificó el propio Lead (Claude Code) con el pipeline Lighthouse/Playwright ya usado en el hardening 001A, en vez de un noveno subagente — hubiera sido duplicar capacidad ya probada.
+
+### 12.1 Hallazgo más importante: conflicto real entre dos gates explícitos
+
+Dos especialistas independientes (SEO técnico y Security/Privacy) encontraron, cada uno por su cuenta, que **no existía ningún mecanismo de `noindex` condicionado a entorno**: `robots.txt` permitía `allow: "/"` siempre, y solo `/aviso-de-privacidad` tenía `noindex` a nivel de página. Cualquier despliegue de preview en una URL públicamente alcanzable habría quedado indexable por Google desde el día uno — exactamente lo que el gate **"staging NOINDEX"** pedido por el CEO prohíbe.
+
+**Se implementó el fix** (`siteConfig.allowIndexing`, controlado por `NEXT_PUBLIC_ALLOW_INDEXING`, por defecto `false`): sin esa variable, `robots.ts` devuelve `disallow: "/"` para todo user-agent y el `layout.tsx` raíz aplica `robots: { index: false, follow: false }` a todo el sitio por herencia. Verificado en runtime: `curl /robots.txt` → `Disallow: /`; el HTML de cualquier página → `<meta name="robots" content="noindex, nofollow">`.
+
+**Consecuencia medida, no anticipada:** con el gate de `noindex` activo (el estado correcto y por defecto de este piloto), Lighthouse **no puede** dar SEO 100 — su auditoría `is-crawlable` falla explícitamente cuando una página está bloqueada de indexación, por diseño de la propia herramienta (Lighthouse asume que una página quiere ser indexable). Con el gate activo: **SEO 66-69/100** en las 4 combinaciones auditadas (home/producto × mobile/desktop). Se verificó con una prueba controlada (`NEXT_PUBLIC_ALLOW_INDEXING=true`, rebuild, un solo audit en home mobile, luego revertido) que **el resto del sitio SÍ llega a SEO 100/100** — la única auditoría que falla es `is-crawlable`, y falla *porque el gate está haciendo exactamente lo que se le pidió*.
+
+**Esto no es un defecto para corregir. Es una decisión de negocio que el CEO debe conocer explícitamente:**
+
+| Opción | SEO en Lighthouse | Riesgo |
+|---|---|---|
+| `NEXT_PUBLIC_ALLOW_INDEXING=false` (estado actual, recomendado mientras no haya aprobación) | 66-69/100 (solo por `is-crawlable`, intencional) | Ninguno — el sitio no es indexable |
+| `NEXT_PUBLIC_ALLOW_INDEXING=true` | 100/100 | El piloto queda indexable públicamente antes de la aprobación visual/comercial |
+
+**Recomendación de Agente A: mantener `false` hasta que el CEO apruebe explícitamente publicar.** El gate "SEO 100" se cumple automáticamente el día que se active `ALLOW_INDEXING`, sin tocar código.
+
+### 12.2 Matriz consolidada de hallazgos
+
+Severidad reclasificada por el Lead tras eliminar contradicciones entre especialistas (dos hallazgos convergentes — encontrados de forma independiente por más de un especialista — se marcan con 🔁 y toman la severidad más alta reportada).
+
+| Especialista(s) | Hallazgo | Severidad | Estado |
+|---|---|---|---|
+| 🔁 SEO técnico + Security/Privacy | Sin `noindex` global condicionado a entorno — preview público indexable desde el día 1 | **P0** | ✅ Corregido (§12.1) |
+| UX/CRO | Sticky CTA móvil: WhatsApp deshabilitado primero, 50% del ancho — contradice el patrón del resto del sitio | **P0** | ✅ Corregido — orden invertido, "Diseñar mi sistema" con el doble de ancho |
+| UX/CRO | "Productos relacionados" con catálogo vacío justo antes del CTA final | **P0** | ✅ Corregido — la sección se oculta por completo mientras no haya productos relacionados reales |
+| SEO técnico | `/aviso-de-privacidad`: `robots.txt disallow` + meta `noindex` a la vez es contraproducente (Google no puede leer un noindex que no puede rastrear) | P1 | ✅ Corregido — un solo mecanismo (meta noindex de la página) |
+| SEO técnico | `ogImageSrc` era SVG — no se previsualiza en WhatsApp/LinkedIn/X | P1 | ✅ Corregido — PNG 1200×630 generado y referenciado |
+| 🔁 Frontend/Next.js + Accessibility | Modal `<dialog>` sin `aria-labelledby` — nombre accesible ambiguo para lectores de pantalla | P1 | ✅ Corregido |
+| Frontend/Next.js | `product.images[0]` sin garantía de tipo — un producto futuro con `images: []` rompe en SSG/runtime | P1 | ✅ Corregido — `images` ahora es tupla no vacía en el tipo |
+| Arquitectura | `currentStageId` tipado como `string` suelto — un typo no falla en build | P1 | ✅ Corregido — unión de tipos derivada de `GROWTH_PATH_STAGES` |
+| Arquitectura | Dato "Proveedor" duplicado sin sincronización (`supplier` vs. fila manual en specs) | P1 | ✅ Corregido — la fila se construye desde `product.supplier` |
+| UX/CRO | Instalación: mismo CTA ("Consultar con un asesor") para "comprar solo equipo" y "solicitar instalación" | P1 | ✅ Corregido — labels distintos por tarjeta |
+| Copy comercial | Mensaje central divergía textualmente entre `/soluciones` y el resto | P1 | ✅ Corregido — constante compartida (`lib/copy.ts`) |
+| Copy comercial | Mensaje de error del formulario remite a WhatsApp cuando ese canal está deshabilitado | P1 | ✅ Corregido — condicionado a `whatsappNumberVerified` |
+| Copy comercial | Mensaje de éxito en modo demo usa jerga de desarrollador, sin alternativa de contacto clara | P1 | ✅ Corregido — reescrito en lenguaje de cliente |
+| Accessibility | Falta enlace "Saltar al contenido" | P1 | ✅ Corregido |
+| Accessibility | Checkbox del menú móvil tabulable en desktop sin efecto visible; sin indicador de foco visible en mobile | P1 | ✅ Corregido — `md:hidden` en el input + `peer-focus-visible` en los labels |
+| Security/Privacy | Endpoint sin límite de tamaño/forma de payload | P1 | ✅ Corregido — límites de longitud + validación de forma en `utm`/`productContext` |
+| UX/CRO | Campo "¿Qué quieres proteger?" redundante con "Tipo de propiedad" | P1 | ⛔ **No implementado** — ambos campos fueron pedidos explícitamente por separado en el encargo original; fusionar es una decisión de negocio, no un bug de código. Queda para decisión CEO |
+| UX/CRO | Sección Garantía duplica el contenido de la respuesta de FAQ sobre garantía | P1 | ⛔ **No implementado** — ambas secciones (Garantía y FAQ) fueron pedidas explícitamente por separado en el encargo original. Se corrigió que usen la misma fuente de texto (`WARRANTY_FALLBACK_COPY`), pero no se fusionaron los componentes |
+| UX/CRO | Ruta de Crecimiento interrumpe el flujo Specs→Instalación→Garantía | P1 | ⛔ **No implementado** — el orden actual (Instalación → Ruta de Crecimiento → Garantía) es exactamente la secuencia 8→9→10 del encargo original. Reordenar requiere instrucción explícita del CEO |
+| UX/CRO | Disclaimer "consulta con un asesor" repetido en 7 secciones | P1 | ⛔ **No implementado** — cada instancia está atada a un dato `requires_source` específico; recortarlas sin cuidado arriesga que un dato no verificado parezca más confirmado de lo que es. Es tensión producto vs. transparencia, no bug |
+| Copy comercial | "Punto de vigilancia" (repetido en 4 lugares) no viola ADR-0014 literalmente, pero toca la palabra sensible del decreto | P2 | ⛔ **No implementado** — el propio especialista lo marcó como "confirmar con abogado", no como corrección de código. Se deja para la próxima revisión jurídica de ADR-0014 |
+| Diseño visual | Hero (home y producto) no usa el componente `Section` compartido — ritmo vertical inconsistente | P1 | ⛔ **No implementado** — refactor estructural de dos componentes, no un fix mecánico; se deja para una iteración de diseño deliberada, no dentro de un pase de hardening |
+| Diseño visual | Ícono de "play" en testimonios reutilizaba `chevron-right` | P1 | ✅ Corregido — ícono `play` dedicado agregado a `Icon.tsx` |
+| Diseño visual | Insignia "DEMO" es el único color fuera de paleta | P1 | ⛔ **Aceptado intencionalmente** — es un marcador de QA que debe eliminarse junto con el testimonio antes de producción, no mantenerse como token permanente |
+| Frontend/Next.js | Home sin `openGraph.images` propio | P2 | ✅ Corregido — mismo PNG de marca por defecto |
+| Frontend/Next.js | Condición muerta en `ButtonLink` (`isExternal`) | P2 | ✅ Corregido |
+| Frontend/Next.js | Keys de React basadas en contenido (`item.label`, `item.question`) sin garantía de unicidad | P2 | ✅ Corregido — `index` combinado con el contenido |
+| Accessibility | Foco inicial del modal caía en el botón "Cerrar", no en el primer campo | P2 | ✅ Corregido — foco explícito al abrir |
+| Accessibility | `prefers-reduced-motion` no respetado en la rotación del chevron del FAQ | P2 | ✅ Corregido — `motion-safe:` |
+| Accessibility | Contraste del placeholder de WhatsApp en el modal (~3.2:1) | P2 | ✅ Corregido — sin opacidad reducida |
+| Accessibility | Panel del menú móvil sin cierre por teclado (Escape) | P2 | ⛔ No implementado — limitación conocida de la técnica sin JS; documentada, no bloqueante |
+| Accessibility | `title` del botón WhatsApp deshabilitado probablemente nunca se muestra (comportamiento nativo de `disabled`) | P2 | ⛔ No implementado — el label visible ya comunica el estado; el `title` es redundante, no la única fuente |
+| Security/Privacy | JSON-LD sin escape defensivo de `</script>` | P2 | ✅ Corregido — `stringifyJsonLd()` |
+| Security/Privacy | Sin rate limiting en el endpoint de staging | P2 | ⛔ No implementado — aceptado como riesgo de staging; prerrequisito documentado antes de `mode: "live"` |
+| SEO técnico | `BreadcrumbList` JSON-LD solo existía en la ficha de producto | P2 | ✅ Corregido — agregado a `/productos`, `/soluciones`, `/empresas`, `/soporte` |
+| SEO técnico | Sin `twitter:card` | P2 | ✅ Corregido |
+| Copy comercial | Nota del testimonio DEMO con plural forzado ("La(s) tarjeta(s)...") | P2 | ✅ Corregido — singular/plural real según cantidad |
+| Copy comercial | Inconsistencia "4MP"/"4 MP" y "MicroSD"/"microSD" en el copy de prosa | P2 | ✅ Corregido — unificado a "4 MP"/"microSD" en prosa (el nombre/título del producto conserva el formato dado en el encargo original) |
+| Copy comercial | Respuesta de garantía en FAQ divergía del `fallbackCopy` oficial | P2 | ✅ Corregido — una sola constante compartida |
+| Diseño visual | Color de WhatsApp (`#25D366`) como hex suelto, no tokenizado | P2 | ✅ Corregido — `--color-whatsapp` en `globals.css` |
+| Diseño visual | `rounded-md` inconsistente con el resto del sistema (`rounded-lg`/`xl`/`2xl`) | P2 | ✅ Corregido |
+| Diseño visual | `text-[11px]` fuera de la escala tipográfica nombrada | P2 | ✅ Corregido — `text-xs` |
+| Arquitectura | `Sourced<T>` infrautilizado (patrón inconsistente con `Pricing/Availability/WarrantyInfo`) | P2 | ⛔ No implementado — el propio especialista lo marcó "no urgente para 1 producto" |
+| Arquitectura | Patrón de tarjeta "icon-box" repetido 4 veces sin componente compartido | P2 | ⛔ No implementado — "no rehacer lo que ya funciona sin motivo medible"; se extrae si el segundo producto lo repite |
+| Arquitectura | Bloque de 3 etapas de soporte duplicado entre `Support.tsx` y `/soporte/page.tsx` | P2 | ⛔ No implementado — mismo criterio que el anterior |
+| Arquitectura | `Testimonial.photoSrc` es un campo muerto (no se consume) | P2 | ✅ Documentado como "preparado, no implementado" (mismo tratamiento que `videoUrl`) |
+| Arquitectura | `SourceStatus.requires_test` nunca usado | P2 | ⛔ No implementado — sin caso real que lo ejercite todavía |
+
+**Sin hallazgos P0 propios en:** Diseño visual (cumple la dirección visual macro), Arquitectura (el patrón "una plantilla, N productos" escala; cero fuga de `SourceStatus` verificada línea por línea), Copy comercial (cero violaciones confirmadas de ADR-0014), Accessibility (los P0 esperables — bloqueo total a un usuario — no aparecieron; todo lo encontrado es fricción real pero no bloqueo).
+
+### 12.2.1 Nota metodológica de Accessibility
+
+El especialista de Accessibility señaló algo importante: el `<dialog>` de "Diseñar mi sistema" está en `display: none` por defecto (comportamiento nativo hasta que se llama `showModal()`), y Lighthouse/axe excluyen del árbol de accesibilidad todo lo que esté en `display: none`. **Esto significa que el 100/100 de Accessibility reportado en el hardening 001A nunca evaluó el contenido del modal** — formulario, checkboxes, botón de cerrar — porque Lighthouse audita el DOM en su estado inicial (modal cerrado). Los hallazgos de accesibilidad del modal (foco inicial, `aria-labelledby`, contraste del placeholder) solo se detectaron por la revisión manual de código de este especialista, no por la auditoría automatizada ya ejecutada. **Conclusión: "Accessibility 100 en Lighthouse" certifica la página en reposo, no el flujo de conversión completo.** Los tres hallazgos reales del modal ya se corrigieron (§12.2).
+
+### 12.3 Resultado final de gates (post-implementación)
+
+| Gate | Resultado |
+|---|---|
+| TypeScript | ✅ PASS (0 errores) |
+| ESLint | ✅ PASS (0 errores/warnings) |
+| Build de producción | ✅ PASS (13 rutas) |
+| 375px / 768px / 1440px | ✅ PASS (0 overflow, 0 errores de consola, 0 HTTP≥400 en las 6 combinaciones página×ancho) |
+| Lighthouse Accessibility | ✅ **100/100** en las 4 combinaciones (home/producto × mobile/desktop) |
+| Lighthouse Best Practices | ✅ **100/100** en las 4 combinaciones |
+| Lighthouse SEO | ⚠️ **66-69/100 con el gate de noindex activo (estado actual, correcto) — 100/100 verificado con el gate desactivado.** Ver §12.1: es un conflicto real entre dos gates explícitos, no un defecto pendiente |
+| Lighthouse Performance | ✅ 88-100/100 (home mobile 88, producto mobile 97, ambos desktop 100) — variación de laboratorio ya documentada en el hardening 001A, sin regresión |
+| Sin datos comerciales inventados | ✅ Verificado por Copy comercial + Arquitectura (cero fuga de `SourceStatus`) |
+| Sin PII en logs | ✅ Verificado por Security/Privacy (`name`/`whatsapp` solo como booleanos) |
+| Sin WhatsApp ficticio funcional | ✅ Verificado — `WhatsappCta` nunca genera un enlace sin número real confirmado |
+| Staging NOINDEX | ✅ Implementado y verificado en runtime (§12.1) |
+| Schema validado | ✅ Product/BreadcrumbList válidos contra schema.org (SEO técnico); JSON-LD con escape defensivo (Security) |
+| CTA y formulario probados | ✅ Modal, envío, mensaje de éxito/error, foco inicial y `aria-labelledby` verificados con Playwright |
+
+### 12.4 Reportes y evidencia
+
+Lighthouse post-fix (JSON+HTML) en `docs/qa/lighthouse-ath-security-web-001/` (mismos 4 archivos de la iteración anterior, sobrescritos con los resultados finales). QA responsive y verificaciones puntuales (orden del sticky CTA, foco del modal, `aria-labelledby`, imagen OG accesible, gate de noindex en ambos estados) ejecutados con Playwright contra el build de producción.
