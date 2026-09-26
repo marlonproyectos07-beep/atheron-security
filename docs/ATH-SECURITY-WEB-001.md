@@ -2,7 +2,7 @@
 
 **Autor:** Claude Code · **Fecha:** 26 de septiembre de 2026 (iteración de hardening: mismo día, revisión Agente B)
 **Rama:** `pilot/ath-security-web-001` (creada desde `claude/audit-atheron-ecosystem-v1`)
-**Estado:** IMPLEMENTADO + ENDURECIDO (HARDENING 001A). Corresponde a M3 del `MVP-30-DAYS-v1` ("Plantilla maestra de landing") y respeta el gate regulatorio de ADR-0014 (construcción sí, activación comercial no).
+**Estado:** IMPLEMENTADO + ENDURECIDO (HARDENING 001A + 001B) + **GATE 001C: PREVIEW CEO + VALIDACIÓN PERFORMANCE**. Corresponde a M3 del `MVP-30-DAYS-v1` ("Plantilla maestra de landing") y respeta el gate regulatorio de ADR-0014 (construcción sí, activación comercial no).
 
 > Esta segunda iteración incorpora decisiones nuevas del CEO y revisión del Agente B: WhatsApp sin número ficticio, testimonio DEMO explícito, corrección de copy central, auditoría Lighthouse real (ver §11), corrección de JSON-LD e identificación correcta del proveedor (SYSCOM Colombia). Ver §11 para el detalle completo de esta iteración.
 
@@ -402,3 +402,115 @@ El especialista de Accessibility señaló algo importante: el `<dialog>` de "Dis
 ### 12.4 Reportes y evidencia
 
 Lighthouse post-fix (JSON+HTML) en `docs/qa/lighthouse-ath-security-web-001/` (mismos 4 archivos de la iteración anterior, sobrescritos con los resultados finales). QA responsive y verificaciones puntuales (orden del sticky CTA, foco del modal, `aria-labelledby`, imagen OG accesible, gate de noindex en ambos estados) ejecutados con Playwright contra el build de producción.
+
+---
+
+## 13. GATE 001C — PREVIEW CEO + VALIDACIÓN PERFORMANCE
+
+Orden explícita del CEO tras la revisión de 001B por el Agente B. Objetivo: cerrar la decisión SEO/noindex, revalidar Performance con múltiples corridas (no una sola muestra), blindar el testimonio DEMO ante un futuro entorno público, y entregar algo revisable visualmente.
+
+### 13.1 Decisión SEO/noindex — CERRADA
+
+**Regla adoptada, sin excepción:** en cualquier entorno de staging/preview, `NEXT_PUBLIC_ALLOW_INDEXING` permanece `false`. No se desactiva el gate para "hacer verde" Lighthouse artificialmente.
+
+Se documenta la distinción que el CEO pidió:
+
+- **SEO técnico release-ready: 100/100.** Verificado de nuevo en esta iteración con una prueba controlada (ver §13.6): con `NEXT_PUBLIC_ALLOW_INDEXING=true`, home mobile obtiene `Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100`. El código de la página, cuando puede ser indexado, es perfecto en las categorías medibles.
+- **SEO Lighthouse en staging (estado real y actual del repo): 66-69/100**, penalizado **exclusivamente** por la auditoría `is-crawlable` (falla por diseño en cualquier página con `noindex` — Lighthouse asume que toda página quiere ser indexable). El resto de auditorías SEO (title, meta description, canonical, alt text, structured data, robots.txt válido, etc.) pasan en 100% tanto con el gate activo como desactivado.
+
+No hay ninguna acción de código pendiente aquí. Es un estado esperado y correcto mientras el sitio no tenga aprobación de publicación.
+
+### 13.2 Performance — revalidado con 3 corridas independientes por ruta
+
+Mismo build de producción (`next build` con configuración por defecto, `NEXT_PUBLIC_ALLOW_INDEXING` sin definir), mismo servidor (`next start`), mismo Chromium headless, sin reiniciar entre corridas de una misma ruta. Método de *throttling*: `simulate`.
+
+**HOME · Mobile**
+
+| | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT | FCP | Speed Index |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| RUN 1 | 93 | 100 | 100 | 66 | 2.5 s | 0 | 230 ms | 0.8 s | 0.8 s |
+| RUN 2 | 97 | 100 | 100 | 66 | 2.4 s | 0 | 150 ms | 0.8 s | 0.8 s |
+| RUN 3 | 97 | 100 | 100 | 66 | 2.3 s | 0 | 120 ms | 0.8 s | 0.8 s |
+| **Mediana** | **97** | 100 | 100 | 66 | **2.4 s** | **0** | **150 ms** | 0.8 s | 0.8 s |
+| **Peor resultado** | **93** | 100 | 100 | 66 | 2.5 s | 0 | 230 ms | 0.8 s | 0.8 s |
+
+**PRODUCTO (`/productos/ezviz-h8c-4mp-64gb`) · Mobile**
+
+| | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT | FCP | Speed Index |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| RUN 1 | 97 | 100 | 100 | 69 | 2.5 s | 0 | 40 ms | 0.9 s | 0.9 s |
+| RUN 2 | 96 | 100 | 100 | 69 | 2.6 s | 0 | 100 ms | 0.9 s | 0.9 s |
+| RUN 3 | 97 | 100 | 100 | 69 | 2.5 s | 0 | 80 ms | 0.9 s | 0.9 s |
+| **Mediana** | **97** | 100 | 100 | 69 | **2.5 s** | **0** | **80 ms** | 0.9 s | 0.9 s |
+| **Peor resultado** | **96** | 100 | 100 | 69 | 2.6 s | 0 | 100 ms | 0.9 s | 0.9 s |
+
+**Gate cumplido:** mediana **97/97** (objetivo preferido ≥95, superado en ambas rutas). Peor resultado **93/96** — **ninguna corrida por debajo de 90** en ninguna de las 6 mediciones mobile.
+
+**Diagnóstico de causa raíz: NO SE ACTIVA.** La instrucción pedía diagnosticar y corregir solo si aparecía una corrida `<90`. No apareció ninguna — el punto más bajo (RUN 1 de home, 93) ya está dentro del rango verde. No se fuerzan cambios adicionales de performance sin una corrida real que los justifique (evita degradar UX para perseguir un 100 artificial, tal como se pidió).
+
+**Desktop** (3 corridas por ruta, resultado estable):
+
+| Ruta | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Home · Desktop (3/3 corridas) | **100** | 100 | 100 | 66 | 0.5 s | 0 | 0 ms |
+| Producto · Desktop (3/3 corridas) | **100** | 100 | 100 | 69 | 0.5-0.6 s | 0 | 0-10 ms |
+
+Objetivo desktop (100) cumplido de forma perfectamente estable en las 6 corridas.
+
+### 13.3 Web Vitals — números reales
+
+| Métrica | Objetivo | Home mobile (mediana / peor) | Producto mobile (mediana / peor) |
+|---|---|---|---|
+| LCP | ≤ 2.5 s | 2.4 s / 2.5 s | 2.5 s / **2.6 s** |
+| CLS | ≤ 0.1 | 0 / 0 | 0 / 0 |
+| TBT | (sin objetivo numérico explícito, monitoreado) | 150 ms / 230 ms | 80 ms / 100 ms |
+
+**Nota honesta:** el peor caso de LCP en la ficha de producto (RUN 2) tocó 2.6 s, 0.1 s por encima del objetivo de 2.5 s. La mediana (2.5 s) queda justo en el límite. CLS es 0 en las 6 corridas — ningún salto de layout medido, en ningún run. Esta variación de LCP es consistente con la ya documentada en 001A/001B: costo de hidratación de React/Next.js bajo *throttling* simulado de CPU móvil, no una regresión nueva. No se identificó ninguna mejora adicional razonable más allá de lo ya aplicado en 001A (`browserslist` evergreen) sin comprometer el stack exigido (Next.js App Router con Client Components reales) o degradar la experiencia.
+
+### 13.4 Testimonio DEMO — salvaguarda de release implementada
+
+**Estrategia elegida: fallar el build (opción "dura"), no excluir en silencio.** Coherente con el resto del proyecto, que prefiere fallos ruidosos y explícitos sobre degradaciones silenciosas (mismo patrón que el dominio `.invalid` de `site-config.ts` cuando falta `NEXT_PUBLIC_SITE_URL`).
+
+Implementado en `apps/web/src/lib/products/registry.ts`: si `siteConfig.allowIndexing` es `true` **y** algún producto del registro tiene al menos un testimonio con `isDemo: true`, el build lanza un `Error` explícito en tiempo de evaluación del módulo, deteniendo `next build` por completo con un mensaje que nombra el/los producto(s) afectado(s).
+
+**Verificado en ambas direcciones en esta iteración:**
+- Con `NEXT_PUBLIC_ALLOW_INDEXING=true` y el testimonio DEMO presente (estado real del repo): `next build` **falla** con `[atheron:release-gate] NEXT_PUBLIC_ALLOW_INDEXING=true, pero estos productos todavía tienen testimonios isDemo=true: ezviz-h8c-4mp-64gb...`.
+- Con `NEXT_PUBLIC_ALLOW_INDEXING=true` y `testimonials: []` temporalmente (solo para la prueba controlada de §13.6, revertido de inmediato sin commitear): `next build` **pasa**.
+- Con la configuración por defecto (`ALLOW_INDEXING` sin definir) y el testimonio DEMO presente: `next build` **pasa** — el testimonio sigue visible para la revisión del CEO, tal como se pidió.
+
+Es imposible, con el código actual, terminar con un `next build` exitoso que combine indexación pública permitida y un testimonio marcado como demo.
+
+### 13.5 Preview CEO
+
+**No existe en este entorno ninguna capacidad de generar una URL pública para un servidor que corre localmente** (verificado: no hay conector de hosting/despliegue configurado ni mecanismo de exposición de puerto; la documentación del entorno solo cubre acceso a GitHub, secretos, red saliente y dependencias — nada de publicar un puerto entrante). No se intentó ningún despliegue por cuenta propia, conforme a la instrucción explícita.
+
+**Qué falta exactamente para tener una URL de preview real:**
+1. Decidir un proveedor de hosting (Vercel es el camino de menor fricción para Next.js App Router; cualquier proveedor con Node.js 20+ también sirve). Esta decisión sigue sin tomarse — explícitamente fuera de alcance de 001C.
+2. Conectar ese proveedor al repositorio (vía su integración de GitHub o CLI), apuntando el *root directory* a `apps/web/`.
+3. Configurar en ese proveedor las variables de entorno: `NEXT_PUBLIC_SITE_URL` (la URL que asigne el proveedor), `NEXT_PUBLIC_ALLOW_INDEXING` **sin definir o en `false`**, `NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER` sin definir.
+4. Desplegar la rama `pilot/ath-security-web-001` como *preview* de esa herramienta (no como producción de un dominio propio).
+
+Ninguno de estos 4 pasos requiere tocar código — el proyecto ya está listo para ese despliegue el día que se decida el proveedor.
+
+**Entrega en su lugar (opción §6 de la instrucción):** capturas de pantalla completas de Home (desktop 1440px y móvil 375px, página completa), Producto (desktop 1440px página completa; móvil 375px en 3 partes por la altura), Ruta de Crecimiento (recorte), Testimonio DEMO (recorte) y el modal "Diseñar mi sistema" abierto — todas enviadas junto con este reporte y generadas contra el build de producción real (`next build && next start`), no maquetas.
+
+### 13.6 Metodología de la prueba controlada SEO=100
+
+Como el gate de release (§13.4) ahora bloquea cualquier build con `ALLOW_INDEXING=true` mientras exista un testimonio demo, verificar "SEO=100 con indexado permitido" requirió un procedimiento explícito (no solo cambiar la variable de entorno como en 001B):
+
+1. Confirmar árbol de git limpio.
+2. Editar temporalmente `ezviz-h8c-4mp-64gb.ts` → `testimonials: []` (comentario en el propio archivo marcándolo como temporal).
+3. `next build` con `NEXT_PUBLIC_ALLOW_INDEXING=true` → compila sin error (el gate no encuentra testimonios demo).
+4. `next start` + Lighthouse en home mobile → `Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100`.
+5. `git checkout -- ezviz-h8c-4mp-64gb.ts` → revierte el archivo a su estado commiteado (testimonio DEMO restaurado, verificado con grep).
+6. Rebuild con la configuración por defecto (`ALLOW_INDEXING` sin definir) → compila normal, testimonio DEMO visible de nuevo.
+
+Ningún cambio de este procedimiento quedó commiteado; es evidencia de una prueba, no un estado del repositorio.
+
+### 13.7 QA repetido y commit final
+
+`npx next typegen`, `npx tsc --noEmit` (0 errores), `npm run lint` (0 errores/warnings) y `npm run build` (configuración por defecto) se ejecutaron tras el cambio en `registry.ts` y quedaron limpios. QA responsive con Playwright (375/768/1440px, las 6 combinaciones página×ancho) repetido: 0 errores de consola, 0 `pageerror`, 0 respuestas HTTP ≥ 400, 0 overflow horizontal.
+
+**No se realizó ningún cambio estructural de CRO** en esta iteración (Ruta de Crecimiento no se movió, Garantía no se eliminó, no se creó el producto 002) — conforme a la instrucción explícita de esperar la revisión visual de Marlon y el Agente B.
+
+Reportes Lighthouse de las 3 corridas por ruta (JSON crudo) en `docs/qa/lighthouse-ath-security-web-001/001c-runs/`, incluida la evidencia de la prueba controlada SEO=100 (`home-mobile-indexing-allowed-evidence.json`).
