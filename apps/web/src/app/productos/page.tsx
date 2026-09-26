@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 import { getAllProducts } from "@/lib/products/registry";
 import { siteConfig } from "@/lib/site-config";
 
@@ -17,6 +18,7 @@ export default function ProductsIndexPage() {
 
   return (
     <Section ariaLabel="Catálogo de productos">
+      <BreadcrumbJsonLd items={[{ label: "Inicio", path: "/" }, { label: "Productos", path: "/productos" }]} />
       <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: "Productos" }]} />
       <div className="mt-6">
         <SectionHeading

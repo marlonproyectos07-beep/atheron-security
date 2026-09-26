@@ -6,6 +6,18 @@ function absoluteUrl(path: string): string {
 }
 
 /**
+ * `JSON.stringify` no escapa `<`, así que un valor que contuviera
+ * literalmente `</script>` rompería fuera del tag al inyectarse con
+ * `dangerouslySetInnerHTML`. Hoy los datos son estáticos y de confianza
+ * (archivos TypeScript, no input de usuario), pero esto es una barrera
+ * defensiva barata para cuando existan más productos con datos menos
+ * controlados (auditoría 001B, Security/Privacy, P2).
+ */
+export function stringifyJsonLd(data: unknown): string {
+  return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
+/**
  * Product JSON-LD. `offers` solo se incluye cuando precio Y disponibilidad
  * están verificados (instrucción explícita de la tarea: "Offer SOLO si
  * existe precio/disponibilidad verificable").

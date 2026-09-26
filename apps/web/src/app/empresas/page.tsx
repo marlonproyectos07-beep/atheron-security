@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
 import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { siteConfig } from "@/lib/site-config";
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
 export default function EmpresasPage() {
   return (
     <Section ariaLabel="Atheron para empresas">
+      <BreadcrumbJsonLd items={[{ label: "Inicio", path: "/" }, { label: "Empresas", path: "/empresas" }]} />
       <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: "Empresas" }]} />
       <div className="mt-6 max-w-2xl">
         <SectionHeading

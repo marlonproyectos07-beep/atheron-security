@@ -1,5 +1,5 @@
 import type { Product } from "@/lib/products/types";
-import { buildBreadcrumbJsonLd, buildProductJsonLd } from "@/lib/seo";
+import { buildBreadcrumbJsonLd, buildProductJsonLd, stringifyJsonLd } from "@/lib/seo";
 
 export function ProductJsonLd({ product }: { product: Product }) {
   const productJsonLd = buildProductJsonLd(product);
@@ -11,13 +11,10 @@ export function ProductJsonLd({ product }: { product: Product }) {
 
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: stringifyJsonLd(productJsonLd) }} />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: stringifyJsonLd(breadcrumbJsonLd) }}
       />
     </>
   );

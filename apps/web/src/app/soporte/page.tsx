@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
+import { BreadcrumbJsonLd } from "@/components/ui/BreadcrumbJsonLd";
 import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { siteConfig } from "@/lib/site-config";
 import { buildDesignSystemWhatsappMessage } from "@/lib/whatsapp";
@@ -29,6 +30,7 @@ const stages = [
 export default function SoportePage() {
   return (
     <Section ariaLabel="Soporte Atheron">
+      <BreadcrumbJsonLd items={[{ label: "Inicio", path: "/" }, { label: "Soporte", path: "/soporte" }]} />
       <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: "Soporte" }]} />
       <div className="mt-6 max-w-2xl">
         <SectionHeading
