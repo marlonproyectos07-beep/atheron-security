@@ -19,7 +19,7 @@ export default function SolucionesPage() {
           <SectionHeading
             eyebrow="Cómo trabajamos"
             title="Una sola relación, muchas soluciones"
-            description="Atheron no vende productos aislados. Acompañamos tu seguridad en el tiempo: de un primer equipo a un sistema completo, a tu ritmo y según lo que realmente necesites."
+            description="ATHERON no solo vende productos aislados. Puedes empezar con un solo equipo, y te acompañamos a construir un sistema completo en el tiempo, a tu ritmo y según lo que realmente necesites."
           />
         </div>
       </Section>
