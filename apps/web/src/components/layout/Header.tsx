@@ -36,19 +36,37 @@ export function Header() {
           </ButtonLink>
         </div>
 
-        <input type="checkbox" id="mobile-nav-toggle" className="peer sr-only" />
+        {/*
+          aria-label sí es válido en un <input>: se pone aquí, no en los
+          <label> (ver nota abajo), porque en desktop AMBOS <label> quedan
+          en display:none (md:hidden) y un <label for> oculto con
+          display:none sale del árbol de accesibilidad — el checkbox se
+          queda sin nombre accesible si depende solo de ellos.
+        */}
+        <input
+          type="checkbox"
+          id="mobile-nav-toggle"
+          className="peer sr-only"
+          aria-label="Alternar menú de navegación"
+        />
+        {/*
+          aria-label no es válido en un <label> nativo (rol implícito
+          "labelable", no anuncia aria-label — falla axe/Lighthouse
+          aria-prohibited-attr). El nombre accesible de cada label viene de
+          su contenido: texto sr-only junto al ícono decorativo.
+        */}
         <label
           htmlFor="mobile-nav-toggle"
           className="flex h-10 w-10 items-center justify-center rounded-md text-brand-primary peer-checked:hidden md:hidden"
-          aria-label="Abrir menú"
         >
+          <span className="sr-only">Abrir menú</span>
           <Icon name="menu" className="h-6 w-6" />
         </label>
         <label
           htmlFor="mobile-nav-toggle"
           className="hidden h-10 w-10 items-center justify-center rounded-md text-brand-primary peer-checked:flex md:hidden"
-          aria-label="Cerrar menú"
         >
+          <span className="sr-only">Cerrar menú</span>
           <Icon name="close" className="h-6 w-6" />
         </label>
 
