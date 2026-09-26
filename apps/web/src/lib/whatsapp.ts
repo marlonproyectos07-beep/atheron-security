@@ -4,8 +4,14 @@ import { siteConfig } from "@/lib/site-config";
  * Construye un enlace wa.me con mensaje contextual por producto.
  * No usa la API de WhatsApp Cloud (fuera de alcance de este piloto,
  * ver docs/ATH-SECURITY-WEB-001.md) — es un enlace simple de clic a chat.
+ *
+ * Devuelve `null` si todavía no hay un número comercial verificado — nunca
+ * se genera un enlace hacia un número inventado. Los componentes deben
+ * usar `WhatsappCta` (src/components/ui/WhatsappCta.tsx) en vez de llamar
+ * esta función directamente, para no duplicar esa guarda.
  */
-export function buildWhatsappLink(message: string): string {
+export function buildWhatsappLink(message: string): string | null {
+  if (!siteConfig.whatsappNumberVerified || !siteConfig.whatsappNumber) return null;
   const digits = siteConfig.whatsappNumber.replace(/\D/g, "");
   const params = new URLSearchParams({ text: message });
   return `https://wa.me/${digits}?${params.toString()}`;

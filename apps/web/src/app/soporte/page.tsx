@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { ButtonLink } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
+import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { siteConfig } from "@/lib/site-config";
-import { buildDesignSystemWhatsappMessage, buildWhatsappLink } from "@/lib/whatsapp";
+import { buildDesignSystemWhatsappMessage } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Soporte",
@@ -28,8 +27,6 @@ const stages = [
 ];
 
 export default function SoportePage() {
-  const whatsappHref = buildWhatsappLink(buildDesignSystemWhatsappMessage());
-
   return (
     <Section ariaLabel="Soporte Atheron">
       <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: "Soporte" }]} />
@@ -54,10 +51,7 @@ export default function SoportePage() {
       </div>
 
       <div className="mt-10">
-        <ButtonLink href={whatsappHref} variant="whatsapp" size="lg">
-          <Icon name="whatsapp" className="h-5 w-5" />
-          Escríbenos por WhatsApp
-        </ButtonLink>
+        <WhatsappCta message={buildDesignSystemWhatsappMessage()} size="lg" />
       </div>
     </Section>
   );

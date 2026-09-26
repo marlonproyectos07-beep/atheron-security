@@ -2,10 +2,9 @@ import type { Metadata } from "next";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
-import { ButtonLink } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
+import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { siteConfig } from "@/lib/site-config";
-import { buildDesignSystemWhatsappMessage, buildWhatsappLink } from "@/lib/whatsapp";
+import { buildDesignSystemWhatsappMessage } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
   title: "Empresas",
@@ -14,8 +13,6 @@ export const metadata: Metadata = {
 };
 
 export default function EmpresasPage() {
-  const whatsappHref = buildWhatsappLink(buildDesignSystemWhatsappMessage());
-
   return (
     <Section ariaLabel="Atheron para empresas">
       <Breadcrumb items={[{ label: "Inicio", href: "/" }, { label: "Empresas" }]} />
@@ -28,10 +25,7 @@ export default function EmpresasPage() {
       </div>
       <div className="mt-8 flex flex-col gap-3 sm:flex-row">
         <DesignSystemModal triggerLabel="Diseñar mi sistema" triggerSize="lg" />
-        <ButtonLink href={whatsappHref} variant="whatsapp" size="lg">
-          <Icon name="whatsapp" className="h-5 w-5" />
-          Escribir por WhatsApp
-        </ButtonLink>
+        <WhatsappCta message={buildDesignSystemWhatsappMessage()} size="lg" />
       </div>
       <p className="mt-4 text-sm text-text-muted">
         Un asesor Atheron confirma contigo el alcance, las condiciones y los tiempos según tu

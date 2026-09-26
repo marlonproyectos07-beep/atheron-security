@@ -2,7 +2,7 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactNode } from "reac
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "secondary" | "outline-on-dark" | "whatsapp";
+type Variant = "primary" | "secondary" | "outline-on-dark" | "whatsapp" | "disabled-neutral";
 type Size = "md" | "lg";
 
 const VARIANT_CLASSES: Record<Variant, string> = {
@@ -13,6 +13,7 @@ const VARIANT_CLASSES: Record<Variant, string> = {
   "outline-on-dark":
     "border border-white/40 text-white hover:bg-white/10 focus-visible:outline-white",
   whatsapp: "bg-[#25D366] text-[#0a2350] hover:brightness-95 focus-visible:outline-[#25D366]",
+  "disabled-neutral": "border border-dashed border-border bg-surface-muted text-text-muted",
 };
 
 const SIZE_CLASSES: Record<Size, string> = {

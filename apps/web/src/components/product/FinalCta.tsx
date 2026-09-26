@@ -1,15 +1,10 @@
 import type { Product } from "@/lib/products/types";
 import { Section } from "@/components/ui/Section";
-import { ButtonLink } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
+import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
-import { buildProductWhatsappMessage, buildWhatsappLink } from "@/lib/whatsapp";
+import { buildProductWhatsappMessage } from "@/lib/whatsapp";
 
 export function FinalCta({ product }: { product: Product }) {
-  const whatsappHref = buildWhatsappLink(
-    buildProductWhatsappMessage(product.name, product.atheronSku),
-  );
-
   return (
     <Section tone="dark" ariaLabel="Contacto">
       <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
@@ -28,10 +23,10 @@ export function FinalCta({ product }: { product: Product }) {
             triggerSize="lg"
             productContext={{ slug: product.slug, name: product.name }}
           />
-          <ButtonLink href={whatsappHref} variant="whatsapp" size="lg">
-            <Icon name="whatsapp" className="h-5 w-5" />
-            Escribir por WhatsApp
-          </ButtonLink>
+          <WhatsappCta
+            message={buildProductWhatsappMessage(product.name, product.atheronSku)}
+            size="lg"
+          />
         </div>
       </div>
     </Section>

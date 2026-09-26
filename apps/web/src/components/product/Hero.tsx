@@ -2,16 +2,12 @@ import Image from "next/image";
 import type { Product } from "@/lib/products/types";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
-import { ButtonLink } from "@/components/ui/Button";
-import { Icon } from "@/components/ui/Icon";
+import { WhatsappCta } from "@/components/ui/WhatsappCta";
 import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
 import { formatCOP } from "@/lib/format";
-import { buildProductWhatsappMessage, buildWhatsappLink } from "@/lib/whatsapp";
+import { buildProductWhatsappMessage } from "@/lib/whatsapp";
 
 export function Hero({ product }: { product: Product }) {
-  const whatsappHref = buildWhatsappLink(
-    buildProductWhatsappMessage(product.name, product.atheronSku),
-  );
   const heroImage = product.images[0];
 
   return (
@@ -45,10 +41,10 @@ export function Hero({ product }: { product: Product }) {
               triggerSize="lg"
               productContext={{ slug: product.slug, name: product.name }}
             />
-            <ButtonLink href={whatsappHref} variant="whatsapp" size="lg">
-              <Icon name="whatsapp" className="h-5 w-5" />
-              Escribir por WhatsApp
-            </ButtonLink>
+            <WhatsappCta
+              message={buildProductWhatsappMessage(product.name, product.atheronSku)}
+              size="lg"
+            />
           </div>
           <p className="mt-3 text-xs text-text-muted">
             Un asesor Atheron confirma contigo alcance, condiciones y disponibilidad antes de
