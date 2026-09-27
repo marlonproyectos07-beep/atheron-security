@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
-import { HomeHero } from "@/components/home/Hero";
+import { CinematicHeroV3 as HomeHero } from "@/components/home/cinematic-v3/CinematicHeroV3";
 import { Segments } from "@/components/home/Segments";
 import { GrowthPath } from "@/components/product/GrowthPath";
 import { getAllProducts } from "@/lib/products/registry";
