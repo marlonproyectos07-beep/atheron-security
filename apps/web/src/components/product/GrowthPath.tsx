@@ -6,7 +6,6 @@ import {
   type GrowthStageId,
 } from "@/lib/growth/growth-path";
 import { cn } from "@/lib/cn";
-import { Icon } from "@/components/ui/Icon";
 import { ATHERON_CENTRAL_MESSAGE } from "@/lib/copy";
 
 /**
@@ -20,6 +19,13 @@ import { ATHERON_CENTRAL_MESSAGE } from "@/lib/copy";
  * "Empezar / Consolidar / Integrar" (`stage.phase`) da la sensación de
  * progresión narrativa que pedía el brief, sin romper la numeración 1-9
  * continua ni la lógica de resaltado de la etapa actual.
+ *
+ * HOME PREMIUM V4: el CEO señaló "sensación de bloques fríos" — cada
+ * etapa vivía en su propia caja con borde completo, sin hilo visual entre
+ * ellas. Se reemplaza por una línea conectora vertical detrás de los
+ * números (un solo timeline por fase) y se quita el borde/caja a las
+ * etapas no-actuales (solo número + texto) — la etapa "actual" conserva
+ * su tarjeta destacada, que ahora contrasta más al ser la única caja.
  */
 export function GrowthPath({ currentStageId }: { currentStageId?: GrowthStageId }) {
   const highlightId = currentStageId ?? GROWTH_PATH_STAGES[0].id;
@@ -52,42 +58,37 @@ export function GrowthPath({ currentStageId }: { currentStageId?: GrowthStageId 
               ) : null}
             </div>
 
-            <ol className="mt-4 flex flex-col gap-4">
-              {group.stages.map((stage) => {
+            <ol className="mt-4 flex flex-col gap-5">
+              {group.stages.map((stage, stageIndex) => {
                 const isCurrent = stage.id === highlightId;
                 const index = getGrowthStageIndex(stage.id);
+                const isLastInGroup = stageIndex === group.stages.length - 1;
                 return (
-                  <li key={stage.id}>
-                    <div
+                  <li key={stage.id} className="relative flex gap-4">
+                    {!isLastInGroup ? (
+                      <span
+                        className="absolute left-4 top-9 h-[calc(100%+0.75rem)] w-px bg-white/12"
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    <span
                       className={cn(
-                        "flex h-full flex-col rounded-xl border p-5 transition-colors",
-                        isCurrent
-                          ? "border-brand-accent bg-white text-text shadow-lg shadow-brand-accent/20 ring-1 ring-brand-accent/40"
-                          : "border-white/15 bg-white/5 text-text-on-dark-muted hover:bg-white/[0.08]",
+                        "relative z-10 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold",
+                        isCurrent ? "bg-brand-accent text-white" : "bg-white/10 text-white",
                       )}
                     >
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={cn(
-                            "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
-                            isCurrent ? "bg-brand-accent text-white" : "bg-white/10 text-white",
-                          )}
-                        >
-                          {index + 1}
-                        </span>
-                        {index < GROWTH_PATH_STAGES.length - 1 ? (
-                          <Icon
-                            name="arrow-right"
-                            className={cn(
-                              "h-4 w-4",
-                              isCurrent ? "text-brand-accent" : "text-white/30",
-                            )}
-                          />
-                        ) : null}
-                      </div>
+                      {index + 1}
+                    </span>
+                    <div
+                      className={cn(
+                        "flex-1 pb-1",
+                        isCurrent &&
+                          "rounded-xl border border-brand-accent bg-white p-5 text-text shadow-lg shadow-brand-accent/20 ring-1 ring-brand-accent/40",
+                      )}
+                    >
                       <p
                         className={cn(
-                          "mt-3 text-base font-semibold",
+                          "text-base font-semibold",
                           isCurrent ? "text-text" : "text-white",
                         )}
                       >

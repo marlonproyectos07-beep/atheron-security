@@ -105,3 +105,74 @@ body {
   background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
   filter: blur(40px);
 }
+
+/*
+ * HOME PREMIUM V4 — movimiento sutil, 100% CSS (sin librería de
+ * animación ni JS para el hero en sí). Todo vive bajo
+ * `prefers-reduced-motion: no-preference`: con reduced-motion, el
+ * contenido queda en su estado final (visible, sin transform) por
+ * definición del CSS en cascada — no hay una rama JS/servidor distinta
+ * que mantener, a diferencia del experimento GSAP anterior.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .atheron-hero-enter {
+    animation: atheron-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .atheron-hero-enter-1 {
+    animation-delay: 0.05s;
+  }
+  .atheron-hero-enter-2 {
+    animation-delay: 0.16s;
+  }
+  .atheron-hero-enter-3 {
+    animation-delay: 0.28s;
+  }
+  .atheron-hero-enter-4 {
+    animation-delay: 0.4s;
+  }
+
+  .atheron-breathe {
+    animation: atheron-breathe 6s ease-in-out infinite;
+  }
+
+  /*
+   * Scroll-reveal (Reveal.tsx): la clase base solo declara la
+   * transición; `.atheron-reveal-pre` (que de verdad oculta el
+   * elemento) la agrega un efecto de cliente DESPUÉS del montaje, nunca
+   * el servidor — así que el primer HTML/paint (con o sin JS) siempre
+   * muestra el contenido visible, sin posibilidad de un mismatch de
+   * hidratación.
+   */
+  .atheron-reveal {
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .atheron-reveal-pre {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes atheron-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes atheron-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}

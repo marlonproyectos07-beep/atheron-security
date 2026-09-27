@@ -1,5 +1,6 @@
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Icon, type IconName } from "@/components/ui/Icon";
+import { Reveal } from "@/components/ui/Reveal";
 
 interface SegmentCard {
   icon: IconName;
@@ -37,18 +38,17 @@ export function Segments() {
     <Section id="segmentos" ariaLabel="Segmentos que atendemos">
       <SectionHeading eyebrow="Para quién trabajamos" title="Hogar, finca y negocio" />
       <div className="mt-10 grid gap-6 sm:grid-cols-3">
-        {SEGMENTS.map((segment) => (
-          <div
-            key={segment.title}
-            className="group relative overflow-hidden rounded-xl border border-border bg-white p-6 transition-shadow hover:shadow-md"
-          >
-            <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-accent to-brand-primary opacity-0 transition-opacity group-hover:opacity-100" />
-            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-accent-light text-brand-accent">
-              <Icon name={segment.icon} className="h-5 w-5" />
+        {SEGMENTS.map((segment, index) => (
+          <Reveal key={segment.title} delayMs={index * 80}>
+            <div className="group relative overflow-hidden rounded-xl border border-border bg-white p-6 transition-shadow hover:shadow-md">
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-brand-accent to-brand-primary opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-brand-accent-light text-brand-accent">
+                <Icon name={segment.icon} className="h-5 w-5" />
+              </div>
+              <p className="mt-4 text-base font-semibold text-text">{segment.title}</p>
+              <p className="mt-2 text-sm leading-relaxed text-text-muted">{segment.description}</p>
             </div>
-            <p className="mt-4 text-base font-semibold text-text">{segment.title}</p>
-            <p className="mt-2 text-sm leading-relaxed text-text-muted">{segment.description}</p>
-          </div>
+          </Reveal>
         ))}
       </div>
     </Section>

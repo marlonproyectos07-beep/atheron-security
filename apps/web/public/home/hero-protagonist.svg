@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 520" role="img" aria-labelledby="hp-title hp-desc">
+  <title id="hp-title">Cámara de seguridad Atheron</title>
+  <desc id="hp-desc">Ilustración conceptual de una cámara de seguridad: el punto de partida de un sistema que puede crecer con cámaras adicionales, alarmas, control de acceso y automatización.</desc>
+  <defs>
+    <linearGradient id="hp-body" x1="0.1" y1="0" x2="0.9" y2="1">
+      <stop offset="0%" stop-color="#3b6fe0" />
+      <stop offset="45%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#0a2350" />
+    </linearGradient>
+    <linearGradient id="hp-body-top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0" />
+    </linearGradient>
+    <radialGradient id="hp-lens" cx="38%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#bcd3fb" />
+      <stop offset="35%" stop-color="#4b7bef" />
+      <stop offset="75%" stop-color="#123a7a" />
+      <stop offset="100%" stop-color="#071026" />
+    </radialGradient>
+    <radialGradient id="hp-glow" cx="50%" cy="55%" r="50%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="hp-ground" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#020617" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#020617" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="hp-arm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#12245c" />
+      <stop offset="100%" stop-color="#050d24" />
+    </linearGradient>
+  </defs>
+
+  <!-- Halo ambiental detrás del objeto -->
+  <ellipse cx="266" cy="240" rx="230" ry="220" fill="url(#hp-glow)" />
+
+  <!-- Sombra de contacto -->
+  <ellipse cx="252" cy="430" rx="150" ry="26" fill="url(#hp-ground)" />
+
+  <!-- Brazo / soporte trasero -->
+  <path d="M158 300 C132 322 122 352 132 388" fill="none" stroke="url(#hp-arm)" stroke-width="20" stroke-linecap="round" />
+  <circle cx="132" cy="392" r="20" fill="url(#hp-arm)" />
+  <circle cx="132" cy="392" r="7" fill="#2563eb" opacity="0.7" />
+
+  <!-- Cuerpo principal (perspectiva 3/4) -->
+  <g>
+    <rect x="118" y="176" width="272" height="118" rx="56" fill="url(#hp-body)" />
+    <rect x="118" y="176" width="272" height="46" rx="23" fill="url(#hp-body-top)" />
+    <rect x="126" y="184" width="256" height="102" rx="48" fill="none" stroke="#7fa6f5" stroke-opacity="0.25" stroke-width="1.5" />
+  </g>
+
+  <!-- Visera superior -->
+  <path d="M330 176 q66 -30 118 10" fill="none" stroke="#071a3d" stroke-width="14" stroke-linecap="round" />
+
+  <!-- Aro + lente -->
+  <circle cx="392" cy="238" r="72" fill="#071026" stroke="#2563eb" stroke-width="6" />
+  <circle cx="392" cy="238" r="72" fill="none" stroke="#7fa6f5" stroke-width="1" stroke-opacity="0.35" />
+  <circle cx="392" cy="238" r="52" fill="url(#hp-lens)" />
+  <circle cx="370" cy="214" r="14" fill="#ffffff" opacity="0.45" />
+  <circle cx="392" cy="238" r="52" fill="none" stroke="#0a1733" stroke-width="2" />
+
+  <!-- LEDs infrarrojos -->
+  <g fill="#3b82f6" opacity="0.75">
+    <circle cx="344" cy="196" r="4.2" />
+    <circle cx="440" cy="196" r="4.2" />
+    <circle cx="344" cy="280" r="4.2" />
+    <circle cx="440" cy="280" r="4.2" />
+  </g>
+
+  <!-- Rejilla de ventilación trasera -->
+  <g stroke="#4c7ae8" stroke-width="5" stroke-linecap="round" opacity="0.55">
+    <line x1="146" y1="204" x2="146" y2="266" />
+    <line x1="164" y1="204" x2="164" y2="266" />
+    <line x1="182" y1="204" x2="182" y2="266" />
+  </g>
+
+  <!-- Indicador de estado activo -->
+  <g transform="translate(388,150)">
+    <circle r="9" fill="#22d3ee" opacity="0.25" />
+    <circle r="4.5" fill="#22d3ee" />
+  </g>
+
+  <!-- Arco de detección sutil frente al lente -->
+  <path d="M392 238 m-96 0 a96 96 0 0 1 48 -83" fill="none" stroke="#7fa6f5" stroke-width="1.5" stroke-dasharray="2 7" opacity="0.35" />
+</svg>
