@@ -105,3 +105,45 @@ body {
   background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
   filter: blur(40px);
 }
+
+/*
+ * ATH-SECURITY-HOME-SIGNATURE-002 — brillo ambiental de fondo para la
+ * experiencia cinemática del hero. A diferencia de `.atheron-glow` (un
+ * blob puntual posicionado por utilidades de Tailwind), este cubre todo
+ * el viewport fijado y solo se usa detrás de las 3 escenas ancladas.
+ */
+.atheron-cine-glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 30% 20%, rgba(37, 99, 235, 0.18), transparent),
+    radial-gradient(50% 40% at 75% 75%, rgba(29, 78, 216, 0.14), transparent);
+}
+
+/*
+ * Entrada de la Escena 1 del hero cinemático: 100% CSS, sin JS, sin
+ * dependencias — reemplaza lo que antes eran componentes `m.*` de Motion
+ * con `initial`/`animate` (medido: bajaba Performance/aumentaba JS sin
+ * usar en Lighthouse). Con `prefers-reduced-motion: reduce` la regla ni
+ * se registra, así que el contenido aparece de inmediato en su estado
+ * final — nunca depende de JS para ser legible (H1/copy ya son HTML real
+ * desde el primer render).
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .cine-reveal {
+    animation: cine-reveal-in 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: var(--cine-delay, 0ms);
+  }
+
+  @keyframes cine-reveal-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

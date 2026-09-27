@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
-import { HomeHero } from "@/components/home/Hero";
+import { CinematicHero } from "@/components/home/cinematic/CinematicHero";
 import { Segments } from "@/components/home/Segments";
 import { GrowthPath } from "@/components/product/GrowthPath";
 import { getAllProducts } from "@/lib/products/registry";
@@ -19,7 +19,7 @@ export default function HomePage() {
 
   return (
     <div>
-      <HomeHero />
+      <CinematicHero />
       <Segments />
 
       <Section tone="muted" id="producto-destacado" ariaLabel="Producto destacado">
