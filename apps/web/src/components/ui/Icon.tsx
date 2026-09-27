@@ -15,7 +15,10 @@ export type IconName =
   | "whatsapp"
   | "arrow-right"
   | "shield"
-  | "play";
+  | "play"
+  | "home"
+  | "tree"
+  | "building";
 
 const PATHS: Record<IconName, string> = {
   resolution:
@@ -38,6 +41,9 @@ const PATHS: Record<IconName, string> = {
   "arrow-right": "M5 12h14m-6-6 6 6-6 6",
   shield: "M12 3 4 6v6c0 5 3.5 8.5 8 9 4.5-.5 8-4 8-9V6l-8-3Z",
   play: "M8 5.5v13l11-6.5-11-6.5Z",
+  home: "m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-8Z",
+  tree: "M12 3 8 9h2l-3.5 5.5H9L6 20h12l-3-5.5h2.5L14 9h2L12 3Zm0 14v4",
+  building: "M5 21V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v16M13 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M8 8h.01M8 12h.01M8 16h.01M5 21h14",
 };
 
 export function Icon({

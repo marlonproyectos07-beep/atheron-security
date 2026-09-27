@@ -25,7 +25,7 @@ export function RelatedProducts({ product }: { product: Product }) {
           <Link
             key={relatedProduct.slug}
             href={`/productos/${relatedProduct.slug}`}
-            className="group rounded-xl border border-border bg-white p-5 transition-shadow hover:shadow-md"
+            className="group rounded-xl border border-border bg-white p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-primary/10"
           >
             <div className="relative aspect-square w-full overflow-hidden rounded-lg bg-surface-muted">
               <Image

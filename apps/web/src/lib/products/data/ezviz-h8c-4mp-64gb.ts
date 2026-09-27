@@ -113,7 +113,7 @@ export const ezvizH8c4mp64gb: Product = {
       segment: "finca",
       title: "Finca",
       description:
-        "Un primer punto de vigilancia para predios extensos, ampliable con más cámaras cuando lo necesites.",
+        "La base de un sistema de seguridad para predios extensos, ampliable con más cámaras cuando lo necesites.",
     },
     {
       segment: "negocio",

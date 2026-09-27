@@ -26,6 +26,15 @@
    */
   --color-whatsapp: #25d366;
   --color-whatsapp-ink: #0a2350;
+
+  /*
+   * Refinamiento visual premium (001E): tonos adicionales para romper la
+   * uniformidad plana de las secciones oscuras y dar textura sobria sin
+   * salir de la paleta azul/blanco/gris ya aprobada. Ningún token existente
+   * cambia de valor — esto es puramente aditivo.
+   */
+  --color-surface-dark-2: #0d2c66;
+  --color-brand-accent-dark: #1d4ed8;
 }
 
 @theme inline {
@@ -48,6 +57,8 @@
   --color-text-on-dark-muted: var(--color-text-on-dark-muted);
   --color-whatsapp: var(--color-whatsapp);
   --color-whatsapp-ink: var(--color-whatsapp-ink);
+  --color-surface-dark-2: var(--color-surface-dark-2);
+  --color-brand-accent-dark: var(--color-brand-accent-dark);
 }
 
 body {
@@ -59,4 +70,38 @@ body {
   .has-sticky-mobile-cta {
     padding-bottom: 4.5rem;
   }
+}
+
+/*
+ * Utilidades decorativas compartidas (001E, refinamiento visual premium).
+ * Sin dependencias nuevas: solo gradientes/patrones CSS puros, siempre
+ * `pointer-events: none` cuando son puramente decorativos para no
+ * interferir con el foco de teclado ni con el lector de pantalla.
+ */
+.atheron-surface-dark {
+  background-image: linear-gradient(
+    165deg,
+    var(--color-surface-dark) 0%,
+    var(--color-surface-dark-2) 100%
+  );
+}
+
+.atheron-grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%);
+}
+
+.atheron-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
+  filter: blur(40px);
 }

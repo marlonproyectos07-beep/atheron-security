@@ -15,11 +15,14 @@ export function UseCases({ product }: { product: Product }) {
       <SectionHeading eyebrow="¿Para quién es?" title="Casos de uso reales para este equipo" />
       <div className="mt-10 grid gap-6 sm:grid-cols-3">
         {product.useCases.map((useCase) => (
-          <div key={useCase.segment} className="rounded-xl bg-white p-6 shadow-sm">
-            <p className="text-xs font-semibold uppercase tracking-wide text-brand-accent">
+          <div
+            key={useCase.segment}
+            className="rounded-xl border-l-4 border-brand-primary bg-white p-6 shadow-sm"
+          >
+            <span className="inline-flex rounded-full bg-surface-muted px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-brand-primary">
               {SEGMENT_LABEL[useCase.segment]}
-            </p>
-            <p className="mt-2 text-base font-semibold text-text">{useCase.title}</p>
+            </span>
+            <p className="mt-3 text-base font-semibold text-text">{useCase.title}</p>
             <p className="mt-2 text-sm leading-relaxed text-text-muted">{useCase.description}</p>
           </div>
         ))}

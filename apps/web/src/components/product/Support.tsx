@@ -16,10 +16,14 @@ export function Support({ product }: { product: Product }) {
         title="Soporte Atheron"
         description="No te dejamos solo con el equipo. Te acompañamos en las tres etapas de tu compra."
       />
-      <div className="mt-10 grid gap-6 sm:grid-cols-3">
+      <div className="relative mt-10 grid gap-6 sm:grid-cols-3">
+        <div
+          className="absolute inset-x-0 top-[2.75rem] hidden h-px bg-gradient-to-r from-transparent via-border to-transparent sm:block"
+          aria-hidden="true"
+        />
         {stages.map((stage, index) => (
-          <div key={stage.label} className="rounded-xl border border-border bg-white p-6">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-primary text-sm font-bold text-white">
+          <div key={stage.label} className="relative rounded-xl border border-border bg-white p-6">
+            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-primary text-sm font-bold text-white ring-4 ring-white">
               {index + 1}
             </div>
             <p className="mt-4 text-base font-semibold text-text">{stage.label}</p>

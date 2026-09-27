@@ -3,6 +3,7 @@ import type { Product } from "@/lib/products/types";
 import { Container } from "@/components/ui/Container";
 import { Breadcrumb } from "@/components/ui/Breadcrumb";
 import { WhatsappCta } from "@/components/ui/WhatsappCta";
+import { Icon } from "@/components/ui/Icon";
 import { DesignSystemModal } from "@/components/lead/DesignSystemModal";
 import { formatCOP } from "@/lib/format";
 import { buildProductWhatsappMessage } from "@/lib/whatsapp";
@@ -11,8 +12,9 @@ export function Hero({ product }: { product: Product }) {
   const heroImage = product.images[0];
 
   return (
-    <section className="border-b border-border bg-gradient-to-b from-surface-muted to-white">
-      <Container className="grid gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
+    <section className="relative overflow-hidden border-b border-border bg-gradient-to-b from-surface-muted to-white">
+      <div className="atheron-glow -right-20 -top-24 h-72 w-72" aria-hidden="true" />
+      <Container className="relative grid gap-10 py-10 sm:py-14 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-20">
         <div>
           <Breadcrumb
             items={[
@@ -33,6 +35,8 @@ export function Hero({ product }: { product: Product }) {
             {product.shortDescription}
           </p>
 
+          <HighlightChips product={product} />
+
           <PriceOrAvailabilityNotice product={product} />
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
@@ -52,8 +56,8 @@ export function Hero({ product }: { product: Product }) {
           </p>
         </div>
 
-        <div className="relative">
-          <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-sm">
+        <div className="relative mx-auto w-full max-w-md lg:mx-0 lg:max-w-none">
+          <div className="overflow-hidden rounded-2xl border border-border bg-white shadow-xl shadow-brand-primary/10">
             <div className="relative aspect-square w-full">
               <Image
                 src={heroImage.src}
@@ -76,6 +80,29 @@ export function Hero({ product }: { product: Product }) {
   );
 }
 
+/**
+ * Chips de highlight derivados de `product.benefits` (001E): reutilizan la
+ * misma fuente de verdad que la sección "Lo que ganas con este equipo" en
+ * vez de declarar una segunda lista de "specs de hero" que podría
+ * desalinearse — cero datos nuevos, solo una presentación más compacta y
+ * escaneable arriba del pliegue.
+ */
+function HighlightChips({ product }: { product: Product }) {
+  return (
+    <ul className="mt-5 flex flex-wrap gap-2">
+      {product.benefits.map((benefit) => (
+        <li
+          key={benefit.title}
+          className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-3 py-1.5 text-xs font-medium text-text"
+        >
+          <Icon name={benefit.icon} className="h-3.5 w-3.5 text-brand-accent" />
+          {benefit.title}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function PriceOrAvailabilityNotice({ product }: { product: Product }) {
   const { pricing } = product;
 
@@ -91,8 +118,9 @@ function PriceOrAvailabilityNotice({ product }: { product: Product }) {
   }
 
   return (
-    <div className="mt-6 rounded-lg border border-border bg-white px-4 py-3 text-sm text-text-muted">
-      Precio y disponibilidad se confirman con un asesor Atheron según tu ciudad.
+    <div className="mt-6 flex items-start gap-3 rounded-lg border border-border bg-white px-4 py-3 text-sm text-text-muted">
+      <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" />
+      <span>Precio y disponibilidad se confirman con un asesor Atheron según tu ciudad.</span>
     </div>
   );
 }

@@ -16,12 +16,15 @@ export function WhatsappCta({
   className,
   verifiedLabel = "Escribir por WhatsApp",
   pendingLabel = "WhatsApp (próximamente)",
+  tone = "light",
 }: {
   message: string;
   size?: "md" | "lg";
   className?: string;
   verifiedLabel?: string;
   pendingLabel?: string;
+  /** "dark" cuando el CTA vive sobre una Section tone="dark" (p. ej. FinalCta). */
+  tone?: "light" | "dark";
 }) {
   const href = buildWhatsappLink(message);
 
@@ -37,13 +40,13 @@ export function WhatsappCta({
   return (
     <Button
       type="button"
-      variant="disabled-neutral"
+      variant={tone === "dark" ? "ghost-on-dark" : "ghost-neutral"}
       size={size}
       className={className}
       disabled
       title="Este canal se activará próximamente. Por ahora, usa “Diseñar mi sistema”."
     >
-      <Icon name="whatsapp" className="h-5 w-5" />
+      <Icon name="whatsapp" className="h-4 w-4" />
       {pendingLabel}
     </Button>
   );

@@ -7,7 +7,13 @@ type Tone = "default" | "muted" | "dark";
 const TONE_CLASSES: Record<Tone, string> = {
   default: "bg-surface text-text",
   muted: "bg-surface-muted text-text",
-  dark: "bg-surface-dark text-text-on-dark",
+  /**
+   * Gradiente sutil + textura de rejilla en vez de un azul plano (001E,
+   * refinamiento visual premium): rompe la sensación de "bloque de color
+   * uniforme" que se repetía en cada sección `dark` del sitio, sin tocar
+   * el resto de la paleta ni el contraste de texto ya validado.
+   */
+  dark: "atheron-surface-dark relative isolate overflow-hidden text-text-on-dark",
 };
 
 export function Section({
@@ -31,7 +37,8 @@ export function Section({
       aria-label={ariaLabel}
       className={cn("py-14 sm:py-20", TONE_CLASSES[tone], className)}
     >
-      <Container className={containerClassName}>{children}</Container>
+      {tone === "dark" ? <div className="atheron-grid-overlay" aria-hidden="true" /> : null}
+      <Container className={cn("relative", containerClassName)}>{children}</Container>
     </section>
   );
 }

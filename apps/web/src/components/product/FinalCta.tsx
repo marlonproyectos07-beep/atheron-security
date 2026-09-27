@@ -7,7 +7,8 @@ import { buildProductWhatsappMessage } from "@/lib/whatsapp";
 export function FinalCta({ product }: { product: Product }) {
   return (
     <Section tone="dark" ariaLabel="Contacto">
-      <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="atheron-glow -bottom-16 -right-16 h-64 w-64" aria-hidden="true" />
+      <div className="relative flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="max-w-xl">
           <h2 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
             ¿Listo para dar el primer paso?
@@ -17,7 +18,7 @@ export function FinalCta({ product }: { product: Product }) {
             encaja en tu Ruta de Crecimiento.
           </p>
         </div>
-        <div className="flex flex-col gap-3 sm:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <DesignSystemModal
             triggerLabel="Diseñar mi sistema"
             triggerSize="lg"
@@ -26,6 +27,7 @@ export function FinalCta({ product }: { product: Product }) {
           <WhatsappCta
             message={buildProductWhatsappMessage(product.name, product.atheronSku)}
             size="lg"
+            tone="dark"
           />
         </div>
       </div>

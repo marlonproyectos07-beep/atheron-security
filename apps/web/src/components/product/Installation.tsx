@@ -16,9 +16,9 @@ export function Installation({ product }: { product: Product }) {
       <div className="mt-10 grid gap-6 sm:grid-cols-2">
         {installation.offersEquipmentOnly ? (
           <OptionCard
-            title="Comprar solo el equipo"
+            title="Solo el equipo"
             description="Recibes el kit y lo instalas por tu cuenta o con tu técnico de confianza."
-            ctaLabel="Comprar este equipo"
+            ctaLabel="Solicitar este equipo"
             productContext={{ slug: product.slug, name: product.name }}
           />
         ) : null}
@@ -47,7 +47,7 @@ function OptionCard({
   productContext: { slug: string; name: string };
 }) {
   return (
-    <div className="flex flex-col rounded-xl border border-border bg-white p-6">
+    <div className="flex flex-col rounded-xl border border-border bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-primary/10">
       <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brand-accent-light text-brand-accent">
         <Icon name="install" className="h-5 w-5" />
       </div>

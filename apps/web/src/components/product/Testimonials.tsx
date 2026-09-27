@@ -31,12 +31,12 @@ export function Testimonials({ product }: { product: Product }) {
               key={testimonial.id}
               className={
                 testimonial.isDemo
-                  ? "relative rounded-xl border-2 border-dashed border-amber-400 bg-amber-50/40 p-6"
-                  : "relative rounded-xl border border-border bg-white p-6"
+                  ? "relative overflow-hidden rounded-xl border-2 border-dashed border-amber-300 bg-amber-50/50 p-6"
+                  : "relative overflow-hidden rounded-xl border border-border bg-white p-6 shadow-sm"
               }
             >
               {testimonial.isDemo ? (
-                <span className="absolute right-3 top-3 rounded-full bg-amber-400 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-amber-950">
+                <span className="absolute right-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-400 px-2.5 py-1 text-xs font-bold uppercase tracking-wide text-amber-950">
                   Demo
                 </span>
               ) : null}
@@ -47,19 +47,41 @@ export function Testimonials({ product }: { product: Product }) {
                 </div>
               ) : null}
 
-              <blockquote className="text-sm leading-relaxed text-text">
-                “{testimonial.quote}”
+              <span
+                aria-hidden="true"
+                className={
+                  testimonial.isDemo
+                    ? "font-serif text-4xl leading-none text-amber-300"
+                    : "font-serif text-4xl leading-none text-brand-accent-light"
+                }
+              >
+                “
+              </span>
+              <blockquote className="-mt-3 text-sm leading-relaxed text-text">
+                {testimonial.quote}
               </blockquote>
-              <figcaption className="mt-4 text-sm font-semibold text-text">
-                {testimonial.authorName}
-                <span className="block font-normal text-text-muted">
-                  {testimonial.authorContext}
+              <figcaption className="mt-4 flex items-center gap-3">
+                <span
+                  aria-hidden="true"
+                  className={
+                    testimonial.isDemo
+                      ? "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-amber-200 text-xs font-bold text-amber-900"
+                      : "flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-accent-light text-xs font-bold text-brand-accent"
+                  }
+                >
+                  {getInitials(testimonial.authorName)}
                 </span>
-                {testimonial.productOrProject ? (
-                  <span className="mt-1 block text-xs font-normal text-text-muted">
-                    {testimonial.productOrProject}
+                <span className="text-sm font-semibold text-text">
+                  {testimonial.authorName}
+                  <span className="block font-normal text-text-muted">
+                    {testimonial.authorContext}
                   </span>
-                ) : null}
+                  {testimonial.productOrProject ? (
+                    <span className="mt-1 block text-xs font-normal text-text-muted">
+                      {testimonial.productOrProject}
+                    </span>
+                  ) : null}
+                </span>
               </figcaption>
             </figure>
           ))}
@@ -74,4 +96,10 @@ export function Testimonials({ product }: { product: Product }) {
       )}
     </Section>
   );
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const initials = parts.slice(0, 2).map((part) => part[0]?.toUpperCase() ?? "");
+  return initials.join("") || "?";
 }

@@ -6,9 +6,9 @@ export function WhatsIncluded({ product }: { product: Product }) {
   return (
     <Section id="que-incluye" ariaLabel="Qué incluye">
       <SectionHeading eyebrow="Contenido del kit" title="Qué incluye" />
-      <div className="mt-10 grid gap-8 sm:grid-cols-2">
-        <div>
-          <p className="text-sm font-semibold text-text">Incluido</p>
+      <div className="mt-10 grid gap-6 sm:grid-cols-2">
+        <div className="rounded-xl border border-brand-accent-light bg-brand-accent-light/40 p-6">
+          <p className="text-sm font-semibold text-brand-primary">Incluido</p>
           <ul className="mt-4 space-y-3">
             {product.includedItems.map((item, index) => (
               <li key={`${index}-${item}`} className="flex items-start gap-3 text-sm text-text">
@@ -18,7 +18,7 @@ export function WhatsIncluded({ product }: { product: Product }) {
             ))}
           </ul>
         </div>
-        <div>
+        <div className="rounded-xl border border-border bg-surface-muted p-6">
           <p className="text-sm font-semibold text-text">No incluido</p>
           <ul className="mt-4 space-y-3">
             {product.excludedItems.map((item, index) => (
