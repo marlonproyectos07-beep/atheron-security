@@ -105,3 +105,93 @@ body {
   background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
   filter: blur(40px);
 }
+
+/*
+ * HOME PREMIUM V5.1 — implementación con assets fotográficos reales
+ * aprobados (fondo nocturno + cámara doble lente, ambos foto/render),
+ * ya no ilustración SVG. Movimiento 100% CSS bajo
+ * `prefers-reduced-motion: no-preference` (mismo patrón validado en V4/V5):
+ * con reduced-motion el contenido nace directamente en su estado final
+ * visible, sin rama de JS distinta que mantener.
+ */
+.atheron-scrim {
+  position: absolute;
+  pointer-events: none;
+  background-image: linear-gradient(
+    100deg,
+    rgba(2, 6, 23, 0.88) 0%,
+    rgba(2, 6, 23, 0.55) 42%,
+    rgba(2, 6, 23, 0.15) 68%,
+    transparent 100%
+  );
+}
+
+/*
+ * Fondo fotográfico del hero, SOLO desktop/tablet. Deliberadamente NO es
+ * un `next/image` con `fill` + clase `hidden`: medido con Playwright, un
+ * `<img>` oculto por CSS (`display:none`) igual dispara la descarga
+ * completa del archivo — el navegador no sabe que "nunca se va a
+ * mostrar" hasta después de haber decidido pedirlo. Una `background-image`
+ * declarada DENTRO de un `@media` que no matchea, en cambio, nunca se
+ * pide — es la única forma con garantía real (no un `display:none` que
+ * cruza los dedos) de no mandar esta foto a mobile.
+ */
+.atheron-hero-bg {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+@media (min-width: 768px) {
+  .atheron-hero-bg {
+    background-image: url("/home/hero-bg-night.webp");
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .atheron-hero-enter {
+    animation: atheron-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .atheron-hero-enter-1 {
+    animation-delay: 0.05s;
+  }
+  .atheron-hero-enter-2 {
+    animation-delay: 0.16s;
+  }
+  .atheron-hero-enter-3 {
+    animation-delay: 0.28s;
+  }
+  .atheron-hero-enter-4 {
+    animation-delay: 0.4s;
+  }
+  .atheron-hero-enter-5 {
+    animation-delay: 0.52s;
+  }
+
+  .atheron-breathe {
+    animation: atheron-breathe 6s ease-in-out infinite;
+  }
+}
+
+@keyframes atheron-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes atheron-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}

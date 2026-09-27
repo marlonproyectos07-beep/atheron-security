@@ -18,7 +18,13 @@ export type IconName =
   | "play"
   | "home"
   | "tree"
-  | "building";
+  | "building"
+  | "camera"
+  | "bell"
+  | "access"
+  | "gear"
+  | "users"
+  | "chart-bars";
 
 const PATHS: Record<IconName, string> = {
   resolution:
@@ -44,6 +50,12 @@ const PATHS: Record<IconName, string> = {
   home: "m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-8Z",
   tree: "M12 3 8 9h2l-3.5 5.5H9L6 20h12l-3-5.5h2.5L14 9h2L12 3Zm0 14v4",
   building: "M5 21V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v16M13 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M8 8h.01M8 12h.01M8 16h.01M5 21h14",
+  camera: "M3 7a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Zm13 3 5-3v10l-5-3v-4Z",
+  bell: "M12 3a5 5 0 0 0-5 5v3.2c0 1-.4 2-1 2.8L5 15h14l-1-1c-.6-.8-1-1.8-1-2.8V8a5 5 0 0 0-5-5Zm-2.3 15a2.3 2.3 0 0 0 4.6 0",
+  access: "M7 10V7a5 5 0 0 1 10 0v3m-12 0h14v9a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-9Zm6 4v2",
+  gear: "M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm7.6 3.5a7 7 0 0 0-.1-1.1l1.8-1.4-1.8-3.1-2.1.8a7 7 0 0 0-1.9-1.1L15.1 3h-3.6l-.4 2.4a7 7 0 0 0-1.9 1.1l-2.1-.8-1.8 3.1 1.8 1.4a7 7 0 0 0 0 2.2l-1.8 1.4 1.8 3.1 2.1-.8c.6.5 1.2.8 1.9 1.1l.4 2.4h3.6l.4-2.4c.7-.3 1.3-.6 1.9-1.1l2.1.8 1.8-3.1-1.8-1.4c.1-.4.1-.7.1-1.1Z",
+  users: "M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm7-1a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5ZM3 20v-1a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v1M16 14a4.5 4.5 0 0 1 4 4.5V20",
+  "chart-bars": "M4 20V10m6 10V4m6 16v-7",
 };
 
 export function Icon({
