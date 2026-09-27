@@ -1,0 +1,516 @@
+# ATH-SECURITY-WEB-001 — Landing maestra, producto piloto
+
+**Autor:** Claude Code · **Fecha:** 26 de septiembre de 2026 (iteración de hardening: mismo día, revisión Agente B)
+**Rama:** `pilot/ath-security-web-001` (creada desde `claude/audit-atheron-ecosystem-v1`)
+**Estado:** IMPLEMENTADO + ENDURECIDO (HARDENING 001A + 001B) + **GATE 001C: PREVIEW CEO + VALIDACIÓN PERFORMANCE**. Corresponde a M3 del `MVP-30-DAYS-v1` ("Plantilla maestra de landing") y respeta el gate regulatorio de ADR-0014 (construcción sí, activación comercial no).
+
+> Esta segunda iteración incorpora decisiones nuevas del CEO y revisión del Agente B: WhatsApp sin número ficticio, testimonio DEMO explícito, corrección de copy central, auditoría Lighthouse real (ver §11), corrección de JSON-LD e identificación correcta del proveedor (SYSCOM Colombia). Ver §11 para el detalle completo de esta iteración.
+
+---
+
+## 0. Qué NO hace este piloto (léase primero)
+
+Por diseño, y siguiendo ADR-0014 y R01 (`docs/RISKS-v1.md`), este sitio:
+
+- **No captura pedidos ni cobra.** No hay pasarela de pagos.
+- **No conecta a producción**: ni Odoo, ni SYSCOM, ni WhatsApp Cloud API, ni n8n, ni Redis. El formulario "Diseñar mi sistema" envía a un endpoint propio (`/api/design-my-system`) que solo **valida y registra en el log del servidor** — no hay ningún sistema productivo detrás.
+- **No menciona monitoreo, respuesta, custodia de video ni consultoría de seguridad facturada** en ninguna pieza de copy, cumpliendo la restricción contractual de ADR-0014 §4.
+- **No publica precio, disponibilidad, garantía ni tiempo de entrega** del producto piloto porque el repositorio no contiene evidencia verificable de ninguno de esos datos. Ver §5.
+
+Esto es intencional: el encargo pide "construir", no "publicar oferta comercial al público" (esto último sigue bloqueado por G0/R01 hasta que exista el permiso de Supervigilancia).
+
+---
+
+## 1. Arquitectura implementada
+
+**Stack:** Next.js 16 (App Router, Turbopack) + TypeScript + Tailwind CSS v4 + ESLint. Scaffold con `create-next-app`, sin dependencias adicionales instaladas.
+
+**Ubicación:** `apps/web/` — se eligió una carpeta `apps/` (en vez de la raíz del repo) porque el Playbook y el MVP prevén más adelante un backend propio (Atheron Core, M2) y posibles otros frontales; esto deja espacio para un monorepo simple sin herramientas de monorepo todavía (decisión reversible, no requiere ADR).
+
+**Principio de diseño:** Server Components por defecto. Solo son Client Components (`"use client"`) los que tienen interacción real:
+- `DesignSystemModal` (estado del modal, formulario, fetch).
+- Nada más. El menú móvil del header usa la técnica de checkbox oculto + `peer-checked` de Tailwind (sin JavaScript). El FAQ usa `<details>/<summary>` nativos (sin JavaScript).
+
+### 1.1 Modelo de producto (`src/lib/products/types.ts`)
+
+Principio rector: **ningún campo comercial es un valor suelto que pueda inventarse por accidente.** Todo campo que depende de evidencia externa (precio, disponibilidad, garantía, especificaciones, alcance de instalación, SKU de proveedor) es un objeto con su propio `status: "verified" | "requires_source" | "requires_test"`. Los componentes de presentación **leen ese status** y solo muestran el valor cuando es `"verified"`; en caso contrario muestran copy neutral (nunca inventado).
+
+Campos principales del `Product`: `id`, `slug`, `atheronSku`, `supplier` (con su propio status), `brand`, `name`, `category`, `segment`, `images`, `headline`, `shortDescription`, `benefits`, `specifications` (agrupadas, cada ítem con status), `includedItems`/`excludedItems`, `useCases`, `installation`, `support`, `warranty`, `pricing`, `availability`, `growthPath` (referencia a la etapa en la Ruta de Crecimiento compartida), `relatedProducts`, `faq`, `testimonials`, `seo`.
+
+### 1.2 Publicar un producto nuevo
+
+1. Crear `src/lib/products/data/<slug>.ts` exportando un objeto `Product`.
+2. Agregarlo al arreglo en `src/lib/products/registry.ts`.
+3. Añadir su imagen en `public/products/<slug>/`.
+
+No se toca ningún componente ni la ruta `src/app/productos/[slug]/page.tsx`, que ya usa `generateStaticParams()` sobre el registro.
+
+### 1.3 Ruta de Crecimiento Atheron (`src/lib/growth/growth-path.ts`)
+
+Lista compartida de 9 etapas (1 cámara → más cobertura → 4 cámaras → 8/16 cámaras → NVR/almacenamiento → alarmas → control de acceso → automatización → comercial/industrial). El componente `GrowthPath` (`src/components/product/GrowthPath.tsx`) la reutiliza en:
+- Cada landing de producto, resaltando la etapa actual del producto (`product.growthPath.currentStageId`).
+- La home (`/`) y `/soluciones`, como mapa general sin etapa resaltada.
+
+### 1.4 Rutas creadas
+
+| Ruta | Contenido |
+|---|---|
+| `/` | Home del ecosistema: hero, segmentos (hogar/finca/negocio), catálogo piloto, Ruta de Crecimiento |
+| `/productos` | Índice de catálogo (hoy: 1 producto) |
+| `/productos/[slug]` | Landing maestra parametrizada — ver §2 |
+| `/soluciones` | Explicación del concepto de acompañamiento + Ruta de Crecimiento |
+| `/empresas` | Página para segmento comercial/industrial |
+| `/soporte` | Explicación de soporte antes/durante/después + WhatsApp |
+| `/aviso-de-privacidad` | Borrador neutral, marcado explícitamente como pendiente de validación jurídica (ADR-0007) |
+| `/api/design-my-system` | Route Handler POST, valida y **registra en log** (staging) |
+| `/sitemap.xml`, `/robots.txt` | Generados dinámicamente desde el registro de productos |
+
+### 1.5 Componentes de la landing de producto
+
+`Hero`, `Benefits`, `UseCases`, `WhatsIncluded`, `Specifications`, `Support`, `Installation`, `GrowthPath`, `Warranty`, `Testimonials`, `Faq`, `RelatedProducts`, `FinalCta`, `ProductJsonLd`, `MobileStickyCta` — todos en `src/components/product/`, cada uno recibe `product: Product` (o `currentStageId` en el caso de `GrowthPath`) y no tiene datos hardcodeados.
+
+Primitivas de UI reusables en `src/components/ui/`: `Container`, `Section`/`SectionHeading`, `Button`/`ButtonLink`, `Icon` (set propio de SVG inline, sin librería de íconos), `Breadcrumb`.
+
+---
+
+## 2. Producto piloto: EZVIZ H8C 4MP + MicroSD 64 GB
+
+Archivo: `apps/web/src/lib/products/data/ezviz-h8c-4mp-64gb.ts`.
+
+### 2.1 Datos usados como hecho (origen: encargo de esta tarea)
+
+- Nombre del kit: "EZVIZ H8C 4MP + MicroSD 64 GB".
+- Marca: EZVIZ. Modelo: H8C. Resolución: 4 MP.
+- El kit incluye una tarjeta microSD de 64 GB.
+- **Proveedor: SYSCOM Colombia** (ADR-0009, decisión ya tomada — no es una hipótesis). SKU de proveedor: `CSH8C4MPKIT` (dado explícitamente en el encargo).
+- SKU Atheron generado por esta tarea (no es el SKU del proveedor, según ADR-0009): `ATH-CAM-EZV-H8C-4MP-64GB`.
+
+**Corrección de esta iteración:** la primera versión marcaba `supplier.status = "requires_source"` y mostraba "Proveedor en validación", tratando a SYSCOM Colombia como si no fuera el proveedor definido. Es incorrecto separar así dos preguntas distintas: la **identidad** del proveedor (SYSCOM Colombia, ADR-0009) SÍ está verificada; lo que sigue sin verificar es la **oferta** de ese proveedor sobre este SKU (stock, costo, disponibilidad, condiciones comerciales — ver §2.2). Ahora `supplier.status = "verified"` y la ficha técnica muestra "Proveedor: SYSCOM Colombia" con status verificado; `pricing`/`availability`/`installation` siguen, cada uno, en `requires_source` por separado.
+
+### 2.2 REQUIERE_FUENTE (no se muestran como hecho al usuario)
+
+| Campo | Dónde vive en el código | Qué ve el usuario en su lugar |
+|---|---|---|
+| Precio de contado / crédito / inicial / cuotas | `pricing.status = "requires_source"` | "Precio y disponibilidad se confirman con un asesor Atheron según tu ciudad." |
+| Disponibilidad / stock | `availability.status = "requires_source"` | Mismo copy que precio |
+| Garantía (duración, cobertura) | `warranty.status = "requires_source"` | "Consulta las condiciones aplicables a este producto." (copy exacto pedido en el encargo) |
+| Tiempo de entrega | No existe como campo con valor; FAQ lo trata explícitamente | "El tiempo de entrega se confirma con un asesor según tu ciudad y disponibilidad real." |
+| Especificaciones ampliadas (visión nocturna, IP, PTZ, alimentación, conectividad) | `specifications[1].items[*].status = "requires_source"` | Fila de tabla con "Pendiente de confirmar" en vez de un valor |
+| Alcance de instalación (qué incluye/excluye la instalación) | `installation.scopeIncluded/scopeExcluded.status = "requires_source"` | No se muestra un alcance detallado; se ofrece "Consultar con un asesor" |
+| Inscripción de SYSCOM Colombia ante Supervigilancia como comercializador | No es un campo de `Product`; vive en la diligencia de ADR-0009 (pregunta 7) | No se expone al usuario final |
+| Número de WhatsApp comercial real | `site-config.ts` (`NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER`) | **Sin placeholder funcional (corregido esta iteración).** Si la variable no está configurada, el CTA se muestra como `<button disabled>` "WhatsApp (próximamente)" — nunca navega a un número inventado. Ver §7 y §11.2 |
+
+### 2.3 REQUIERE_PRUEBA
+
+- Que el copy de beneficios y casos de uso (redactado en lenguaje general, sin afirmar capacidades técnicas no verificadas) convierte igual o mejor que una ficha con specs completas — solo se sabrá con tráfico real.
+- Que el flujo "Diseñar mi sistema" (staging) captura los campos que un asesor realmente necesita para cotizar — pendiente de validar con el primer lote de leads reales una vez exista Atheron Core (M2).
+
+---
+
+## 3. Testimonios y prueba social
+
+**Decisión CEO (esta iteración):** se agregó **un testimonio DEMO** para validar visualmente cómo se vería la sección, en vez de dejarla vacía.
+
+- `Testimonial.isDemo: boolean` es obligatorio en el tipo (`src/lib/products/types.ts`). El único testimonio hoy tiene `isDemo: true`, `authorName: "Testimonio de demostración"`, y `source` dice explícitamente `"DEMO interno — placeholder de diseño... NO PUBLICAR COMO TESTIMONIO REAL"`.
+- El componente `Testimonials` (`src/components/product/Testimonials.tsx`) renderiza cualquier tarjeta con `isDemo: true` con **borde discontinuo ámbar + insignia "DEMO"** visible, y agrega una nota bajo el encabezado de sección explicando que esa tarjeta no es un testimonio real. Es inequívoco tanto en datos como en UI — no hay forma de que se confunda con contenido de producción.
+- El tipo ya soporta lo pedido para el futuro: `photoSrc`, `videoUrl`, `productOrProject`. Si un testimonio trae `videoUrl`, el componente reserva un marco de video sobre la cita — listo para **video-testimonios** sin rediseñar el componente.
+- Antes de publicar en producción: **borrar el testimonio DEMO** (o cambiar `isDemo` no es suficiente — hay que reemplazarlo por datos reales) y agregar testimonios reales con su procedencia en `source`.
+
+---
+
+## 4. Consentimiento y datos personales (ADR-0007)
+
+El formulario "Diseñar mi sistema" (`src/components/lead/DesignSystemModal.tsx`) implementa consentimiento granular por finalidad, cada casilla **separada y no preseleccionada**:
+
+- `consentService` (obligatoria): autoriza el contacto para dar seguimiento a la solicitud. Enlaza al aviso de privacidad.
+- `consentMarketingOwn` (opcional): comunicaciones comerciales de Atheron.
+- `consentMarketingEcosystem` (opcional): ofertas de otras líneas del ecosistema.
+
+El payload enviado a `/api/design-my-system` incluye estas tres banderas por separado, más UTM capturado (`src/lib/utm.ts`) y el contexto de producto — dejando el contrato de datos listo para cuando `LeadCreated` viaje a Atheron Core (ADR-0003), sin construir Core en esta tarea.
+
+**Pendiente (documentado, no bloqueante para este piloto):** el aviso de privacidad en `/aviso-de-privacidad` es un borrador neutral explícitamente marcado como no válido legalmente — REQUIERE_FUENTE: validación jurídica antes de cualquier publicación real (ver ADR-0007, punto 9).
+
+### 4.1 Modo demo/live y no registro de PII (corrección de esta iteración)
+
+- **`src/lib/lead-mode.ts`** exporta `LEAD_CAPTURE_MODE: "demo" | "live"` (hoy `"demo"`). El endpoint incluye `mode` en su respuesta JSON; el modal lee ese `mode` y decide qué mensaje de éxito mostrar — **el servidor decide, el formulario no se rediseña** cuando exista backend real: basta con cambiar la constante (y el propio handler) para pasar a `"live"`.
+  - `mode: "demo"` → "Flujo de demostración completado. La solicitud todavía no se envía a nuestro sistema comercial."
+  - `mode: "live"` (futuro) → "Recibimos tu solicitud. Un asesor Atheron se pondrá en contacto contigo."
+- **El log del servidor (`/api/design-my-system/route.ts`) ya NO registra `name` ni `whatsapp` completos.** Se registran solo como booleanos (`hasName`, `hasWhatsapp`) junto con el resto de campos no personales (ciudad, tipo de propiedad, consentimientos, UTM, contexto de producto). No hay persistencia en disco/BD — el log de consola es efímero, pero aun así no debía contener PII en texto plano.
+
+---
+
+## 5. SEO técnico implementado
+
+- `title`/`description` por página vía `generateMetadata` (producto) y `export const metadata` (páginas estáticas).
+- `alternates.canonical` en todas las páginas indexables.
+- Open Graph (`title`, `description`, `url`, `images`, `locale`, `siteName`) en layout raíz y por producto.
+- H1 único por página, HTML semántico (`header`, `nav`, `main`, `section`, `footer`, `dl`/`dt`/`dd` para specs, `details`/`summary` para FAQ).
+- Breadcrumbs visibles (`Breadcrumb`) + `BreadcrumbList` en JSON-LD.
+- **Product JSON-LD** (`src/lib/seo.ts` → `ProductJsonLd`): incluye `name`, `brand`, `sku`, `description`, `url`. **El nodo `offers` solo se agrega si `pricing.status === "verified"` Y `availability.status === "verified"`** — instrucción explícita del encargo. Para el producto piloto, `offers` **no se emite** porque ninguno de los dos está verificado. **Corrección de esta iteración:** `image` tampoco se emite — la única imagen del producto es un placeholder ilustrativo (`isPlaceholder: true`), y declararla en datos estructurados la presentaría como fotografía verificable del producto, lo cual no es honesto. `buildProductJsonLd()` filtra `product.images` por `!isPlaceholder`; el campo `image` reaparece automáticamente en cuanto exista al menos una foto real en los datos del producto, sin tocar el componente.
+- `sitemap.xml` y `robots.txt` generados dinámicamente (`src/app/sitemap.ts`, `src/app/robots.ts`) a partir del registro de productos — publicar un producto nuevo lo agrega automáticamente al sitemap.
+- Imágenes con `next/image` (`fill` + `sizes` correctos, `object-contain`), placeholder SVG propio marcado visualmente como "Imagen ilustrativa".
+- Enlaces internos: nav principal, breadcrumbs, productos relacionados, CTAs cruzados entre home/productos/soluciones.
+- **Corrección de esta iteración — duplicación de marca en `<title>`:** el layout raíz ya aplica `template: "%s | Atheron Security"`. La home y el producto piloto pasaban un `title` que **ya incluía** "Atheron Security", generando `"... | Atheron Security | Atheron Security"`. Se corrigió: `product.seo.title` y el `title` de la home ahora son el nombre plano (sin marca); el template la agrega una sola vez. El `openGraph.title` usa el mismo título plano y confía en `openGraph.siteName` para transmitir la marca (así lo especifica Open Graph), en vez de concatenarla a mano.
+- **`NEXT_PUBLIC_SITE_URL` sin fallback silencioso a `localhost` en producción:** `site-config.ts` solo usa `http://localhost:3000` como fallback en desarrollo. Si el build es de producción (`NODE_ENV=production`) y la variable no está configurada, usa `https://pending-site-url.atheron.invalid` (dominio reservado por RFC 2606, nunca resuelve) y emite un `console.warn` ruidoso en el log de build/despliegue. Así, un `canonical`, un `sitemap.xml` o un JSON-LD mal configurado en un preview real nunca apunta silenciosamente a `localhost` — la falla es imposible de pasar desapercibida.
+
+---
+
+## 6. Pruebas ejecutadas
+
+Todas ejecutadas en `apps/web/`:
+
+| Paso | Resultado |
+|---|---|
+| `npm install` | OK — 365 paquetes, 0 vulnerabilidades |
+| `npx next typegen` | OK — tipos de rutas regenerados (re-ejecutado tras cada cambio de rutas) |
+| `npx tsc --noEmit` | **0 errores** (verificado de nuevo tras la iteración de hardening) |
+| `npm run lint` (ESLint, `eslint-config-next`) | **0 errores, 0 warnings** (verificado de nuevo tras la iteración de hardening) |
+| `npm run build` (`next build`, Turbopack) | **Compiló exitosamente**, dos veces (antes y después de agregar `browserslist` — ver §11.4). 13 rutas generadas, incluida `/productos/ezviz-h8c-4mp-64gb` como SSG (`generateStaticParams`) |
+| `npm run start` + QA con Playwright (Chromium headless preinstalado) | Ver §6.1 |
+| Lighthouse real sobre build de producción (home + producto, mobile + desktop) | Ver §11 |
+
+### 6.1 QA visual y funcional (Playwright, sin servicio externo)
+
+Se navegaron `/` y `/productos/ezviz-h8c-4mp-64gb` en **375px, 768px y 1440px**:
+
+- **0 errores de consola, 0 `pageerror`, 0 overflow horizontal** en las 6 combinaciones página×ancho.
+- Capturas de pantalla completas revisadas visualmente: jerarquía visual, contraste, tipografía y espaciado consistentes con la dirección visual pedida (blanco/azul/azul oscuro/grises, sin gradientes excesivos, sin sliders).
+- **Menú móvil** (checkbox + `peer-checked`, sin JS): abre y cierra correctamente en 375px.
+- **Modal "Diseñar mi sistema"**: abre como `<dialog>` nativo, formulario completo, validación de campos requeridos y de consentimiento obligatorio.
+- **Envío del formulario**: petición a `/api/design-my-system` respondida `200`, payload visible en el log del servidor **sin PII** (confirmando que el flujo end-to-end de staging funciona sin tocar ningún sistema productivo ni registrar datos personales), estado de éxito mostrado en la UI con el copy de modo demo ("Flujo de demostración completado...").
+- **CTA sticky móvil**: presente y funcional en la landing de producto (`MobileStickyCta`), con "Diseñar mi sistema" (activo) + WhatsApp (estado "próximamente", deshabilitado — ver §11.2).
+- **Sección Ruta de Crecimiento**: revisada en los tres anchos tras el rediseño de grilla (§11.3); en producto resalta la etapa "1 cámara" con la insignia "Estás aquí"; en home/soluciones resalta la misma etapa como "Punto de partida".
+- **Testimonio DEMO**: verificado visualmente en 375/768/1440px — insignia "DEMO" y borde ámbar discontinuo claramente distinguibles del resto de la landing.
+- Repetido íntegramente tras la iteración de hardening: **0 errores de consola, 0 `pageerror`, 0 respuestas HTTP ≥ 400, 0 overflow horizontal** en las 6 combinaciones página×ancho.
+
+No se generó ningún despliegue de vista previa externo (no hay integración de hosting configurada en este piloto); el QA se hizo localmente contra `next build && next start`.
+
+---
+
+## 7. Configuración pendiente antes de un despliegue real
+
+Ver `apps/web/.env.example`:
+
+- `NEXT_PUBLIC_SITE_URL`: URL pública real del sitio (para metadata absoluta, JSON-LD, sitemap).
+- `NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER`: **REQUIERE_FUENTE.** Número de WhatsApp Business real de Atheron. **Decisión CEO (esta iteración): se configura después, y hasta entonces NO se usa ningún número ficticio.** Sin esta variable, `WhatsappCta` (`src/components/ui/WhatsappCta.tsx`) renderiza un `<button disabled>` real — "WhatsApp (próximamente)", con `title` explicando el estado — en vez de un enlace `wa.me` a un número inventado. Todos los puntos de contacto (Hero, CTA final, sticky móvil, Home, Empresas, Soporte) pasan por este único componente, así que activar el canal real es: configurar la variable de entorno y redesplegar — cero cambios de código.
+
+---
+
+## 8. Deuda pendiente / fuera de alcance de esta tarea
+
+- Conexión real a Atheron Core / Odoo / WhatsApp Cloud API / n8n / Redis (explícitamente fuera de alcance del encargo).
+- Ficha técnica completa del producto piloto (visión nocturna, IP, PTZ, alimentación, conectividad) — requiere la hoja de datos real del proveedor.
+- Precio, disponibilidad, garantía y tiempo de entrega reales — requieren costeo verificado (M1 del MVP) y aprobación de Marlon, y en cualquier caso **no pueden activarse comercialmente hasta cerrar el gate regulatorio G0/R01** (permiso Supervigilancia).
+- Aviso de privacidad definitivo — requiere validación jurídica (ADR-0007).
+- Número de WhatsApp Business real (arquitectura ya lista para activarlo — ver §7).
+- Favicon/marca real (hoy usa el favicon por defecto de Next.js — no se inventó un logo).
+- Testimonios reales, cuando existan (hoy hay un testimonio DEMO explícitamente marcado, no real — ver §3).
+- Productos relacionados reales (`relatedProducts` está vacío porque solo hay un producto publicado).
+- Dominio y hosting definitivos — explícitamente fuera de alcance de esta iteración (decisión CEO); se decide después de aprobar visualmente la landing.
+
+---
+
+## 9. Siguiente paso recomendado
+
+Publicar el segundo producto de la línea Hogar sobre esta misma plantilla (agregando solo un archivo de datos, sin tocar componentes), para validar en la práctica el principio "una plantilla, N productos" antes de invertir en más piloto de contenido. En paralelo, avanzar M1 (costeo real) para poder pasar los campos `requires_source` de precio/garantía/disponibilidad a `verified` en cuanto exista evidencia, sin cambiar ni una línea de los componentes.
+
+---
+
+## 10. Decisiones técnicas tomadas sin bloquear (reversibles, documentadas aquí)
+
+1. **Ubicación en `apps/web/`** en vez de la raíz del repo — deja espacio para Atheron Core u otros servicios sin herramientas de monorepo todavía.
+2. **Sin librería de íconos ni de utilidades de clases** (`clsx`, `lucide-react`, etc.) — set de SVG inline propio (`src/components/ui/Icon.tsx`) y un `cn()` de una línea, para no instalar dependencias innecesarias en un piloto de este tamaño.
+3. **Menú móvil y FAQ sin JavaScript** (checkbox hack + `<details>`) — reduce el JS enviado al cliente y es coherente con "Client Components únicamente donde haya interacción real".
+4. **Número de WhatsApp como variable de entorno, sin placeholder funcional** (corregido en la iteración de hardening — ver §11.2): mientras no esté configurada, el CTA se muestra deshabilitado en vez de navegar a un número inventado.
+5. **`/aviso-de-privacidad` publicado como borrador visible**, no omitido — la casilla de consentimiento necesita un enlace real para ser válida como evidencia (ADR-0007), aunque el texto final quede pendiente de abogado.
+6. **`WhatsappCta` como componente único** para todo el sitio en vez de repetir `buildWhatsappLink` + `ButtonLink` en cada página — un solo lugar decide "número verificado vs. próximamente", así que activar WhatsApp real es un cambio de una sola pieza.
+7. **`browserslist` explícito en `package.json`** (últimas 2 versiones de Chrome/Firefox/Safari/Edge/iOS/ChromeAndroid) para que el compilador no genere *shims* de compatibilidad con navegadores muy antiguos que este piloto no necesita soportar — ver §11.4. Reversible: basta con ampliar la lista si en algún momento se requiere soporte más amplio.
+8. **Grilla de la Ruta de Crecimiento: de 9 columnas a 5 (dos filas)** — a 1440px, 9 columnas dejaban cada tarjeta en ~110px de ancho, casi ilegible. La secuencia narrativa se conserva con la flecha dentro de cada tarjeta, no con el conteo de columnas.
+9. **Modo demo/live decidido por el servidor, no por el formulario** (`lib/lead-mode.ts`) — cambiar de staging a un backend real no requiere tocar `DesignSystemModal`, solo el endpoint.
+
+---
+
+## 11. REVISIÓN AGENTE B — HARDENING 001A
+
+Iteración ejecutada el mismo día sobre nuevas decisiones del CEO. Todos los números de esta sección son **medidos**, no estimados — `docs/qa/lighthouse-ath-security-web-001/*.report.json` (y su `.html` correspondiente) quedan versionados como evidencia cruda.
+
+### 11.1 Auditoría Lighthouse — build de producción real
+
+Ejecutada contra `next build && next start` (sin `next dev`), con Chromium headless preinstalado del entorno. Método de *throttling*: `simulate` (estándar de Lighthouse para mobile/desktop lab data).
+
+| Ruta | Dispositivo | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| `/` | Mobile | **98** | **100** | **100** | **100** | 2.2 s | 0 | 120 ms |
+| `/` | Desktop | **100** | **100** | **100** | **100** | 0.6 s | 0 | 30 ms |
+| `/productos/ezviz-h8c-4mp-64gb` | Mobile | **99** | **100** | **100** | **100** | 2.1 s | 0 | 60 ms |
+| `/productos/ezviz-h8c-4mp-64gb` | Desktop | **100** | **100** | **100** | **100** | 0.5 s | 0 | 0 ms |
+
+**Accessibility, Best Practices y SEO: 100/100 en las 4 combinaciones**, sin excepciones ni auditorías desactivadas.
+
+**Performance: 98–100.** Desktop llega a 100 en ambas rutas. Mobile queda en 98 (home) y 99 (producto) — no en 100 literal. Causa real, no estimada: de los cinco componentes que pesan en el puntaje de Performance (FCP 10%, LCP 25%, TBT 30%, CLS 25%, SI 10%), los únicos por debajo del 100% son `largest-contentful-paint` (95% en home, 96% en producto) y, en home, `total-blocking-time` (97%). Es decir, el LCP mobile simulado queda en 2.1–2.2 s — dentro del objetivo `≤ 2.5 s` del encargo, pero no en el mínimo absoluto de la curva de puntaje de Lighthouse. **Se documenta honestamente en vez de forzarlo:** exprimir ese último 1–2% implicaría reducir aún más el JavaScript de framework (React + Next.js runtime, ~140 KB transferidos/gzip), lo cual entra en conflicto directo con el stack exigido (Next.js App Router con Client Components reales para el modal de contacto). No se aplicó ningún truco que empeore la UX real (no se quitó el modal, no se de-hidrató nada a la fuerza).
+
+**CLS = 0 en las 4 combinaciones.** Ningún salto de layout medido.
+
+Reportes completos (JSON crudo + HTML navegable) en `docs/qa/lighthouse-ath-security-web-001/`:
+`home-mobile`, `home-desktop`, `producto-mobile`, `producto-desktop` (`.report.json` + `.report.html` cada uno).
+
+### 11.2 WhatsApp sin número ficticio
+
+- `siteConfig.whatsappNumber` es `null` hasta que exista `NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER`. `buildWhatsappLink()` devuelve `null` en ese caso — ya no genera un enlace `wa.me` con un número de relleno.
+- `WhatsappCta` (nuevo, `src/components/ui/WhatsappCta.tsx`) es el único punto donde se decide qué mostrar: enlace real si `href` existe, o un `<button disabled>` — "WhatsApp (próximamente)" — con `title` explicativo si no. Es un botón nativo deshabilitado, no un enlace falso: se ve terminado, no navega a ningún lado, y un lector de pantalla lo anuncia como deshabilitado.
+- Todos los puntos de contacto migraron a este componente: Hero y CTA final de producto, sticky móvil, Home, `/empresas`, `/soporte`.
+
+### 11.3 Ruta de Crecimiento Atheron — rediseño de grilla
+
+Antes: `lg:grid-cols-9` — a 1440px cada tarjeta quedaba en ~110px de ancho, título y descripción casi ilegibles (detectado en la revisión visual del CEO). Ahora: `sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5` — envuelve en dos filas (5 + 4) con casi el doble de ancho por tarjeta, conservando la secuencia con la flecha dentro de cada una. Además, sin `currentStageId` (home/soluciones) la primera etapa ahora se resalta como **"Punto de partida"** en vez de quedar sin marcar — el bloque siempre se lee como "empiezas aquí", nunca como tabla suelta, tal como se pidió.
+
+### 11.4 Optimización de performance aplicada (no solo medida)
+
+- **`browserslist` en `package.json`** limitado a navegadores evergreen (últimas 2 versiones de Chrome/Firefox/Safari/Edge/iOS/ChromeAndroid). Antes de este cambio, el compilador incluía *shims* de compatibilidad para navegadores antiguos (detectados por Lighthouse: `Array.prototype.at/flat/flatMap`, `Object.fromEntries/hasOwn`, `String.prototype.trimStart/End`) que este piloto no necesita soportar. Efecto medido en home mobile: **Performance 88 → 97** en la misma máquina, mismo build salvo este cambio (LCP 2.7 s → 2.2 s, TBT 330 ms → 150 ms).
+- **Corrección de accesibilidad real, no cosmética:** `aria-label` en un `<label>` nativo es inválido (axe: `aria-prohibited-attr`) porque un `<label>` no tiene rol ARIA propio — se movió el nombre accesible a un `<span className="sr-only">` dentro de cada label. Además, en desktop ambos `<label>` del menú móvil quedan en `display:none` (`md:hidden`), y un `<label for>` oculto así sale del árbol de accesibilidad — se agregó `aria-label` directamente al `<input type="checkbox">` (ahí sí es válido) para que el control conserve nombre accesible en cualquier ancho.
+- **Nota metodológica honesta:** durante esta iteración, una corrida de Lighthouse quedó contaminada por un proceso `next start` obsoleto que no liberó el puerto 3000 entre rebuilds (error `EADDRINUSE` silencioso en el intento nuevo), sirviendo una mezcla de build antiguo/nuevo con un error 500 en el CSS. Se detectó por el propio audit (`errors-in-console`), se identificó la causa raíz (proceso zombie en el puerto), se mató el proceso correcto y se repitió la medición limpia. Los números de §11.1 son de la corrida limpia, verificada sin errores de red ni de consola.
+
+### 11.5 Copy central corregido
+
+"Atheron no vende cámaras sueltas" (técnicamente falso: Atheron sí puede vender solo el equipo) se reemplazó por una formulación que sí es cierta y más fuerte en CRO: **"ATHERON no solo vende cámaras. Puedes empezar comprando un solo equipo, y te acompañamos a construir un sistema completo a medida que crecen tus necesidades."** Aplicado de forma consistente en Home, `/soluciones` y el bloque Ruta de Crecimiento (compartido también por la landing de producto).
+
+### 11.6 Preview para revisión del CEO
+
+No hay integración de hosting configurada en este entorno (decisión explícita: no desplegar por cuenta propia sin aprobación). Para esta revisión se entregan:
+
+- Capturas de pantalla completas (desktop 1440px y móvil 375px) de home y del producto piloto, enviadas junto con este reporte.
+- Los 8 reportes Lighthouse (JSON + HTML) en `docs/qa/lighthouse-ath-security-web-001/`, navegables abriendo el `.html` en cualquier navegador.
+
+**Instrucciones exactas para generar un preview real en el siguiente gate** (cuando se decida dominio/hosting):
+1. Elegir proveedor (Vercel es el camino de menor fricción para Next.js App Router, pero cualquier proveedor con Node.js 20+ sirve — no se decide aquí, ver §8).
+2. Conectar el repositorio, apuntando el *root directory* del proyecto a `apps/web/`.
+3. Configurar `NEXT_PUBLIC_SITE_URL` con la URL real que asigne el proveedor (o el dominio definitivo) — sin esto, `site-config.ts` usa el dominio placeholder `*.invalid` y lo advierte en el log de build (ver §5).
+4. Dejar `NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER` sin configurar hasta tener el número real — el sitio se ve terminado igual (§11.2).
+5. Desplegar la rama `pilot/ath-security-web-001` como *preview*, nunca como producción del dominio definitivo, hasta que este gate visual se apruebe.
+6. **Dejar `NEXT_PUBLIC_ALLOW_INDEXING` sin configurar (o en `false`)** en ese preview — el sitio se sirve con `noindex,nofollow` por defecto (§12.1). Cambiarlo a `true` solo el día que el CEO apruebe la publicación pública real.
+
+### 11.7 QA repetido tras esta iteración
+
+`npx next typegen`, `npx tsc --noEmit` (0 errores), `npm run lint` (0 errores/warnings) y `npm run build` se repitieron después de cada bloque de cambios (no solo al final) y quedaron limpios. El QA responsive con Playwright (375/768/1440px, las 6 combinaciones página×ancho) se repitió íntegro tras todos los cambios: 0 errores de consola, 0 `pageerror`, 0 respuestas HTTP ≥ 400, 0 overflow horizontal.
+
+---
+
+## 12. AUDITORÍA MULTIAGENTE — HARDENING 001B
+
+Orden explícita del CEO: auditar la landing con especialistas independientes antes de declararla lista para revisión, usando capacidad multiagente real si existe en el entorno.
+
+**Verificación de capacidad (obligatoria antes de simular nada):** no existe ninguna herramienta llamada "Ruflo" ni equivalente en este entorno. La capacidad multiagente real disponible es el `Agent` tool de Claude Code (subagentes reales, cada uno con su propio contexto y ejecución). Se usó esa capacidad: **8 subagentes reales, en paralelo, cada uno de solo lectura** (sin permiso de `Edit`/`Write`), auditando el mismo commit (`90c72e9`) desde un ángulo distinto. Ninguno fue simulado.
+
+Especialistas desplegados: Frontend/Next.js, UX/CRO, SEO técnico, Accessibility (código, más allá de Lighthouse), Copy comercial, Diseño visual, Security/Privacy, Arquitectura/Maintainability. Performance/CWV y QA Responsive los reverificó el propio Lead (Claude Code) con el pipeline Lighthouse/Playwright ya usado en el hardening 001A, en vez de un noveno subagente — hubiera sido duplicar capacidad ya probada.
+
+### 12.1 Hallazgo más importante: conflicto real entre dos gates explícitos
+
+Dos especialistas independientes (SEO técnico y Security/Privacy) encontraron, cada uno por su cuenta, que **no existía ningún mecanismo de `noindex` condicionado a entorno**: `robots.txt` permitía `allow: "/"` siempre, y solo `/aviso-de-privacidad` tenía `noindex` a nivel de página. Cualquier despliegue de preview en una URL públicamente alcanzable habría quedado indexable por Google desde el día uno — exactamente lo que el gate **"staging NOINDEX"** pedido por el CEO prohíbe.
+
+**Se implementó el fix** (`siteConfig.allowIndexing`, controlado por `NEXT_PUBLIC_ALLOW_INDEXING`, por defecto `false`): sin esa variable, `robots.ts` devuelve `disallow: "/"` para todo user-agent y el `layout.tsx` raíz aplica `robots: { index: false, follow: false }` a todo el sitio por herencia. Verificado en runtime: `curl /robots.txt` → `Disallow: /`; el HTML de cualquier página → `<meta name="robots" content="noindex, nofollow">`.
+
+**Consecuencia medida, no anticipada:** con el gate de `noindex` activo (el estado correcto y por defecto de este piloto), Lighthouse **no puede** dar SEO 100 — su auditoría `is-crawlable` falla explícitamente cuando una página está bloqueada de indexación, por diseño de la propia herramienta (Lighthouse asume que una página quiere ser indexable). Con el gate activo: **SEO 66-69/100** en las 4 combinaciones auditadas (home/producto × mobile/desktop). Se verificó con una prueba controlada (`NEXT_PUBLIC_ALLOW_INDEXING=true`, rebuild, un solo audit en home mobile, luego revertido) que **el resto del sitio SÍ llega a SEO 100/100** — la única auditoría que falla es `is-crawlable`, y falla *porque el gate está haciendo exactamente lo que se le pidió*.
+
+**Esto no es un defecto para corregir. Es una decisión de negocio que el CEO debe conocer explícitamente:**
+
+| Opción | SEO en Lighthouse | Riesgo |
+|---|---|---|
+| `NEXT_PUBLIC_ALLOW_INDEXING=false` (estado actual, recomendado mientras no haya aprobación) | 66-69/100 (solo por `is-crawlable`, intencional) | Ninguno — el sitio no es indexable |
+| `NEXT_PUBLIC_ALLOW_INDEXING=true` | 100/100 | El piloto queda indexable públicamente antes de la aprobación visual/comercial |
+
+**Recomendación de Agente A: mantener `false` hasta que el CEO apruebe explícitamente publicar.** El gate "SEO 100" se cumple automáticamente el día que se active `ALLOW_INDEXING`, sin tocar código.
+
+### 12.2 Matriz consolidada de hallazgos
+
+Severidad reclasificada por el Lead tras eliminar contradicciones entre especialistas (dos hallazgos convergentes — encontrados de forma independiente por más de un especialista — se marcan con 🔁 y toman la severidad más alta reportada).
+
+| Especialista(s) | Hallazgo | Severidad | Estado |
+|---|---|---|---|
+| 🔁 SEO técnico + Security/Privacy | Sin `noindex` global condicionado a entorno — preview público indexable desde el día 1 | **P0** | ✅ Corregido (§12.1) |
+| UX/CRO | Sticky CTA móvil: WhatsApp deshabilitado primero, 50% del ancho — contradice el patrón del resto del sitio | **P0** | ✅ Corregido — orden invertido, "Diseñar mi sistema" con el doble de ancho |
+| UX/CRO | "Productos relacionados" con catálogo vacío justo antes del CTA final | **P0** | ✅ Corregido — la sección se oculta por completo mientras no haya productos relacionados reales |
+| SEO técnico | `/aviso-de-privacidad`: `robots.txt disallow` + meta `noindex` a la vez es contraproducente (Google no puede leer un noindex que no puede rastrear) | P1 | ✅ Corregido — un solo mecanismo (meta noindex de la página) |
+| SEO técnico | `ogImageSrc` era SVG — no se previsualiza en WhatsApp/LinkedIn/X | P1 | ✅ Corregido — PNG 1200×630 generado y referenciado |
+| 🔁 Frontend/Next.js + Accessibility | Modal `<dialog>` sin `aria-labelledby` — nombre accesible ambiguo para lectores de pantalla | P1 | ✅ Corregido |
+| Frontend/Next.js | `product.images[0]` sin garantía de tipo — un producto futuro con `images: []` rompe en SSG/runtime | P1 | ✅ Corregido — `images` ahora es tupla no vacía en el tipo |
+| Arquitectura | `currentStageId` tipado como `string` suelto — un typo no falla en build | P1 | ✅ Corregido — unión de tipos derivada de `GROWTH_PATH_STAGES` |
+| Arquitectura | Dato "Proveedor" duplicado sin sincronización (`supplier` vs. fila manual en specs) | P1 | ✅ Corregido — la fila se construye desde `product.supplier` |
+| UX/CRO | Instalación: mismo CTA ("Consultar con un asesor") para "comprar solo equipo" y "solicitar instalación" | P1 | ✅ Corregido — labels distintos por tarjeta |
+| Copy comercial | Mensaje central divergía textualmente entre `/soluciones` y el resto | P1 | ✅ Corregido — constante compartida (`lib/copy.ts`) |
+| Copy comercial | Mensaje de error del formulario remite a WhatsApp cuando ese canal está deshabilitado | P1 | ✅ Corregido — condicionado a `whatsappNumberVerified` |
+| Copy comercial | Mensaje de éxito en modo demo usa jerga de desarrollador, sin alternativa de contacto clara | P1 | ✅ Corregido — reescrito en lenguaje de cliente |
+| Accessibility | Falta enlace "Saltar al contenido" | P1 | ✅ Corregido |
+| Accessibility | Checkbox del menú móvil tabulable en desktop sin efecto visible; sin indicador de foco visible en mobile | P1 | ✅ Corregido — `md:hidden` en el input + `peer-focus-visible` en los labels |
+| Security/Privacy | Endpoint sin límite de tamaño/forma de payload | P1 | ✅ Corregido — límites de longitud + validación de forma en `utm`/`productContext` |
+| UX/CRO | Campo "¿Qué quieres proteger?" redundante con "Tipo de propiedad" | P1 | ⛔ **No implementado** — ambos campos fueron pedidos explícitamente por separado en el encargo original; fusionar es una decisión de negocio, no un bug de código. Queda para decisión CEO |
+| UX/CRO | Sección Garantía duplica el contenido de la respuesta de FAQ sobre garantía | P1 | ⛔ **No implementado** — ambas secciones (Garantía y FAQ) fueron pedidas explícitamente por separado en el encargo original. Se corrigió que usen la misma fuente de texto (`WARRANTY_FALLBACK_COPY`), pero no se fusionaron los componentes |
+| UX/CRO | Ruta de Crecimiento interrumpe el flujo Specs→Instalación→Garantía | P1 | ⛔ **No implementado** — el orden actual (Instalación → Ruta de Crecimiento → Garantía) es exactamente la secuencia 8→9→10 del encargo original. Reordenar requiere instrucción explícita del CEO |
+| UX/CRO | Disclaimer "consulta con un asesor" repetido en 7 secciones | P1 | ⛔ **No implementado** — cada instancia está atada a un dato `requires_source` específico; recortarlas sin cuidado arriesga que un dato no verificado parezca más confirmado de lo que es. Es tensión producto vs. transparencia, no bug |
+| Copy comercial | "Punto de vigilancia" (repetido en 4 lugares) no viola ADR-0014 literalmente, pero toca la palabra sensible del decreto | P2 | ⛔ **No implementado** — el propio especialista lo marcó como "confirmar con abogado", no como corrección de código. Se deja para la próxima revisión jurídica de ADR-0014 |
+| Diseño visual | Hero (home y producto) no usa el componente `Section` compartido — ritmo vertical inconsistente | P1 | ⛔ **No implementado** — refactor estructural de dos componentes, no un fix mecánico; se deja para una iteración de diseño deliberada, no dentro de un pase de hardening |
+| Diseño visual | Ícono de "play" en testimonios reutilizaba `chevron-right` | P1 | ✅ Corregido — ícono `play` dedicado agregado a `Icon.tsx` |
+| Diseño visual | Insignia "DEMO" es el único color fuera de paleta | P1 | ⛔ **Aceptado intencionalmente** — es un marcador de QA que debe eliminarse junto con el testimonio antes de producción, no mantenerse como token permanente |
+| Frontend/Next.js | Home sin `openGraph.images` propio | P2 | ✅ Corregido — mismo PNG de marca por defecto |
+| Frontend/Next.js | Condición muerta en `ButtonLink` (`isExternal`) | P2 | ✅ Corregido |
+| Frontend/Next.js | Keys de React basadas en contenido (`item.label`, `item.question`) sin garantía de unicidad | P2 | ✅ Corregido — `index` combinado con el contenido |
+| Accessibility | Foco inicial del modal caía en el botón "Cerrar", no en el primer campo | P2 | ✅ Corregido — foco explícito al abrir |
+| Accessibility | `prefers-reduced-motion` no respetado en la rotación del chevron del FAQ | P2 | ✅ Corregido — `motion-safe:` |
+| Accessibility | Contraste del placeholder de WhatsApp en el modal (~3.2:1) | P2 | ✅ Corregido — sin opacidad reducida |
+| Accessibility | Panel del menú móvil sin cierre por teclado (Escape) | P2 | ⛔ No implementado — limitación conocida de la técnica sin JS; documentada, no bloqueante |
+| Accessibility | `title` del botón WhatsApp deshabilitado probablemente nunca se muestra (comportamiento nativo de `disabled`) | P2 | ⛔ No implementado — el label visible ya comunica el estado; el `title` es redundante, no la única fuente |
+| Security/Privacy | JSON-LD sin escape defensivo de `</script>` | P2 | ✅ Corregido — `stringifyJsonLd()` |
+| Security/Privacy | Sin rate limiting en el endpoint de staging | P2 | ⛔ No implementado — aceptado como riesgo de staging; prerrequisito documentado antes de `mode: "live"` |
+| SEO técnico | `BreadcrumbList` JSON-LD solo existía en la ficha de producto | P2 | ✅ Corregido — agregado a `/productos`, `/soluciones`, `/empresas`, `/soporte` |
+| SEO técnico | Sin `twitter:card` | P2 | ✅ Corregido |
+| Copy comercial | Nota del testimonio DEMO con plural forzado ("La(s) tarjeta(s)...") | P2 | ✅ Corregido — singular/plural real según cantidad |
+| Copy comercial | Inconsistencia "4MP"/"4 MP" y "MicroSD"/"microSD" en el copy de prosa | P2 | ✅ Corregido — unificado a "4 MP"/"microSD" en prosa (el nombre/título del producto conserva el formato dado en el encargo original) |
+| Copy comercial | Respuesta de garantía en FAQ divergía del `fallbackCopy` oficial | P2 | ✅ Corregido — una sola constante compartida |
+| Diseño visual | Color de WhatsApp (`#25D366`) como hex suelto, no tokenizado | P2 | ✅ Corregido — `--color-whatsapp` en `globals.css` |
+| Diseño visual | `rounded-md` inconsistente con el resto del sistema (`rounded-lg`/`xl`/`2xl`) | P2 | ✅ Corregido |
+| Diseño visual | `text-[11px]` fuera de la escala tipográfica nombrada | P2 | ✅ Corregido — `text-xs` |
+| Arquitectura | `Sourced<T>` infrautilizado (patrón inconsistente con `Pricing/Availability/WarrantyInfo`) | P2 | ⛔ No implementado — el propio especialista lo marcó "no urgente para 1 producto" |
+| Arquitectura | Patrón de tarjeta "icon-box" repetido 4 veces sin componente compartido | P2 | ⛔ No implementado — "no rehacer lo que ya funciona sin motivo medible"; se extrae si el segundo producto lo repite |
+| Arquitectura | Bloque de 3 etapas de soporte duplicado entre `Support.tsx` y `/soporte/page.tsx` | P2 | ⛔ No implementado — mismo criterio que el anterior |
+| Arquitectura | `Testimonial.photoSrc` es un campo muerto (no se consume) | P2 | ✅ Documentado como "preparado, no implementado" (mismo tratamiento que `videoUrl`) |
+| Arquitectura | `SourceStatus.requires_test` nunca usado | P2 | ⛔ No implementado — sin caso real que lo ejercite todavía |
+
+**Sin hallazgos P0 propios en:** Diseño visual (cumple la dirección visual macro), Arquitectura (el patrón "una plantilla, N productos" escala; cero fuga de `SourceStatus` verificada línea por línea), Copy comercial (cero violaciones confirmadas de ADR-0014), Accessibility (los P0 esperables — bloqueo total a un usuario — no aparecieron; todo lo encontrado es fricción real pero no bloqueo).
+
+### 12.2.1 Nota metodológica de Accessibility
+
+El especialista de Accessibility señaló algo importante: el `<dialog>` de "Diseñar mi sistema" está en `display: none` por defecto (comportamiento nativo hasta que se llama `showModal()`), y Lighthouse/axe excluyen del árbol de accesibilidad todo lo que esté en `display: none`. **Esto significa que el 100/100 de Accessibility reportado en el hardening 001A nunca evaluó el contenido del modal** — formulario, checkboxes, botón de cerrar — porque Lighthouse audita el DOM en su estado inicial (modal cerrado). Los hallazgos de accesibilidad del modal (foco inicial, `aria-labelledby`, contraste del placeholder) solo se detectaron por la revisión manual de código de este especialista, no por la auditoría automatizada ya ejecutada. **Conclusión: "Accessibility 100 en Lighthouse" certifica la página en reposo, no el flujo de conversión completo.** Los tres hallazgos reales del modal ya se corrigieron (§12.2).
+
+### 12.3 Resultado final de gates (post-implementación)
+
+| Gate | Resultado |
+|---|---|
+| TypeScript | ✅ PASS (0 errores) |
+| ESLint | ✅ PASS (0 errores/warnings) |
+| Build de producción | ✅ PASS (13 rutas) |
+| 375px / 768px / 1440px | ✅ PASS (0 overflow, 0 errores de consola, 0 HTTP≥400 en las 6 combinaciones página×ancho) |
+| Lighthouse Accessibility | ✅ **100/100** en las 4 combinaciones (home/producto × mobile/desktop) |
+| Lighthouse Best Practices | ✅ **100/100** en las 4 combinaciones |
+| Lighthouse SEO | ⚠️ **66-69/100 con el gate de noindex activo (estado actual, correcto) — 100/100 verificado con el gate desactivado.** Ver §12.1: es un conflicto real entre dos gates explícitos, no un defecto pendiente |
+| Lighthouse Performance | ✅ 88-100/100 (home mobile 88, producto mobile 97, ambos desktop 100) — variación de laboratorio ya documentada en el hardening 001A, sin regresión |
+| Sin datos comerciales inventados | ✅ Verificado por Copy comercial + Arquitectura (cero fuga de `SourceStatus`) |
+| Sin PII en logs | ✅ Verificado por Security/Privacy (`name`/`whatsapp` solo como booleanos) |
+| Sin WhatsApp ficticio funcional | ✅ Verificado — `WhatsappCta` nunca genera un enlace sin número real confirmado |
+| Staging NOINDEX | ✅ Implementado y verificado en runtime (§12.1) |
+| Schema validado | ✅ Product/BreadcrumbList válidos contra schema.org (SEO técnico); JSON-LD con escape defensivo (Security) |
+| CTA y formulario probados | ✅ Modal, envío, mensaje de éxito/error, foco inicial y `aria-labelledby` verificados con Playwright |
+
+### 12.4 Reportes y evidencia
+
+Lighthouse post-fix (JSON+HTML) en `docs/qa/lighthouse-ath-security-web-001/` (mismos 4 archivos de la iteración anterior, sobrescritos con los resultados finales). QA responsive y verificaciones puntuales (orden del sticky CTA, foco del modal, `aria-labelledby`, imagen OG accesible, gate de noindex en ambos estados) ejecutados con Playwright contra el build de producción.
+
+---
+
+## 13. GATE 001C — PREVIEW CEO + VALIDACIÓN PERFORMANCE
+
+Orden explícita del CEO tras la revisión de 001B por el Agente B. Objetivo: cerrar la decisión SEO/noindex, revalidar Performance con múltiples corridas (no una sola muestra), blindar el testimonio DEMO ante un futuro entorno público, y entregar algo revisable visualmente.
+
+### 13.1 Decisión SEO/noindex — CERRADA
+
+**Regla adoptada, sin excepción:** en cualquier entorno de staging/preview, `NEXT_PUBLIC_ALLOW_INDEXING` permanece `false`. No se desactiva el gate para "hacer verde" Lighthouse artificialmente.
+
+Se documenta la distinción que el CEO pidió:
+
+- **SEO técnico release-ready: 100/100.** Verificado de nuevo en esta iteración con una prueba controlada (ver §13.6): con `NEXT_PUBLIC_ALLOW_INDEXING=true`, home mobile obtiene `Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100`. El código de la página, cuando puede ser indexado, es perfecto en las categorías medibles.
+- **SEO Lighthouse en staging (estado real y actual del repo): 66-69/100**, penalizado **exclusivamente** por la auditoría `is-crawlable` (falla por diseño en cualquier página con `noindex` — Lighthouse asume que toda página quiere ser indexable). El resto de auditorías SEO (title, meta description, canonical, alt text, structured data, robots.txt válido, etc.) pasan en 100% tanto con el gate activo como desactivado.
+
+No hay ninguna acción de código pendiente aquí. Es un estado esperado y correcto mientras el sitio no tenga aprobación de publicación.
+
+### 13.2 Performance — revalidado con 3 corridas independientes por ruta
+
+Mismo build de producción (`next build` con configuración por defecto, `NEXT_PUBLIC_ALLOW_INDEXING` sin definir), mismo servidor (`next start`), mismo Chromium headless, sin reiniciar entre corridas de una misma ruta. Método de *throttling*: `simulate`.
+
+**HOME · Mobile**
+
+| | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT | FCP | Speed Index |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| RUN 1 | 93 | 100 | 100 | 66 | 2.5 s | 0 | 230 ms | 0.8 s | 0.8 s |
+| RUN 2 | 97 | 100 | 100 | 66 | 2.4 s | 0 | 150 ms | 0.8 s | 0.8 s |
+| RUN 3 | 97 | 100 | 100 | 66 | 2.3 s | 0 | 120 ms | 0.8 s | 0.8 s |
+| **Mediana** | **97** | 100 | 100 | 66 | **2.4 s** | **0** | **150 ms** | 0.8 s | 0.8 s |
+| **Peor resultado** | **93** | 100 | 100 | 66 | 2.5 s | 0 | 230 ms | 0.8 s | 0.8 s |
+
+**PRODUCTO (`/productos/ezviz-h8c-4mp-64gb`) · Mobile**
+
+| | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT | FCP | Speed Index |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| RUN 1 | 97 | 100 | 100 | 69 | 2.5 s | 0 | 40 ms | 0.9 s | 0.9 s |
+| RUN 2 | 96 | 100 | 100 | 69 | 2.6 s | 0 | 100 ms | 0.9 s | 0.9 s |
+| RUN 3 | 97 | 100 | 100 | 69 | 2.5 s | 0 | 80 ms | 0.9 s | 0.9 s |
+| **Mediana** | **97** | 100 | 100 | 69 | **2.5 s** | **0** | **80 ms** | 0.9 s | 0.9 s |
+| **Peor resultado** | **96** | 100 | 100 | 69 | 2.6 s | 0 | 100 ms | 0.9 s | 0.9 s |
+
+**Gate cumplido:** mediana **97/97** (objetivo preferido ≥95, superado en ambas rutas). Peor resultado **93/96** — **ninguna corrida por debajo de 90** en ninguna de las 6 mediciones mobile.
+
+**Diagnóstico de causa raíz: NO SE ACTIVA.** La instrucción pedía diagnosticar y corregir solo si aparecía una corrida `<90`. No apareció ninguna — el punto más bajo (RUN 1 de home, 93) ya está dentro del rango verde. No se fuerzan cambios adicionales de performance sin una corrida real que los justifique (evita degradar UX para perseguir un 100 artificial, tal como se pidió).
+
+**Desktop** (3 corridas por ruta, resultado estable):
+
+| Ruta | Performance | Accessibility | Best Practices | SEO | LCP | CLS | TBT |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Home · Desktop (3/3 corridas) | **100** | 100 | 100 | 66 | 0.5 s | 0 | 0 ms |
+| Producto · Desktop (3/3 corridas) | **100** | 100 | 100 | 69 | 0.5-0.6 s | 0 | 0-10 ms |
+
+Objetivo desktop (100) cumplido de forma perfectamente estable en las 6 corridas.
+
+### 13.3 Web Vitals — números reales
+
+| Métrica | Objetivo | Home mobile (mediana / peor) | Producto mobile (mediana / peor) |
+|---|---|---|---|
+| LCP | ≤ 2.5 s | 2.4 s / 2.5 s | 2.5 s / **2.6 s** |
+| CLS | ≤ 0.1 | 0 / 0 | 0 / 0 |
+| TBT | (sin objetivo numérico explícito, monitoreado) | 150 ms / 230 ms | 80 ms / 100 ms |
+
+**Nota honesta:** el peor caso de LCP en la ficha de producto (RUN 2) tocó 2.6 s, 0.1 s por encima del objetivo de 2.5 s. La mediana (2.5 s) queda justo en el límite. CLS es 0 en las 6 corridas — ningún salto de layout medido, en ningún run. Esta variación de LCP es consistente con la ya documentada en 001A/001B: costo de hidratación de React/Next.js bajo *throttling* simulado de CPU móvil, no una regresión nueva. No se identificó ninguna mejora adicional razonable más allá de lo ya aplicado en 001A (`browserslist` evergreen) sin comprometer el stack exigido (Next.js App Router con Client Components reales) o degradar la experiencia.
+
+### 13.4 Testimonio DEMO — salvaguarda de release implementada
+
+**Estrategia elegida: fallar el build (opción "dura"), no excluir en silencio.** Coherente con el resto del proyecto, que prefiere fallos ruidosos y explícitos sobre degradaciones silenciosas (mismo patrón que el dominio `.invalid` de `site-config.ts` cuando falta `NEXT_PUBLIC_SITE_URL`).
+
+Implementado en `apps/web/src/lib/products/registry.ts`: si `siteConfig.allowIndexing` es `true` **y** algún producto del registro tiene al menos un testimonio con `isDemo: true`, el build lanza un `Error` explícito en tiempo de evaluación del módulo, deteniendo `next build` por completo con un mensaje que nombra el/los producto(s) afectado(s).
+
+**Verificado en ambas direcciones en esta iteración:**
+- Con `NEXT_PUBLIC_ALLOW_INDEXING=true` y el testimonio DEMO presente (estado real del repo): `next build` **falla** con `[atheron:release-gate] NEXT_PUBLIC_ALLOW_INDEXING=true, pero estos productos todavía tienen testimonios isDemo=true: ezviz-h8c-4mp-64gb...`.
+- Con `NEXT_PUBLIC_ALLOW_INDEXING=true` y `testimonials: []` temporalmente (solo para la prueba controlada de §13.6, revertido de inmediato sin commitear): `next build` **pasa**.
+- Con la configuración por defecto (`ALLOW_INDEXING` sin definir) y el testimonio DEMO presente: `next build` **pasa** — el testimonio sigue visible para la revisión del CEO, tal como se pidió.
+
+Es imposible, con el código actual, terminar con un `next build` exitoso que combine indexación pública permitida y un testimonio marcado como demo.
+
+### 13.5 Preview CEO
+
+**No existe en este entorno ninguna capacidad de generar una URL pública para un servidor que corre localmente** (verificado: no hay conector de hosting/despliegue configurado ni mecanismo de exposición de puerto; la documentación del entorno solo cubre acceso a GitHub, secretos, red saliente y dependencias — nada de publicar un puerto entrante). No se intentó ningún despliegue por cuenta propia, conforme a la instrucción explícita.
+
+**Qué falta exactamente para tener una URL de preview real:**
+1. Decidir un proveedor de hosting (Vercel es el camino de menor fricción para Next.js App Router; cualquier proveedor con Node.js 20+ también sirve). Esta decisión sigue sin tomarse — explícitamente fuera de alcance de 001C.
+2. Conectar ese proveedor al repositorio (vía su integración de GitHub o CLI), apuntando el *root directory* a `apps/web/`.
+3. Configurar en ese proveedor las variables de entorno: `NEXT_PUBLIC_SITE_URL` (la URL que asigne el proveedor), `NEXT_PUBLIC_ALLOW_INDEXING` **sin definir o en `false`**, `NEXT_PUBLIC_ATHERON_WHATSAPP_NUMBER` sin definir.
+4. Desplegar la rama `pilot/ath-security-web-001` como *preview* de esa herramienta (no como producción de un dominio propio).
+
+Ninguno de estos 4 pasos requiere tocar código — el proyecto ya está listo para ese despliegue el día que se decida el proveedor.
+
+**Entrega en su lugar (opción §6 de la instrucción):** capturas de pantalla completas de Home (desktop 1440px y móvil 375px, página completa), Producto (desktop 1440px página completa; móvil 375px en 3 partes por la altura), Ruta de Crecimiento (recorte), Testimonio DEMO (recorte) y el modal "Diseñar mi sistema" abierto — todas enviadas junto con este reporte y generadas contra el build de producción real (`next build && next start`), no maquetas.
+
+### 13.6 Metodología de la prueba controlada SEO=100
+
+Como el gate de release (§13.4) ahora bloquea cualquier build con `ALLOW_INDEXING=true` mientras exista un testimonio demo, verificar "SEO=100 con indexado permitido" requirió un procedimiento explícito (no solo cambiar la variable de entorno como en 001B):
+
+1. Confirmar árbol de git limpio.
+2. Editar temporalmente `ezviz-h8c-4mp-64gb.ts` → `testimonials: []` (comentario en el propio archivo marcándolo como temporal).
+3. `next build` con `NEXT_PUBLIC_ALLOW_INDEXING=true` → compila sin error (el gate no encuentra testimonios demo).
+4. `next start` + Lighthouse en home mobile → `Performance 97 · Accessibility 100 · Best Practices 100 · SEO 100`.
+5. `git checkout -- ezviz-h8c-4mp-64gb.ts` → revierte el archivo a su estado commiteado (testimonio DEMO restaurado, verificado con grep).
+6. Rebuild con la configuración por defecto (`ALLOW_INDEXING` sin definir) → compila normal, testimonio DEMO visible de nuevo.
+
+Ningún cambio de este procedimiento quedó commiteado; es evidencia de una prueba, no un estado del repositorio.
+
+### 13.7 QA repetido y commit final
+
+`npx next typegen`, `npx tsc --noEmit` (0 errores), `npm run lint` (0 errores/warnings) y `npm run build` (configuración por defecto) se ejecutaron tras el cambio en `registry.ts` y quedaron limpios. QA responsive con Playwright (375/768/1440px, las 6 combinaciones página×ancho) repetido: 0 errores de consola, 0 `pageerror`, 0 respuestas HTTP ≥ 400, 0 overflow horizontal.
+
+**No se realizó ningún cambio estructural de CRO** en esta iteración (Ruta de Crecimiento no se movió, Garantía no se eliminó, no se creó el producto 002) — conforme a la instrucción explícita de esperar la revisión visual de Marlon y el Agente B.
+
+Reportes Lighthouse de las 3 corridas por ruta (JSON crudo) en `docs/qa/lighthouse-ath-security-web-001/001c-runs/`, incluida la evidencia de la prueba controlada SEO=100 (`home-mobile-indexing-allowed-evidence.json`).

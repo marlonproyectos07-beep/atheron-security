@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">EZVIZ H8C 4MP con microSD de 64 GB</title>
+  <desc id="desc">Ilustración conceptual de una cámara de videovigilancia tipo bullet con su tarjeta microSD incluida. No es una fotografía real del producto.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eaf1fd" />
+      <stop offset="100%" stop-color="#dbe7fb" />
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1d4ed8" />
+      <stop offset="100%" stop-color="#0a2350" />
+    </linearGradient>
+    <radialGradient id="lensGlass" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#5b8ff2" />
+      <stop offset="55%" stop-color="#123a7a" />
+      <stop offset="100%" stop-color="#0a2350" />
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.22" />
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0" />
+    </radialGradient>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse">
+      <path d="M28 0H0V28" fill="none" stroke="#123a7a" stroke-opacity="0.06" stroke-width="1" />
+    </pattern>
+  </defs>
+
+  <circle cx="240" cy="240" r="220" fill="url(#bg)" />
+  <circle cx="240" cy="240" r="220" fill="url(#grid)" />
+  <circle cx="180" cy="150" r="140" fill="url(#glow)" />
+
+  <!-- Brazo y placa de montaje -->
+  <g stroke="#8ca3c9" stroke-width="4" stroke-linecap="round">
+    <path d="M158 300 C150 320 150 335 160 350" fill="none" />
+  </g>
+  <rect x="132" y="348" width="56" height="20" rx="6" fill="#c7d5ef" />
+  <circle cx="144" cy="358" r="2.6" fill="#8ca3c9" />
+  <circle cx="176" cy="358" r="2.6" fill="#8ca3c9" />
+
+  <!-- Cuerpo tipo bullet -->
+  <g>
+    <rect x="120" y="176" width="188" height="86" rx="40" fill="url(#body)" />
+    <rect x="120" y="176" width="188" height="34" rx="17" fill="#ffffff" opacity="0.08" />
+
+    <!-- Visera / parasol -->
+    <path d="M258 176 q40 -22 78 4" fill="none" stroke="#0a2350" stroke-width="10" stroke-linecap="round" />
+
+    <!-- Aro de la lente -->
+    <circle cx="300" cy="219" r="46" fill="#0a2350" stroke="#1d4ed8" stroke-width="4" />
+    <circle cx="300" cy="219" r="33" fill="url(#lensGlass)" />
+    <circle cx="288" cy="207" r="9" fill="#ffffff" opacity="0.35" />
+
+    <!-- LEDs de visión nocturna -->
+    <g fill="#1d4ed8" opacity="0.55">
+      <circle cx="270" cy="188" r="3" />
+      <circle cx="330" cy="188" r="3" />
+      <circle cx="270" cy="250" r="3" />
+      <circle cx="330" cy="250" r="3" />
+    </g>
+
+    <!-- Rejilla de ventilación trasera -->
+    <g stroke="#5b8ff2" stroke-width="3" stroke-linecap="round" opacity="0.55">
+      <line x1="140" y1="200" x2="140" y2="238" />
+      <line x1="150" y1="200" x2="150" y2="238" />
+      <line x1="160" y1="200" x2="160" y2="238" />
+    </g>
+  </g>
+
+  <!-- Conexión punteada hacia la tarjeta microSD -->
+  <path d="M304 262 C300 300 300 320 296 336" fill="none" stroke="#2563eb" stroke-width="2.5"
+    stroke-dasharray="2 7" stroke-linecap="round" opacity="0.6" />
+
+  <!-- Tarjeta microSD -->
+  <g transform="translate(252,336)">
+    <path d="M0 8 a8 8 0 0 1 8-8 h56 a8 8 0 0 1 8 8 v64 a8 8 0 0 1-8 8 H8 a8 8 0 0 1-8-8 Z" fill="#ffffff" stroke="#123a7a" stroke-width="3" />
+    <path d="M8 0 h40 l16 16 v-8 a8 8 0 0 0-8-8 Z" fill="#dbe7fb" />
+    <rect x="12" y="30" width="48" height="30" rx="4" fill="#eaf1fd" />
+    <text x="36" y="49" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#123a7a">64GB</text>
+  </g>
+</svg>

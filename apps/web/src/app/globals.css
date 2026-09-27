@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  /* Dirección visual: blanco, azul, azul oscuro, grises. Premium, técnica, sobria. */
+  --color-brand-primary: #123a7a;
+  --color-brand-primary-dark: #0a2350;
+  --color-brand-accent: #2563eb;
+  --color-brand-accent-light: #eaf1fd;
+  --color-surface: #ffffff;
+  --color-surface-muted: #f5f7fb;
+  --color-surface-dark: #0a2350;
+  --color-border: #e2e8f0;
+  --color-text: #0f172a;
+  --color-text-muted: #52607a;
+  --color-text-on-dark: #f5f7fb;
+  --color-text-on-dark-muted: #b9c6e0;
+
+  /*
+   * Verde de marca de WhatsApp, deliberadamente fuera de la paleta
+   * azul/blanco/gris de Atheron: identifica el canal, no la marca propia.
+   * Tokenizado (en vez de un hex suelto en el componente) para que sea el
+   * único lugar que definir si cambia (auditoría 001B, Diseño visual, P2).
+   */
+  --color-whatsapp: #25d366;
+  --color-whatsapp-ink: #0a2350;
+
+  /*
+   * Refinamiento visual premium (001E): tonos adicionales para romper la
+   * uniformidad plana de las secciones oscuras y dar textura sobria sin
+   * salir de la paleta azul/blanco/gris ya aprobada. Ningún token existente
+   * cambia de valor — esto es puramente aditivo.
+   */
+  --color-surface-dark-2: #0d2c66;
+  --color-brand-accent-dark: #1d4ed8;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-brand-primary: var(--color-brand-primary);
+  --color-brand-primary-dark: var(--color-brand-primary-dark);
+  --color-brand-accent: var(--color-brand-accent);
+  --color-brand-accent-light: var(--color-brand-accent-light);
+  --color-surface: var(--color-surface);
+  --color-surface-muted: var(--color-surface-muted);
+  --color-surface-dark: var(--color-surface-dark);
+  --color-border: var(--color-border);
+  --color-text: var(--color-text);
+  --color-text-muted: var(--color-text-muted);
+  --color-text-on-dark: var(--color-text-on-dark);
+  --color-text-on-dark-muted: var(--color-text-on-dark-muted);
+  --color-whatsapp: var(--color-whatsapp);
+  --color-whatsapp-ink: var(--color-whatsapp-ink);
+  --color-surface-dark-2: var(--color-surface-dark-2);
+  --color-brand-accent-dark: var(--color-brand-accent-dark);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+@media (max-width: 767px) {
+  .has-sticky-mobile-cta {
+    padding-bottom: 4.5rem;
+  }
+}
+
+/*
+ * Utilidades decorativas compartidas (001E, refinamiento visual premium).
+ * Sin dependencias nuevas: solo gradientes/patrones CSS puros, siempre
+ * `pointer-events: none` cuando son puramente decorativos para no
+ * interferir con el foco de teclado ni con el lector de pantalla.
+ */
+.atheron-surface-dark {
+  background-image: linear-gradient(
+    165deg,
+    var(--color-surface-dark) 0%,
+    var(--color-surface-dark-2) 100%
+  );
+}
+
+.atheron-grid-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%);
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 0%, black 40%, transparent 100%);
+}
+
+.atheron-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
+  filter: blur(40px);
+}
