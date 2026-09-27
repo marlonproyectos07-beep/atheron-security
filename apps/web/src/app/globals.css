@@ -105,3 +105,124 @@ body {
   background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
   filter: blur(40px);
 }
+
+/*
+ * HOME PREMIUM V5 — dirección de arte aprobada por el CEO (referencia:
+ * escena nocturna, arquitectura de fondo, cámara protagonista de doble
+ * lente). Reutiliza el mismo patrón de movimiento 100% CSS validado en
+ * la iteración anterior (V4): todo bajo
+ * `prefers-reduced-motion: no-preference`, así que con reduced-motion el
+ * contenido nace directamente en su estado final visible — sin rama de
+ * JS ni componente alternativo que mantener.
+ */
+.atheron-glow-warm {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgba(251, 191, 129, 0.16), transparent);
+  filter: blur(50px);
+}
+
+/* Panel de "muro" a la derecha del hero: sugiere el segundo plano
+   arquitectónico de la referencia sin necesitar una foto real. */
+.atheron-wall-panel {
+  position: absolute;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(2, 6, 23, 0.55) 0%, rgba(2, 6, 23, 0.75) 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 35%);
+  mask-image: linear-gradient(90deg, transparent 0%, black 35%);
+}
+
+/* Franja de piso reflectante, sutil, abajo del hero. */
+.atheron-ground-sheen {
+  position: absolute;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .atheron-hero-enter {
+    animation: atheron-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .atheron-hero-enter-1 {
+    animation-delay: 0.05s;
+  }
+  .atheron-hero-enter-2 {
+    animation-delay: 0.16s;
+  }
+  .atheron-hero-enter-3 {
+    animation-delay: 0.28s;
+  }
+  .atheron-hero-enter-4 {
+    animation-delay: 0.4s;
+  }
+  .atheron-hero-enter-5 {
+    animation-delay: 0.52s;
+  }
+
+  .atheron-breathe {
+    animation: atheron-breathe 6s ease-in-out infinite;
+  }
+
+  /*
+   * Los badges de micro-detalle (Videovigilancia/Alarmas/Control de
+   * acceso/Automatización) entran uno a uno, ligados a la misma escala
+   * de delays que el resto del hero — sensación de "sistema
+   * encendiéndose", sin ninguna librería de scroll.
+   */
+  .atheron-badge-in {
+    animation: atheron-badge-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /*
+   * Scroll-reveal (Reveal.tsx): la clase base solo declara la
+   * transición; `.atheron-reveal-pre` (que de verdad oculta el
+   * elemento) la agrega un efecto de cliente DESPUÉS del montaje, nunca
+   * el servidor — así que el primer HTML/paint (con o sin JS) siempre
+   * muestra el contenido visible, sin posibilidad de un mismatch de
+   * hidratación.
+   */
+  .atheron-reveal {
+    transition:
+      opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .atheron-reveal-pre {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+}
+
+@keyframes atheron-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes atheron-breathe {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes atheron-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

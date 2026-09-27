@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 560" role="img" aria-labelledby="hc5-title hc5-desc">
+  <title id="hc5-title">Cámara de seguridad de doble lente</title>
+  <desc id="hc5-desc">Ilustración conceptual de una cámara de seguridad exterior de doble lente, montada en pared. Representa la idea de un sistema de videovigilancia, no un modelo comercial específico.</desc>
+  <defs>
+    <linearGradient id="hc5-body" x1="0.15" y1="0" x2="0.85" y2="1">
+      <stop offset="0%" stop-color="#f4f7fd" />
+      <stop offset="45%" stop-color="#d7e2f5" />
+      <stop offset="100%" stop-color="#aebedc" />
+    </linearGradient>
+    <linearGradient id="hc5-body-shade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0a1733" stop-opacity="0.18" />
+      <stop offset="60%" stop-color="#0a1733" stop-opacity="0" />
+    </linearGradient>
+    <radialGradient id="hc5-lens" cx="36%" cy="30%" r="75%">
+      <stop offset="0%" stop-color="#8fb4fb" />
+      <stop offset="40%" stop-color="#2563eb" />
+      <stop offset="78%" stop-color="#0a1733" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+    <radialGradient id="hc5-glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#3b82f6" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="hc5-arm" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#c3d0ea" />
+      <stop offset="100%" stop-color="#8ea1c9" />
+    </linearGradient>
+  </defs>
+
+  <!-- Halo ambiental -->
+  <ellipse cx="200" cy="290" rx="190" ry="230" fill="url(#hc5-glow)" />
+
+  <!-- Brazo de montaje (a la pared, hacia la derecha) -->
+  <rect x="286" y="150" width="72" height="26" rx="8" fill="url(#hc5-arm)" />
+  <rect x="286" y="150" width="72" height="10" rx="5" fill="#ffffff" opacity="0.35" />
+
+  <!-- Antenas -->
+  <g stroke="#7a8bb0" stroke-width="6" stroke-linecap="round">
+    <path d="M150 92 96 34" />
+    <path d="M220 92 268 30" />
+  </g>
+  <circle cx="96" cy="34" r="6" fill="#7a8bb0" />
+  <circle cx="268" cy="30" r="6" fill="#7a8bb0" />
+
+  <!-- Cuerpo superior (lente 1) -->
+  <g>
+    <rect x="96" y="90" width="188" height="150" rx="74" fill="url(#hc5-body)" />
+    <rect x="96" y="90" width="188" height="150" rx="74" fill="url(#hc5-body-shade)" />
+    <circle cx="150" cy="165" r="46" fill="#0a1733" />
+    <circle cx="150" cy="165" r="46" fill="none" stroke="#7a8bb0" stroke-width="3" opacity="0.5" />
+    <circle cx="150" cy="165" r="33" fill="url(#hc5-lens)" />
+    <circle cx="138" cy="152" r="9" fill="#ffffff" opacity="0.4" />
+    <g fill="#3b82f6" opacity="0.85">
+      <circle cx="196" cy="132" r="3.4" />
+      <circle cx="210" cy="165" r="3.4" />
+      <circle cx="196" cy="198" r="3.4" />
+    </g>
+  </g>
+
+  <!-- Cuello -->
+  <rect x="168" y="228" width="44" height="30" rx="14" fill="url(#hc5-body)" />
+
+  <!-- Cuerpo inferior (lente 2, mas grande) -->
+  <g>
+    <path d="M90 260 h200 a10 10 0 0 1 10 10 v70 a100 100 0 0 1 -110 100 a100 100 0 0 1 -110 -100 v-70 a10 10 0 0 1 10 -10Z" fill="url(#hc5-body)" />
+    <path d="M90 260 h200 a10 10 0 0 1 10 10 v70 a100 100 0 0 1 -110 100 a100 100 0 0 1 -110 -100 v-70 a10 10 0 0 1 10 -10Z" fill="url(#hc5-body-shade)" />
+    <circle cx="190" cy="360" r="62" fill="#0a1733" />
+    <circle cx="190" cy="360" r="62" fill="none" stroke="#7a8bb0" stroke-width="3" opacity="0.5" />
+    <circle cx="190" cy="360" r="45" fill="url(#hc5-lens)" />
+    <circle cx="174" cy="342" r="12" fill="#ffffff" opacity="0.4" />
+    <!-- LEDs infrarrojos alrededor del lente inferior -->
+    <g fill="#e8edf9">
+      <circle cx="144" cy="322" r="4.2" />
+      <circle cx="236" cy="322" r="4.2" />
+      <circle cx="132" cy="360" r="4.2" />
+      <circle cx="248" cy="360" r="4.2" />
+      <circle cx="144" cy="398" r="4.2" />
+      <circle cx="236" cy="398" r="4.2" />
+    </g>
+  </g>
+
+  <!-- Indicador de estado activo -->
+  <g transform="translate(258,240)">
+    <circle r="10" fill="#22d3ee" opacity="0.25" />
+    <circle r="5" fill="#22d3ee" />
+  </g>
+
+  <!-- Sombra de contacto -->
+  <ellipse cx="188" cy="500" rx="120" ry="18" fill="#020617" opacity="0.35" />
+</svg>
