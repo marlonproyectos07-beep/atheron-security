@@ -73,21 +73,21 @@ export function HomeHero() {
       <div className="relative">
         <div className="atheron-grid-overlay opacity-60 md:hidden" aria-hidden="true" />
 
-        <Container className="relative py-10 sm:py-20 md:py-24 lg:py-28">
+        <Container className="relative pt-12 pb-12 sm:py-20 md:py-24 lg:py-28">
           <div className="max-w-xl text-center md:text-left">
             <p className="atheron-hero-enter atheron-hero-enter-1 flex items-center justify-center gap-3 text-xs font-semibold uppercase tracking-[0.2em] text-text-on-dark-muted md:justify-start">
               <span className="hidden h-px w-6 shrink-0 bg-brand-accent sm:block" aria-hidden="true" />
               Soluciones integrales de seguridad
             </p>
-            <h1 className="atheron-hero-enter atheron-hero-enter-2 mt-4 text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-[3.4rem]">
+            <h1 className="atheron-hero-enter atheron-hero-enter-2 mt-5 text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl md:mt-4 lg:text-[3.4rem]">
               Seguridad que crece <span className="text-brand-accent-light">contigo</span>
             </h1>
-            <p className="atheron-hero-enter atheron-hero-enter-3 mx-auto mt-6 max-w-lg text-lg leading-relaxed text-text-on-dark-muted md:mx-0">
+            <p className="atheron-hero-enter atheron-hero-enter-3 mx-auto mt-7 max-w-lg text-lg leading-relaxed text-text-on-dark-muted md:mx-0 md:mt-6">
               Atheron acompaña tus proyectos de cámaras, alarmas, control de acceso,
               detección de incendio, automatización y energía solar, para hogares,
               empresas e industria.
             </p>
-            <div className="atheron-hero-enter atheron-hero-enter-4 mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row md:justify-start">
+            <div className="atheron-hero-enter atheron-hero-enter-4 mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row md:mt-8 md:justify-start">
               <DesignSystemModal
                 triggerLabel="Diseñar mi sistema"
                 triggerSize="lg"
@@ -101,7 +101,7 @@ export function HomeHero() {
               />
             </div>
 
-            <div className="atheron-hero-enter atheron-hero-enter-4 mt-9 flex flex-col items-center gap-4 sm:flex-row sm:flex-wrap sm:justify-center md:justify-start">
+            <div className="atheron-hero-enter atheron-hero-enter-4 mt-12 flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:justify-center md:mt-9 md:justify-start md:gap-4">
               {AUDIENCE_ITEMS.map((item, i) => (
                 <div
                   key={item.label}
