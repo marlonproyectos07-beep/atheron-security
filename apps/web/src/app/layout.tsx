@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/lib/site-config";
@@ -13,6 +13,24 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+/**
+ * Familia de marca Atheron (recuperado de V5.2): "Atheron" en el logo
+ * usa Fraunces, igual que Atheron Suite. Solo para el lockup del logo
+ * (`Logo.tsx`) — el resto de la tipografía del sitio sigue en Geist.
+ *
+ * `display: "optional"` (medido en V5.2, no supuesto): con "swap" el
+ * LCP mobile empeoraba porque el elemento LCP pasaba a ser el texto
+ * "Atheron" del logo esperando la fuente. "optional" usa Fraunces solo
+ * si ya está lista casi de inmediato; si no, se queda en la fuente de
+ * reserva para ese pintado y nunca bloquea el LCP.
+ */
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["600"],
+  display: "optional",
 });
 
 export const metadata: Metadata = {
@@ -41,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-text">
         <a

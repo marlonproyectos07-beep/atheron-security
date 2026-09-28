@@ -46,7 +46,7 @@ export function Hero({ product }: { product: Product }) {
               productContext={{ slug: product.slug, name: product.name }}
             />
             <WhatsappCta
-              message={buildProductWhatsappMessage(product.name, product.atheronSku)}
+              message={buildProductWhatsappMessage(product)}
               size="lg"
             />
           </div>

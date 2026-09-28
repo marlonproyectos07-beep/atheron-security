@@ -1,3 +1,4 @@
+import type { Product } from "@/lib/products/types";
 import { siteConfig } from "@/lib/site-config";
 
 /**
@@ -17,8 +18,19 @@ export function buildWhatsappLink(message: string): string | null {
   return `https://wa.me/${digits}?${params.toString()}`;
 }
 
-export function buildProductWhatsappMessage(productName: string, sku: string): string {
-  return `Hola Atheron, quiero información sobre ${productName} (${sku}).`;
+/**
+ * Mensaje de WhatsApp con contexto de producto (preparación Web → WhatsApp
+ * → Odoo CRM, mandato de catálogo Línea Hogar): identifica producto,
+ * referencia (SKU Atheron) y la URL de la página de origen, además de la
+ * intención explícita — para que, cuando el número real se active, el
+ * primer mensaje ya traiga todo lo que Odoo necesita para crear el lead sin
+ * pedirle al cliente que repita esos datos.
+ */
+export function buildProductWhatsappMessage(
+  product: Pick<Product, "name" | "atheronSku" | "seo">,
+): string {
+  const pageUrl = `${siteConfig.baseUrl}${product.seo.canonicalPath}`;
+  return `Hola Atheron, me interesa este producto: ${product.name} (Ref. ${product.atheronSku}). Página: ${pageUrl}`;
 }
 
 export function buildDesignSystemWhatsappMessage(): string {

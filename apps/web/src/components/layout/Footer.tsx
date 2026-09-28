@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { mainNavLinks, siteConfig } from "@/lib/site-config";
 import { Container } from "@/components/ui/Container";
+import { Logo } from "@/components/layout/Logo";
 
 export function Footer() {
   const year = new Date().getFullYear();
@@ -9,9 +10,7 @@ export function Footer() {
     <footer className="border-t border-border bg-surface-dark text-text-on-dark">
       <Container className="grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-4">
         <div>
-          <p className="text-lg font-extrabold tracking-tight">
-            ATHERON <span className="font-semibold text-brand-accent-light">SECURITY</span>
-          </p>
+          <Logo tone="dark" />
           <p className="mt-3 max-w-xs text-sm text-text-on-dark-muted">
             Acompañamos tu seguridad hoy y el sistema que vas a necesitar mañana.
           </p>
