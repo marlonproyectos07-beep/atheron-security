@@ -6,7 +6,6 @@ import {
   type GrowthStageId,
 } from "@/lib/growth/growth-path";
 import { cn } from "@/lib/cn";
-import { Icon } from "@/components/ui/Icon";
 import { ATHERON_CENTRAL_MESSAGE } from "@/lib/copy";
 
 /**
@@ -40,7 +39,7 @@ export function GrowthPath({ currentStageId }: { currentStageId?: GrowthStageId 
         </p>
       </div>
 
-      <ol className="mt-12 flex flex-col gap-8 lg:flex-row lg:gap-6">
+      <ol className="mt-10 flex flex-col gap-6 lg:flex-row lg:gap-6">
         {phaseGroups.map((group, groupIndex) => (
           <li key={group.id} className="flex-1">
             <div className="flex items-center gap-3">
@@ -52,7 +51,15 @@ export function GrowthPath({ currentStageId }: { currentStageId?: GrowthStageId 
               ) : null}
             </div>
 
-            <ol className="mt-4 flex flex-col gap-4">
+            {/*
+              Card compacta (pulido final): antes el número/flecha vivían en
+              su propia fila arriba del título — una fila extra por cada una
+              de las 9 etapas, en las 3 columnas. Ponerlo en línea con el
+              título (mismo patrón horizontal que el resto del sitio, p.ej.
+              Capabilities) recorta esa altura sin quitar ninguna etapa ni
+              texto.
+            */}
+            <ol className="mt-3 flex flex-col gap-2.5">
               {group.stages.map((stage) => {
                 const isCurrent = stage.id === highlightId;
                 const index = getGrowthStageIndex(stage.id);
@@ -60,52 +67,40 @@ export function GrowthPath({ currentStageId }: { currentStageId?: GrowthStageId 
                   <li key={stage.id}>
                     <div
                       className={cn(
-                        "flex h-full flex-col rounded-xl border p-5 transition-colors",
+                        "flex items-start gap-3 rounded-xl border p-4 transition-colors",
                         isCurrent
                           ? "border-brand-accent bg-white text-text shadow-lg shadow-brand-accent/20 ring-1 ring-brand-accent/40"
                           : "border-white/15 bg-white/5 text-text-on-dark-muted hover:bg-white/[0.08]",
                       )}
                     >
-                      <div className="flex items-center justify-between">
-                        <span
+                      <span
+                        className={cn(
+                          "flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold",
+                          isCurrent ? "bg-brand-accent text-white" : "bg-white/10 text-white",
+                        )}
+                      >
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                          <p className={cn("text-sm font-semibold", isCurrent ? "text-text" : "text-white")}>
+                            {stage.title}
+                          </p>
+                          {isCurrent ? (
+                            <span className="inline-flex items-center rounded-full bg-brand-accent-light px-2 py-0.5 text-[0.65rem] font-semibold text-brand-accent">
+                              {highlightLabel}
+                            </span>
+                          ) : null}
+                        </div>
+                        <p
                           className={cn(
-                            "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
-                            isCurrent ? "bg-brand-accent text-white" : "bg-white/10 text-white",
+                            "mt-0.5 text-xs leading-relaxed",
+                            isCurrent ? "text-text-muted" : "text-text-on-dark-muted",
                           )}
                         >
-                          {index + 1}
-                        </span>
-                        {index < GROWTH_PATH_STAGES.length - 1 ? (
-                          <Icon
-                            name="arrow-right"
-                            className={cn(
-                              "h-4 w-4",
-                              isCurrent ? "text-brand-accent" : "text-white/30",
-                            )}
-                          />
-                        ) : null}
+                          {stage.description}
+                        </p>
                       </div>
-                      <p
-                        className={cn(
-                          "mt-3 text-base font-semibold",
-                          isCurrent ? "text-text" : "text-white",
-                        )}
-                      >
-                        {stage.title}
-                      </p>
-                      <p
-                        className={cn(
-                          "mt-1.5 text-sm leading-relaxed",
-                          isCurrent ? "text-text-muted" : "text-text-on-dark-muted",
-                        )}
-                      >
-                        {stage.description}
-                      </p>
-                      {isCurrent ? (
-                        <span className="mt-3 inline-flex w-fit items-center rounded-full bg-brand-accent-light px-2.5 py-1 text-xs font-semibold text-brand-accent">
-                          {highlightLabel}
-                        </span>
-                      ) : null}
                     </div>
                   </li>
                 );

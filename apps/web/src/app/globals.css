@@ -35,6 +35,14 @@
    */
   --color-surface-dark-2: #0d2c66;
   --color-brand-accent-dark: #1d4ed8;
+
+  /*
+   * Cierre visual del Home (pulido final): un tono más, más profundo que
+   * `surface-dark-2`, para diferenciar la card industrial del resto sin
+   * salir de la familia azul/marina ya aprobada — sigue siendo un azul,
+   * solo más oscuro/grafito.
+   */
+  --color-surface-dark-3: #071a3d;
 }
 
 @theme inline {
@@ -61,6 +69,7 @@
   --color-whatsapp-ink: var(--color-whatsapp-ink);
   --color-surface-dark-2: var(--color-surface-dark-2);
   --color-brand-accent-dark: var(--color-brand-accent-dark);
+  --color-surface-dark-3: var(--color-surface-dark-3);
 }
 
 body {
@@ -241,15 +250,31 @@ body {
 /*
  * Cards "Explora nuestras soluciones" (home): el espacio protagonista de
  * cada card está reservado para imagen/video real por segmento, que
- * todavía no existe — en vez de una foto simulada, un degradado de marca
- * (mismos tokens azul/blanco/gris ya aprobados) con el ícono del
- * segmento. `data-variant` alterna el ángulo/tono entre cards pares e
- * impares para que las 4 no se vean como el mismo bloque de color
- * repetido, sin salir de la paleta.
+ * todavía no existe — en vez de una foto simulada, un degradado propio
+ * por segmento (mismos tokens azul/marina ya aprobados, sin color
+ * nuevo) + una composición SVG abstracta (`SolutionPattern`) + el ícono
+ * del segmento. Los 4 ángulos/combinaciones son distintos a propósito
+ * para que las 4 cards se lean como 4 identidades, no el mismo bloque
+ * de color repetido con un ícono distinto encima.
  */
-.atheron-solution-visual {
-  background-image: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-surface-dark-2) 100%);
+.atheron-solution-visual[data-variant="0"] {
+  /* Hogar — el más cálido posible dentro de la paleta azul: ángulo más vertical, primary→dark. */
+  background-image: linear-gradient(160deg, var(--color-brand-primary) 0%, var(--color-surface-dark) 100%);
 }
 .atheron-solution-visual[data-variant="1"] {
-  background-image: linear-gradient(135deg, var(--color-brand-accent-dark) 0%, var(--color-brand-primary-dark) 100%);
+  /* Negocios y comercios — el más vivo: accent al frente. */
+  background-image: linear-gradient(
+    115deg,
+    var(--color-brand-accent) 0%,
+    var(--color-brand-accent-dark) 55%,
+    var(--color-brand-primary-dark) 100%
+  );
+}
+.atheron-solution-visual[data-variant="2"] {
+  /* Institucional y empresarial — vertical, formal, simétrico. */
+  background-image: linear-gradient(180deg, var(--color-brand-primary-dark) 0%, var(--color-surface-dark-2) 100%);
+}
+.atheron-solution-visual[data-variant="3"] {
+  /* Industrial y proyectos especiales — el más oscuro/técnico. */
+  background-image: linear-gradient(135deg, var(--color-surface-dark-2) 0%, var(--color-surface-dark-3) 100%);
 }

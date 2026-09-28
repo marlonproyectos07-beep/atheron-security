@@ -16,20 +16,20 @@ export function Header() {
       <Container className="relative flex h-16 items-center justify-between">
         <Logo />
 
-        <nav aria-label="Principal" className="hidden md:flex md:items-center md:gap-8">
+        <nav aria-label="Principal" className="hidden md:flex md:items-center md:gap-5 lg:gap-8">
           {mainNavLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm font-medium text-text-muted transition-colors hover:text-brand-primary"
+              className="whitespace-nowrap text-sm font-medium text-text-muted transition-colors hover:text-brand-primary"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden md:block">
-          <ButtonLink href="/soporte" variant="secondary" size="md">
+        <div className="hidden shrink-0 md:block">
+          <ButtonLink href="/soporte" variant="secondary" size="md" className="whitespace-nowrap">
             Hablar con Atheron
           </ButtonLink>
         </div>

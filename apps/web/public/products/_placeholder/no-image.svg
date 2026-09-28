@@ -1,18 +1,48 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
   <title id="title">Imagen del producto pendiente</title>
-  <desc id="desc">Marcador neutro: todavía no hay una fotografía real de este producto. No representa la forma, el número de lentes ni ninguna característica física del equipo.</desc>
+  <desc id="desc">Marcador de marca Atheron: todavía no hay una fotografía real de este producto. Ilustración genérica, no representa la forma, el número de lentes ni ninguna característica física del equipo real.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#f5f7fb" />
-      <stop offset="100%" stop-color="#e2e8f0" />
+      <stop offset="0%" stop-color="#eaf1fd" />
+      <stop offset="100%" stop-color="#dbe7fb" />
     </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#123a7a" />
+    </linearGradient>
+    <radialGradient id="lensGlass" cx="35%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#5b8ff2" />
+      <stop offset="55%" stop-color="#123a7a" />
+      <stop offset="100%" stop-color="#0a2350" />
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="45%" r="55%">
+      <stop offset="0%" stop-color="#2563eb" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0" />
+    </radialGradient>
   </defs>
-  <rect x="0" y="0" width="480" height="480" fill="url(#bg)" />
-  <rect x="140" y="150" width="200" height="150" rx="16" fill="none" stroke="#94a3b8" stroke-width="3" stroke-dasharray="10 8" />
-  <circle cx="240" cy="210" r="34" fill="none" stroke="#94a3b8" stroke-width="3" />
-  <circle cx="240" cy="210" r="14" fill="#94a3b8" opacity="0.35" />
-  <path d="M190 272 h100" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" />
-  <text x="240" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="600" fill="#52607a">
-    Imagen próximamente
-  </text>
+
+  <rect width="480" height="480" fill="url(#bg)" />
+  <circle cx="240" cy="228" r="175" fill="url(#glow)" />
+
+  <!-- Soporte / brazo -->
+  <path d="M178 292 q-9 20 -9 36" stroke="#8ca3c9" stroke-width="4" fill="none" stroke-linecap="round" />
+  <rect x="148" y="328" width="46" height="17" rx="6" fill="#c7d5ef" />
+  <circle cx="159" cy="336.5" r="2.4" fill="#8ca3c9" />
+  <circle cx="183" cy="336.5" r="2.4" fill="#8ca3c9" />
+
+  <!-- Cuerpo tipo bullet, genérico (no representa un modelo específico) -->
+  <rect x="150" y="198" width="156" height="72" rx="34" fill="url(#body)" />
+  <rect x="150" y="198" width="156" height="28" rx="14" fill="#ffffff" opacity="0.08" />
+  <path d="M282 198 q34 -18 65 4" fill="none" stroke="#0a2350" stroke-width="8" stroke-linecap="round" />
+
+  <circle cx="278" cy="234" r="38" fill="#0a2350" stroke="#2563eb" stroke-width="3.5" />
+  <circle cx="278" cy="234" r="27" fill="url(#lensGlass)" />
+  <circle cx="267" cy="223" r="7.5" fill="#ffffff" opacity="0.32" />
+
+  <g fill="#1d4ed8" opacity="0.5">
+    <circle cx="252" cy="207" r="2.5" />
+    <circle cx="304" cy="207" r="2.5" />
+    <circle cx="252" cy="261" r="2.5" />
+    <circle cx="304" cy="261" r="2.5" />
+  </g>
 </svg>
