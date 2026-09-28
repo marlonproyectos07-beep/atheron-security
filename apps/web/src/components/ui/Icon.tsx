@@ -18,7 +18,8 @@ export type IconName =
   | "play"
   | "home"
   | "tree"
-  | "building";
+  | "building"
+  | "factory";
 
 const PATHS: Record<IconName, string> = {
   resolution:
@@ -44,6 +45,7 @@ const PATHS: Record<IconName, string> = {
   home: "m4 11 8-7 8 7v8a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1v-8Z",
   tree: "M12 3 8 9h2l-3.5 5.5H9L6 20h12l-3-5.5h2.5L14 9h2L12 3Zm0 14v4",
   building: "M5 21V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v16M13 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M8 8h.01M8 12h.01M8 16h.01M5 21h14",
+  factory: "M3 21V11l5 3.5V11l5 3.5V8l6 4v9H3Zm3-4h.01M11 17h.01M16 17h.01",
 };
 
 export function Icon({

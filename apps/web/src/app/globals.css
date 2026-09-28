@@ -105,3 +105,102 @@ body {
   background: radial-gradient(closest-side, rgba(37, 99, 235, 0.35), transparent);
   filter: blur(40px);
 }
+
+/*
+ * HOME ECOSYSTEM HERO — foto real aprobada por el CEO (casa + nave
+ * industrial + iconos de cámaras/alarmas/control de acceso/incendio/
+ * automatización/energía solar), reemplaza el hero de una sola cámara.
+ * El archivo fuente traía de fábrica un header y un copy simulados
+ * "horneados" en los píxeles (la captura que envió el CEO era la página
+ * completa) — se recortó ANTES de usarlo (ver Hero.tsx) para no
+ * duplicar el header real, y el copy simulado que queda bajo el scrim
+ * nunca es contenido real ni accesible (decorativo, bajo un degradado
+ * oscuro), así que no compite con el H1/copy real en HTML.
+ *
+ * Dos variantes (desktop/mobile) como `background-image` DENTRO de su
+ * propio `@media`, técnica ya validada (V5.1): un `<img>`/`next/image`
+ * oculto por `display:none` en el otro breakpoint IGUAL dispara su
+ * descarga — solo una URL dentro de un `@media` que no matchea
+ * garantiza que el navegador nunca la pida. Así cada breakpoint
+ * descarga EXACTAMENTE un archivo, nunca los dos.
+ */
+.atheron-hero-bg-desktop {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+@media (min-width: 768px) {
+  .atheron-hero-bg-desktop {
+    background-image: url("/home/hero-ecosystem-desktop.webp");
+  }
+}
+
+.atheron-scrim-ecosystem {
+  position: absolute;
+  pointer-events: none;
+  /*
+   * El archivo fuente trae un copy simulado horneado en los píxeles
+   * que ocupa aprox. el 0-54% del ancho de la imagen (mismo rango
+   * donde vive el copy REAL, por diseño de la propia referencia
+   * aprobada). Un scrim que se atenúa rápido (como el de V5.1, sobre
+   * fotografía sin texto) dejaba ese texto simulado visible como
+   * "fantasma" detrás del texto real — verificado visualmente, no
+   * supuesto. Se sostiene una opacidad casi total hasta ~50% y recién
+   * ahí empieza a abrirse, dejando la fotografía nítida donde en
+   * realidad importa (casa + iconos, ~58% en adelante).
+   */
+  background-image: linear-gradient(
+    100deg,
+    rgba(2, 6, 23, 1) 0%,
+    rgba(2, 6, 23, 1) 52%,
+    rgba(2, 6, 23, 0.55) 64%,
+    rgba(2, 6, 23, 0.12) 80%,
+    transparent 94%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .atheron-hero-enter {
+    animation: atheron-fade-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .atheron-hero-enter-1 {
+    animation-delay: 0.05s;
+  }
+  .atheron-hero-enter-2 {
+    animation-delay: 0.16s;
+  }
+  .atheron-hero-enter-3 {
+    animation-delay: 0.28s;
+  }
+  .atheron-hero-enter-4 {
+    animation-delay: 0.4s;
+  }
+
+  /* Movimiento muy sutil y liviano (pedido explícito): un "slow drift"
+     casi imperceptible del fondo, nunca protagonismo. Solo `transform`,
+     nunca afecta layout — CLS 0 garantizado. */
+  .atheron-bg-drift {
+    animation: atheron-bg-drift 28s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes atheron-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes atheron-bg-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.04);
+  }
+}
