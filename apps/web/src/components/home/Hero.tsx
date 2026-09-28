@@ -13,13 +13,6 @@ const TRUST_ITEMS: { icon: IconName; label: string }[] = [
   { icon: "gear", label: "Integración total" },
 ];
 
-const FEATURE_BADGES: { icon: IconName; label: string }[] = [
-  { icon: "camera", label: "Videovigilancia" },
-  { icon: "bell", label: "Alarmas" },
-  { icon: "access", label: "Control de accesos" },
-  { icon: "gear", label: "Automatización" },
-];
-
 /**
  * HOME PREMIUM V5.1 — corrección de implementación (V5 fue rechazado
  * visualmente: una ilustración SVG conceptual seguía sin transmitir el
@@ -51,23 +44,31 @@ const FEATURE_BADGES: { icon: IconName; label: string }[] = [
  * (no una caja) para que se sienta apoyada en la escena, no pegada
  * encima.
  *
- * Movimiento: igual que V4/V5, 100% CSS, bajo
- * `prefers-reduced-motion: no-preference` — con reduced-motion nace
- * todo visible en su posición final.
+ * V5.2 — elegancia (referencia: Atheron Suite): se retiraron los 4
+ * badges de micro-detalle del primer viewport. La prioridad visual que
+ * pidió el mandato es marca → mensaje → cámara → CTA; un badge flotante
+ * no aparece en esa lista, y las 4 categorías que nombraban ya están en
+ * el subcopy — quitarlos no pierde información, solo ruido. Movimiento
+ * ahora en dos capas, ambas "casi imperceptibles" (igual que Suite):
+ * `.atheron-bg-drift` (fondo, escala 1→1.045 en 26s) y
+ * `.atheron-camera-breathe` (cámara, escala 1→1.03 en 9s) — ver
+ * globals.css. Bajo `prefers-reduced-motion: reduce` ninguna de las dos
+ * corre; el resto del movimiento (entrada, halo) sigue el mismo patrón
+ * ya validado en V4/V5.
  */
 export function HomeHero() {
   return (
     <section
-      className="atheron-surface-dark relative isolate overflow-hidden border-b border-white/10"
+      className="atheron-surface-dark relative isolate overflow-hidden"
       aria-label="Introducción Atheron Security"
     >
       {/* Fondo fotográfico real — solo desktop/tablet, ver comentario de .atheron-hero-bg en globals.css */}
-      <div className="atheron-hero-bg hidden md:block" aria-hidden="true" />
+      <div className="atheron-hero-bg atheron-bg-drift hidden md:block" aria-hidden="true" />
       <div className="atheron-scrim absolute inset-0 hidden md:block" aria-hidden="true" />
       {/* Textura de rejilla sutil — solo donde NO hay foto (mobile), para no competir con la imagen real */}
       <div className="atheron-grid-overlay opacity-60 md:hidden" aria-hidden="true" />
 
-      <Container className="relative grid gap-8 py-16 sm:py-20 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-6 lg:py-24">
+      <Container className="relative grid gap-8 py-20 sm:py-24 lg:grid-cols-[1fr_1.05fr] lg:items-center lg:gap-6 lg:py-28">
         <div className="text-center lg:text-left">
           <p className="atheron-hero-enter atheron-hero-enter-1 text-sm font-semibold uppercase tracking-[0.2em] text-brand-accent-light/90">
             Atheron Security
@@ -100,38 +101,14 @@ export function HomeHero() {
             aria-hidden="true"
           />
 
-          <Image
-            src="/home/hero-camera-photo.webp"
-            alt="Cámara de seguridad exterior de doble lente — referencia visual conceptual de un sistema que puede crecer con el tiempo, no un modelo comercial específico"
-            fill
-            sizes="(min-width: 1024px) 42vw, (min-width: 640px) 55vw, 72vw"
-            className="object-contain drop-shadow-[0_35px_45px_rgba(2,6,23,0.55)]"
-          />
-
-          {/* Microdetalles discretos: no compiten con la cámara, sin líneas de conexión pixel-perfect contra una foto real. Solo desktop. */}
-          <div className="pointer-events-none absolute inset-x-0 -top-2 hidden justify-between px-2 lg:flex">
-            {FEATURE_BADGES.slice(0, 2).map((badge, i) => (
-              <span
-                key={badge.label}
-                className="atheron-hero-enter flex items-center gap-1.5 rounded-full border border-white/15 bg-surface-dark/70 px-3 py-1.5 text-xs font-medium text-text-on-dark-muted backdrop-blur"
-                style={{ animationDelay: `${0.55 + i * 0.08}s` }}
-              >
-                <Icon name={badge.icon} className="h-3.5 w-3.5 text-brand-accent-light" />
-                {badge.label}
-              </span>
-            ))}
-          </div>
-          <div className="pointer-events-none absolute inset-x-0 bottom-2 hidden justify-between px-2 lg:flex">
-            {FEATURE_BADGES.slice(2, 4).map((badge, i) => (
-              <span
-                key={badge.label}
-                className="atheron-hero-enter flex items-center gap-1.5 rounded-full border border-white/15 bg-surface-dark/70 px-3 py-1.5 text-xs font-medium text-text-on-dark-muted backdrop-blur"
-                style={{ animationDelay: `${0.71 + i * 0.08}s` }}
-              >
-                <Icon name={badge.icon} className="h-3.5 w-3.5 text-brand-accent-light" />
-                {badge.label}
-              </span>
-            ))}
+          <div className="atheron-camera-breathe relative h-full w-full">
+            <Image
+              src="/home/hero-camera-photo.webp"
+              alt="Cámara de seguridad exterior de doble lente — referencia visual conceptual de un sistema que puede crecer con el tiempo, no un modelo comercial específico"
+              fill
+              sizes="(min-width: 1024px) 42vw, (min-width: 640px) 55vw, 72vw"
+              className="object-contain drop-shadow-[0_35px_45px_rgba(2,6,23,0.55)]"
+            />
           </div>
         </div>
       </Container>
@@ -148,6 +125,9 @@ export function HomeHero() {
           ))}
         </Container>
       </div>
+
+      {/* Transición elegante hacia el bloque claro siguiente, en vez de un corte duro */}
+      <div className="atheron-hero-fade-out absolute inset-x-0 bottom-0 h-20" aria-hidden="true" />
     </section>
   );
 }

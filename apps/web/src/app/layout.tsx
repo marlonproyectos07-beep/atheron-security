@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { siteConfig } from "@/lib/site-config";
@@ -13,6 +13,31 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+/**
+ * HOME PREMIUM V5.2 — familia de marca Atheron: Atheron Suite usa
+ * "Fraunces" para la palabra "Atheron" del logo (confirmado en su propio
+ * CSS, `--fuente-titulo`). Se importa SOLO para el lockup del logo
+ * (`Logo.tsx`) — el resto de la tipografía del sitio sigue en Geist, sin
+ * rediseño tipográfico completo, fuera de alcance de este mandato.
+ *
+ * `display: "optional"` (medido, no supuesto): con el valor por defecto
+ * de `next/font` ("swap"), Lighthouse mostró un LCP real de 2.9s en
+ * mobile — el elemento LCP pasó a ser justamente el texto "Atheron" del
+ * logo, con ~1.2s de "render delay" esperando la fuente. "optional" le
+ * dice al navegador que use Fraunces SOLO si ya está lista casi de
+ * inmediato; si no, sigue con la tipografía de reserva para ese pintado
+ * y no vuelve a intentar el cambio en esta carga — nunca bloquea el LCP.
+ * El logo se ve en Fraunces en la enorme mayoría de cargas (el archivo
+ * pesa unos 20KB y carga rápido); en el peor caso, cae a la fuente de
+ * reserva del sistema sin penalizar rendimiento.
+ */
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
+  subsets: ["latin"],
+  weight: ["600"],
+  display: "optional",
 });
 
 export const metadata: Metadata = {
@@ -41,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="es"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white text-text">
         <a

@@ -3,6 +3,7 @@ import { mainNavLinks } from "@/lib/site-config";
 import { Container } from "@/components/ui/Container";
 import { ButtonLink } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { Logo } from "@/components/layout/Logo";
 
 /**
  * Header sin JavaScript: el menú móvil se abre/cierra con un checkbox
@@ -13,10 +14,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
       <Container className="relative flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-baseline gap-1 text-lg font-extrabold tracking-tight text-brand-primary">
-          ATHERON
-          <span className="font-semibold text-brand-accent">SECURITY</span>
-        </Link>
+        <Logo />
 
         <nav aria-label="Principal" className="hidden md:flex md:items-center md:gap-8">
           {mainNavLinks.map((link) => (

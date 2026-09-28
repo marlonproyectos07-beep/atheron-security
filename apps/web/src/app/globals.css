@@ -42,6 +42,8 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  /* Familia de marca (V5.2): igual que Atheron Suite, "Atheron" en Fraunces — solo para el lockup del logo. */
+  --font-brand: var(--font-fraunces);
 
   --color-brand-primary: var(--color-brand-primary);
   --color-brand-primary-dark: var(--color-brand-primary-dark);
@@ -119,11 +121,19 @@ body {
   pointer-events: none;
   background-image: linear-gradient(
     100deg,
-    rgba(2, 6, 23, 0.88) 0%,
-    rgba(2, 6, 23, 0.55) 42%,
-    rgba(2, 6, 23, 0.15) 68%,
+    rgba(2, 6, 23, 0.94) 0%,
+    rgba(2, 6, 23, 0.68) 42%,
+    rgba(2, 6, 23, 0.22) 70%,
     transparent 100%
   );
+}
+
+/* Transición elegante hacia la sección clara siguiente (V5.2): en vez
+   de un corte duro entre el hero oscuro y el bloque blanco de abajo. */
+.atheron-hero-fade-out {
+  position: absolute;
+  pointer-events: none;
+  background-image: linear-gradient(180deg, transparent 0%, var(--color-surface) 100%);
 }
 
 /*
@@ -170,6 +180,40 @@ body {
 
   .atheron-breathe {
     animation: atheron-breathe 6s ease-in-out infinite;
+  }
+
+  /*
+   * Movimiento "a la Atheron Suite" (V5.2): casi imperceptible, nunca
+   * espectáculo. El fondo deriva muy lento (26s) entre 1.00 y 1.045 de
+   * escala — un "slow drift", no un zoom. La cámara respira aparte, más
+   * rápido (9s) pero con un tope de escala bajísimo (1.03) para que se
+   * sienta viva sin distraer del mensaje. Ambas son `transform`, nunca
+   * afectan layout — CLS 0 garantizado.
+   */
+  .atheron-bg-drift {
+    animation: atheron-bg-drift 26s ease-in-out infinite alternate;
+  }
+  .atheron-camera-breathe {
+    animation: atheron-camera-breathe 9s ease-in-out infinite;
+  }
+}
+
+@keyframes atheron-bg-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+
+@keyframes atheron-camera-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
   }
 }
 
