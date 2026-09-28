@@ -4,10 +4,27 @@ import Link from "next/link";
 import { Section, SectionHeading } from "@/components/ui/Section";
 import { Icon } from "@/components/ui/Icon";
 import { HomeHero } from "@/components/home/Hero";
-import { Segments } from "@/components/home/Segments";
+import { Solutions } from "@/components/home/Solutions";
+import { Capabilities } from "@/components/home/Capabilities";
 import { GrowthPath } from "@/components/product/GrowthPath";
-import { getAllProducts } from "@/lib/products/registry";
+import { getProductBySlug } from "@/lib/products/registry";
 import type { Product, Segment } from "@/lib/products/types";
+
+/**
+ * Destacados del home (mandato CEO: el catálogo completo bajaba
+ * demasiado arriba en la página): 4 productos elegidos para mostrar el
+ * rango real del catálogo, no solo el más barato — entrada accesible
+ * (H1c), interior/exterior, y el kit dual-lente de gama alta. El
+ * catálogo completo (10 productos) sigue disponible tal cual en
+ * `/productos`, con su propio link "Ver catálogo completo" al final de
+ * esta sección.
+ */
+const FEATURED_PRODUCT_SLUGS = [
+  "ezviz-h8c-4mp-64gb",
+  "ezviz-h1c-2mp",
+  "ezviz-h3c-kit-4mp-64gb",
+  "ezviz-h9c-kit-dual-3k-64gb",
+] as const;
 
 export const metadata: Metadata = {
   title: "Seguridad que crece contigo",
@@ -67,17 +84,19 @@ function getCatalogChips(product: Product): string[] {
 }
 
 export default function HomePage() {
-  const products = getAllProducts();
+  const featuredProducts = FEATURED_PRODUCT_SLUGS.map((slug) => getProductBySlug(slug)).filter(
+    (product): product is Product => Boolean(product),
+  );
 
   return (
     <div>
       <HomeHero />
-      <Segments />
+      <Solutions />
 
       <Section tone="muted" id="producto-destacado" ariaLabel="Producto destacado">
         <SectionHeading eyebrow="Catálogo piloto" title="Empieza por aquí" />
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => {
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {featuredProducts.map((product) => {
             const heroImage = product.images[0];
             const chips = getCatalogChips(product);
 
@@ -135,8 +154,19 @@ export default function HomePage() {
             );
           })}
         </div>
+
+        <div className="mt-10 text-center">
+          <Link
+            href="/productos"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-primary hover:text-brand-accent"
+          >
+            Ver catálogo completo
+            <Icon name="arrow-right" className="h-4 w-4" />
+          </Link>
+        </div>
       </Section>
 
+      <Capabilities />
       <GrowthPath />
     </div>
   );

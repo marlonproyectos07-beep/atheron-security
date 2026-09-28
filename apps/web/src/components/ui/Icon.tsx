@@ -19,7 +19,13 @@ export type IconName =
   | "home"
   | "tree"
   | "building"
-  | "factory";
+  | "factory"
+  | "camera"
+  | "bell"
+  | "lock"
+  | "flame"
+  | "automation"
+  | "solar";
 
 const PATHS: Record<IconName, string> = {
   resolution:
@@ -46,6 +52,14 @@ const PATHS: Record<IconName, string> = {
   tree: "M12 3 8 9h2l-3.5 5.5H9L6 20h12l-3-5.5h2.5L14 9h2L12 3Zm0 14v4",
   building: "M5 21V5a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v16M13 21v-7a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v7M8 8h.01M8 12h.01M8 16h.01M5 21h14",
   factory: "M3 21V11l5 3.5V11l5 3.5V8l6 4v9H3Zm3-4h.01M11 17h.01M16 17h.01",
+  camera: "M3 8a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8Z M15 10l6-3v10l-6-3",
+  bell: "M12 3a5 5 0 0 0-5 5v3.2c0 .9-.35 1.75-.98 2.38L5 15h14l-1.02-1.42c-.63-.63-.98-1.48-.98-2.38V8a5 5 0 0 0-5-5Z M10 18a2 2 0 0 0 4 0",
+  lock: "M6 10V8a6 6 0 1 1 12 0v2 M5 10h14v10H5Z M12 14v3",
+  flame:
+    "M12 3c1.6 2.8 4 4.8 4 8.5a4 4 0 0 1-8 0c0-1.6.7-2.7 1.6-3.6-.2.9.2 1.6.9 1.9-.5-2.3.3-4.2 1.5-6.8Z",
+  automation:
+    "M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1",
+  solar: "M4 10 7 5h10l3 5v9H4v-9Z M4 10h16 M9.5 5v14 M14.5 5v14 M4 14.5h16",
 };
 
 export function Icon({
