@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 480" role="img" aria-labelledby="title desc">
+  <title id="title">Imagen del producto pendiente</title>
+  <desc id="desc">Marcador neutro: todavía no hay una fotografía real de este producto. No representa la forma, el número de lentes ni ninguna característica física del equipo.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5f7fb" />
+      <stop offset="100%" stop-color="#e2e8f0" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="480" height="480" fill="url(#bg)" />
+  <rect x="140" y="150" width="200" height="150" rx="16" fill="none" stroke="#94a3b8" stroke-width="3" stroke-dasharray="10 8" />
+  <circle cx="240" cy="210" r="34" fill="none" stroke="#94a3b8" stroke-width="3" />
+  <circle cx="240" cy="210" r="14" fill="#94a3b8" opacity="0.35" />
+  <path d="M190 272 h100" stroke="#94a3b8" stroke-width="3" stroke-linecap="round" />
+  <text x="240" y="330" text-anchor="middle" font-family="Arial, sans-serif" font-size="17" font-weight="600" fill="#52607a">
+    Imagen próximamente
+  </text>
+</svg>

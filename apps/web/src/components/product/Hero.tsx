@@ -108,11 +108,14 @@ function PriceOrAvailabilityNotice({ product }: { product: Product }) {
 
   if (pricing.status === "verified" && pricing.cashPrice) {
     return (
-      <div className="mt-6 flex flex-wrap items-baseline gap-3">
-        <span className="text-3xl font-extrabold text-brand-primary">
-          {formatCOP(pricing.cashPrice)}
-        </span>
-        <span className="text-sm text-text-muted">de contado</span>
+      <div className="mt-6">
+        <div className="flex flex-wrap items-baseline gap-3">
+          <span className="text-3xl font-extrabold text-brand-primary">
+            {formatCOP(pricing.cashPrice)}
+          </span>
+          <span className="text-sm text-text-muted">de contado</span>
+        </div>
+        <CreditBreakdown pricing={pricing} />
       </div>
     );
   }
@@ -122,5 +125,36 @@ function PriceOrAvailabilityNotice({ product }: { product: Product }) {
       <Icon name="shield" className="mt-0.5 h-4 w-4 shrink-0 text-brand-accent" />
       <span>Precio y disponibilidad se confirman con un asesor Atheron según tu ciudad.</span>
     </div>
+  );
+}
+
+/**
+ * Desglose de crédito (carga de catálogo Línea Hogar): `pricing.creditPrice`/
+ * `downPayment`/`installments` ya existían en el tipo pero ningún
+ * componente los mostraba todavía — el producto piloto nunca tuvo esos
+ * datos reales. Se muestra solo lo que vino dado: el total a crédito es
+ * opcional (varios productos solo traen inicial + cuotas, sin un total
+ * definido) y nunca se calcula ni se infiere aquí.
+ */
+function CreditBreakdown({ pricing }: { pricing: Product["pricing"] }) {
+  const { downPayment, installments, creditPrice } = pricing;
+  if (!downPayment && !installments) return null;
+
+  return (
+    <p className="mt-2 text-sm text-text-muted">
+      O a crédito
+      {creditPrice ? <>: {formatCOP(creditPrice)}</> : null}
+      {downPayment ? (
+        <>
+          {creditPrice ? "," : ":"} inicial {formatCOP(downPayment)}
+        </>
+      ) : null}
+      {installments ? (
+        <>
+          {" "}
+          + {installments.count} cuotas semanales de {formatCOP(installments.amount)}
+        </>
+      ) : null}
+    </p>
   );
 }

@@ -1,5 +1,15 @@
 import type { Product } from "@/lib/products/types";
 import { ezvizH8c4mp64gb } from "@/lib/products/data/ezviz-h8c-4mp-64gb";
+import { ezvizH1c2mp } from "@/lib/products/data/ezviz-h1c-2mp";
+import { ezvizH6c3mp } from "@/lib/products/data/ezviz-h6c-3mp";
+import { ezvizH6c5mp } from "@/lib/products/data/ezviz-h6c-5mp";
+import { ezvizH7cDual2k } from "@/lib/products/data/ezviz-h7c-dual-2k";
+import { ezvizH3c4mpExterior } from "@/lib/products/data/ezviz-h3c-4mp-exterior";
+import { ezvizH9cDual3k } from "@/lib/products/data/ezviz-h9c-dual-3k";
+import { ezvizH8c4g2k } from "@/lib/products/data/ezviz-h8c-4g-2k";
+import { ezvizH9cKitDual3k64gb } from "@/lib/products/data/ezviz-h9c-kit-dual-3k-64gb";
+import { ezvizH7cKitDual2k64gb } from "@/lib/products/data/ezviz-h7c-kit-dual-2k-64gb";
+import { ezvizH3cKit4mp64gb } from "@/lib/products/data/ezviz-h3c-kit-4mp-64gb";
 import { siteConfig } from "@/lib/site-config";
 
 /**
@@ -7,7 +17,19 @@ import { siteConfig } from "@/lib/site-config";
  * Publicar un producto nuevo = agregar un archivo en lib/products/data
  * y una línea aquí. No requiere tocar componentes ni rutas.
  */
-const PRODUCTS: Product[] = [ezvizH8c4mp64gb];
+const PRODUCTS: Product[] = [
+  ezvizH8c4mp64gb,
+  ezvizH1c2mp,
+  ezvizH6c3mp,
+  ezvizH6c5mp,
+  ezvizH7cDual2k,
+  ezvizH3c4mpExterior,
+  ezvizH9cDual3k,
+  ezvizH8c4g2k,
+  ezvizH9cKitDual3k64gb,
+  ezvizH7cKitDual2k64gb,
+  ezvizH3cKit4mp64gb,
+];
 
 /**
  * GATE DE RELEASE (auditoría 001C, salvaguarda de testimonios DEMO):
